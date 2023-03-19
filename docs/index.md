@@ -1,1 +1,1 @@
-#Globe Ecosystem SDK
+# Delidev SDK pack

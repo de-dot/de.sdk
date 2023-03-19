@@ -1,2 +1,2 @@
-# globe-sdk
-Globe Ecosystem Javascript SDK
+# de.sdk
+Delidev SDK pack
