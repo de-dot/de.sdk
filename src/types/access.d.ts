@@ -6,8 +6,7 @@ export type AccessOptions = {
 }
 
 export type Credentials = {
-  clientType: 'dsp' | 'partner' | 'warehouse'
-  clientId: string
+  workspace: string
   appId: string
   appSecret: string
 }

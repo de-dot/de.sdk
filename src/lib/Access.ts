@@ -15,8 +15,7 @@ export default class Access {
   constructor( creds: Credentials, options?: AccessOptions ){
 
     if( !creds ) throw new Error('Undefined credentials. Check https://doc.delidev.com/sdk/auth')
-    if( !creds.clientType ) throw new Error('Undefined client Type. Check https://doc.delidev.com/sdk/auth')
-    if( !creds.clientId ) throw new Error('Undefined client ID. Check https://doc.delidev.com/sdk/auth')
+    if( !creds.workspace ) throw new Error('Undefined workspace reference. Check https://doc.delidev.com/sdk/auth')
     if( !creds.appId ) throw new Error('Undefined app ID. Check https://doc.delidev.com/sdk/auth')
     if( !creds.appSecret ) throw new Error('Undefined app secret. Check https://doc.delidev.com/sdk/auth')
 
@@ -28,11 +27,12 @@ export default class Access {
 
   async getToken(){
     const
-    { clientType, clientId, appId, appSecret } = this.creds,
+    { workspace, appId, appSecret } = this.creds,
     options: HTTPRequestOptions = {
-      url: `/access/${clientType}/${clientId}`,
+      url: '/access/token',
       method: 'POST',
-      body: { 
+      body: {
+        workspace,
         id: appId,
         secret: appSecret
       }
