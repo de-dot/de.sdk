@@ -9,7 +9,8 @@ import Order from './Order'
 import Event from './Event'
 
 export default class DClient extends Access {
-  protected clientId: string
+  public clientId: string
+  public options: AccessOptions
 
   constructor( clientId: string, creds: Credentials, options?: AccessOptions ){
     super( creds, { autorefresh: true, ...options } )
@@ -19,6 +20,7 @@ export default class DClient extends Access {
 
     // ID/reference of the client on this session
     this.clientId = clientId
+    this.options = options || {}
   }
 
   async authenticate(){
@@ -28,7 +30,7 @@ export default class DClient extends Access {
     return {
       Map: new Map( this ),
       Order: new Order( this ),
-      Event: new Event( this )
+      Event: new Event( this, this.creds.workspace )
     }
   }
 

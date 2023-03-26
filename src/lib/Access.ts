@@ -6,7 +6,7 @@ const EXPIRY_TIME = 3.75 // in 3 minutes 45 seconds
 
 export default class Access {
   private version: number
-  private creds: Credentials
+  protected creds: Credentials
   private expiryTime?: NodeJS.Timeout
   private autorefresh?: boolean
   private baseURL: string

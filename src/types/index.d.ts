@@ -78,3 +78,14 @@ export type OrderStage = {
   current: string
   status: string
 }
+
+export type Message = {
+  type: 'text' | 'location' | 'media'
+  sender: string
+  content: string
+  timestamp: string
+}
+export type Peer = {
+  utype: string,
+  id: string
+}

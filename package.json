@@ -19,11 +19,10 @@
     "compile": "rimraf ./dist && tsc && cp ./src/types/** ./dist",
     "prepack": "yarn run compile",
     "test": "Echo 'Error: No test specified' && exit 1",
-    "test:all": "jest",
-    "test:compile:all": "yarn compile && jest",
     "test:access": "yarn compile && jest test/access.test.js",
     "test:dclient": "yarn compile && jest test/dclient.test.js",
-    "test:order": "yarn compile && jest test/order.test.js"
+    "test:order": "yarn compile && jest test/order.test.js",
+    "test:event": "yarn compile && jest test/event.test.js"
   },
   "dependencies": {
     "request": "^2.88.2",

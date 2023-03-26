@@ -1,5 +1,5 @@
 
-import type Access from '../Access'
+import type DBClient from '.'
 import type { HTTPRequestOptions } from '../../types/access'
 import type { 
   Package, PackageOptions, 
@@ -8,10 +8,10 @@ import type {
 } from '../../types'
 
 export default class Order {
-  private ca: Access // Client Access
+  private ca: DBClient
   private intentToken: string // Active order's intent token
 
-  constructor( ca: Access ){
+  constructor( ca: DBClient ){
     this.ca = ca
     this.intentToken = ''
   }
