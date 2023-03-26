@@ -1,48 +1,49 @@
 
 const { Access } = require('../dist')
 
-const DEBUG_TEST = true
 let instance
 
-describe('[ACCESS TEST] --------------------------------------', function(){
-  describe('# -- Initialize -- [/lib/Access.js]', function(){
-    it('Should throw Error <Undefined credentials. Check https://doc.delidev.com/sdk/auth>', function(){
-      try { new Access() }
-      catch( error ){ DEBUG_TEST && console.error( error.message ) }
-    })
+describe('[ACCESS]: Configurations -- [/lib/Access.js]', () => {
+  test('Should throw: No configuration error', () => {
+    expect( () => new Access() ).toThrow(/^Undefined credentials/)
+  })
 
-    it('Should throw Error <Undefined [credential field]. Check https://doc.delidev.com/sdk/auth>', function(){
-      try { new Access({ workspace: 'abcd' }) }
-      catch( error ){ DEBUG_TEST && console.error( error.message ) }
-    })
+  test('Should throw configuration fields missing error', () => {
+    expect( () => new Access({ workspace: 'abcd' }) )
+        .toThrow(/^Undefined app ID/)
+  })
 
-    it('Should throw Error <Application Not Found>', async function(){
-      try {
-        const credentials = {
-          workspace: 'abcd',
-          appId: '1234',
-          appSecret: '83buf...bh929'
-        }
-        
-        instance = new Access( credentials )
-        await instance.getToken()
-      }
-      catch( error ){ DEBUG_TEST && console.error( error.message ) }
-    })
-
-    it('Return response with <token>', async function(){
+  test('Should throw Error <Application Not Found>', async () => {
+    try {
       const credentials = {
-        workspace: 'RFNQOkRTUC1EMDI4LTAzM0Y3QUE=',
-        appId: '6B8am3SIXy6M444K8T0GjCqG',
-        appSecret: 'oSHwEPPrbrR5x6Qtn77ehiiTRibNkp58T4T1tR906wvUgYuC'
+        workspace: 'abcd',
+        appId: '1234',
+        appSecret: '83buf...bh929'
       }
       
       instance = new Access( credentials )
       await instance.getToken()
-    })
+    }
+    catch( error ){ expect( error.message ).toBe('Application Not Found') }
+  })
+})
 
-    it('Return response with new <token> value', async function(){
-      await instance.refreshToken()
-    })
+describe('[ACCESS]: Setup -- [/lib/Access.js]', () => {
+  test('Return response with <token>', async () => {
+    const credentials = {
+      workspace: 'RFNQOkRTUC1EMDI4LTAzM0Y3QUE=',
+      appId: '6B8am3SIXy6M444K8T0GjCqG',
+      appSecret: 'oSHwEPPrbrR5x6Qtn77ehiiTRibNkp58T4T1tR906wvUgYuC'
+    }
+    
+    instance = new Access( credentials )
+
+    const token = await instance.getToken()
+    expect( token ).toMatch(/\w+/)
+  })
+
+  test('Return response with new <token> value', async () => {
+    const token = await instance.refreshToken()
+    expect( token ).toMatch(/\w+/)
   })
 })

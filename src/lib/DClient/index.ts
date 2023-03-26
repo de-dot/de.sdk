@@ -12,8 +12,11 @@ export default class DClient extends Access {
   protected clientId: string
 
   constructor( clientId: string, creds: Credentials, options?: AccessOptions ){
-    super( creds, { ...options, autorefresh: true } )
+    super( creds, { autorefresh: true, ...options } )
     
+    if( !clientId )
+      throw new Error('Undefined <clientId> required')
+
     // ID/reference of the client on this session
     this.clientId = clientId
   }
@@ -29,7 +32,40 @@ export default class DClient extends Access {
     }
   }
 
+  async fetchActiveOrders(){
+    if( !this.accessToken )
+      throw new Error('Authentication required')
+      
+    const
+    options: HTTPRequestOptions = {
+      url: `/client/${this.clientId}/orders/actives`,
+      method: 'GET'
+    },
+    { error, message, orders } = await this.request( options )
+    if( error ) throw new Error( message )
+    
+    return orders
+  }
+
+  async fetchOrderHistory(){
+    if( !this.accessToken )
+      throw new Error('Authentication required')
+    
+    const
+    options: HTTPRequestOptions = {
+      url: `/client/${this.clientId}/orders/history`,
+      method: 'GET'
+    },
+    { error, message, orders } = await this.request( options )
+    if( error ) throw new Error( message )
+    
+    return orders
+  }
+
   async periferals( location: GPSLocation ){
+    if( !this.accessToken )
+      throw new Error('Authentication required')
+
     if( !location )
       throw new Error('Undefined epicenter location')
 
