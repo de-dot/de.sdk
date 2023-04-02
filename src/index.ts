@@ -1,5 +1,9 @@
 
-export const Access = require('./lib/Access').default
-export const DClient = require('./lib/DClient').default
+export const Auth = require('./backend/Auth').default
 
-export default { Access, DClient }
+const Map = require('./allend/DClient/Map').default
+const Order = require('./allend/DClient/Order').default
+const Event = require('./allend/DClient/Event').default
+const Client = require('./allend/DClient/Client').default
+
+export const DClient = { Client, Order, Event, Map }

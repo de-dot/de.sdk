@@ -1,75 +1,97 @@
 
-const { DClient } = require('../dist')
+const { Auth, DClient } = require('../dist')
 
-const clientId = '1234567890'
-let 
-instance,
-Order,
+const
+clientId = '1234567890',
+remoteOrigin = 'http://localhost:5000'
+workspace = 'RFNQOkRTUC1CMDk4LUMyQUNDRjY=',
+appId = '79kapUEkBZj4GaP24dxxmW6D',
+appSecret = 'xvjLXbpmVUGGLPIpiYa9qJoiqq3nEolRrDSaW7O7EsJsNnGv'
+
+let
+order,
 intentToken,
 PTC // Package Tracking Code
 
-describe('[DCLIENT - ORDER]: Initialize DClient -- [/lib/DClient/index.js]', () => {
-  test('DClient initialized', async () => {
+describe('[AUTH]: Setup -- [src/Auth.ts]', () => {
+  test('Return response with <token>', async () => {
     const credentials = {
-      workspace: 'RFNQOkRTUC1EMDI4LTAzM0Y3QUE=',
-      appId: '6B8am3SIXy6M444K8T0GjCqG',
-      appSecret: 'oSHwEPPrbrR5x6Qtn77ehiiTRibNkp58T4T1tR906wvUgYuC'
+      remoteOrigin,
+      workspace,
+      appId,
+      appSecret
     }
     
-    instance = new DClient( '1234', credentials, { autorefresh: false } )
-    api = await instance.authenticate(),
-    exp = expect( api )
-    
-    exp.toHaveProperty('Map')
-    exp.toHaveProperty('Order')
-    exp.toHaveProperty('Event')
+    const auth = new Auth( credentials )
 
-    Order = api.Order
+    accessToken = await auth.getToken()
+    expect( accessToken ).toMatch(/\w+/)
+  })
+})
+
+describe('[DCLIENT/ORDER]: Initialize DClient -- [src/DClient/Order.ts]', () => {
+  test('Should throw error: Undefined Access Configuration', () => {
+    expect( () => new DClient.Order() ).toThrow(/^Undefined Access Configuration/)
+  })
+  
+  test('Should throw error: Undefined Workspace Reference', () => {
+    expect( () => new DClient.Order({}) ).toThrow(/^Undefined Workspace Reference/)
   })
 
+  test('Return DClient Order API Interface', () => {
+    const access = {
+      remoteOrigin,
+      workspace,
+      accessToken
+    }
+    
+    order = new DClient.Order( access )
+    expect( order ).toHaveProperty('intent')
+  })
+})
+
+describe('[DCLIENT/ORDER]: Initiation Cycle -- [src/DClient/Order.ts]', () => {
   test('Should throw Error <<clientId> argument required>', async () => {
-    try { await Order.intent() }
+    try { await order.intent() }
     catch( error ){
       expect( error.message ).toBe('<clientId> argument required')
     }
   })
-})
 
-describe('[DCLIENT - ORDER]: Initiation Cycle -- [/lib/DClient/Order.js]', () => {
   test('Create order intent successfully', async () => {
-    intentToken = await Order.intent( clientId )
+    intentToken = await order.intent( clientId )
     expect( intentToken ).toMatch(/\w+/)
   })
 
   test('Should throw Error <Undefined intent token>', async () => {
-    try { await Order.unintent() }
+    try { await order.unintent() }
     catch( error ){
       expect( error.message ).toBe('Undefined intent token')
     }
   })
 
   test('Should throw Error <Invalid Request>', async () => {
-    try { await Order.unintent('abcd1234') }
+    try { await order.unintent('abcd1234') }
     catch( error ){
       expect( error.message ).toBe('Invalid Request')
     }
   })
 
   test('Revoke order intent successfully', async () => {
-    const done = await Order.unintent( intentToken )
+    const done = await order.unintent( intentToken )
     expect( done ).toBeTruthy()
   })
 
   test('New order intent', async () => {
-    intentToken = await Order.intent( clientId )
+    intentToken = await order.intent( clientId )
     expect( intentToken ).toMatch(/\w+/)
   })
 })
 
-describe('[DCLIENT - ORDER]: Waypoints -- [/lib/DClient/Order.js]', () => {
+describe('[DCLIENT/ORDER]: Waypoints -- [src/DClient/Order.ts]', () => {
 
   test('Should throw Error <Expect <list> argument to be [Waypoint or Waypoint<array>]>', async () => {
-    try { await Order.addWaypoint() }
+    try { await order.addWaypoint() }
     catch( error ){
       expect( error.message ).toBe('Expect <list> argument to be [Waypoint or Waypoint<array>]')
     }
@@ -82,7 +104,7 @@ describe('[DCLIENT - ORDER]: Waypoints -- [/lib/DClient/Order.js]', () => {
         "address": "Legon university, Accra - Ghana"
       }
 
-      await Order.addWaypoint( waypoints )
+      await order.addWaypoint( waypoints )
     }
     catch( error ){
       expect( error.message ).toBe('body/0 must have required property \'no\'')
@@ -119,21 +141,21 @@ describe('[DCLIENT - ORDER]: Waypoints -- [/lib/DClient/Order.js]', () => {
         }
       }
     ],
-    response = await Order.addWaypoint( waypoints )
+    response = await order.addWaypoint( waypoints )
     
     expect( Array.isArray( response ) ).toBeTruthy()
   })
 
   describe('--------------- GET & FETCH', () => {
     test('Should throw Error: Expected waypoint number', async () => {
-      try { await Order.getWaypoint() }
+      try { await order.getWaypoint() }
       catch( error ){
         expect( error.message ).toBe('Expected waypoint number')
       }
     })
 
     test('Should throw Error: Waypoint Not Found', async () => {
-      try { await Order.getWaypoint( 3 ) }
+      try { await order.getWaypoint( 3 ) }
       catch( error ){
         expect( error.message ).toBe('Waypoint Not Found')
       }
@@ -141,7 +163,7 @@ describe('[DCLIENT - ORDER]: Waypoints -- [/lib/DClient/Order.js]', () => {
 
     test('Retreive order waypoint details successfully', async () => {
       const
-      response = await Order.getWaypoint( 1 ),
+      response = await order.getWaypoint( 1 ),
       exp = expect( response )
       
       exp.toHaveProperty('no')
@@ -152,7 +174,7 @@ describe('[DCLIENT - ORDER]: Waypoints -- [/lib/DClient/Order.js]', () => {
     })
 
     test('Fetch order waypoints successfully', async () => {
-      const response = await Order.fetchWaypoints()
+      const response = await order.fetchWaypoints()
       expect( Array.isArray( response ) ).toBeTruthy()
     })
   })
@@ -168,7 +190,7 @@ describe('[DCLIENT - ORDER]: Waypoints -- [/lib/DClient/Order.js]', () => {
           "contact.email": "quick@pharma.com"
         }
         
-        await Order.updateWaypoint( 3, updates )
+        await order.updateWaypoint( 3, updates )
       }
       catch( error ){
         expect( error.message ).toBe('Waypoint Not Found')
@@ -183,7 +205,7 @@ describe('[DCLIENT - ORDER]: Waypoints -- [/lib/DClient/Order.js]', () => {
         "contact.type": "pharmacy",
         "contact.email": "quick@pharma.com"
       },
-      response = await Order.updateWaypoint( 1, updates )
+      response = await order.updateWaypoint( 1, updates )
       
       expect( Array.isArray( response ) ).toBeTruthy()
     })
@@ -191,30 +213,30 @@ describe('[DCLIENT - ORDER]: Waypoints -- [/lib/DClient/Order.js]', () => {
 
   describe('--------------- DELETE', () => {
     test('Should throw Error: Expected waypoint number', async () => {
-      try { await Order.deleteWaypoint() }
+      try { await order.deleteWaypoint() }
       catch( error ){
         expect( error.message ).toBe('Expected waypoint number')
       }
     })
 
     test('Should throw Error: Waypoint Not Found', async () => {
-      try { await Order.deleteWaypoint( 3 ) }
+      try { await order.deleteWaypoint( 3 ) }
       catch( error ){
         expect( error.message ).toBe('Waypoint Not Found')
       }
     })
 
     test('Remove order waypoint successfully', async () => {
-      const response = await Order.deleteWaypoint( 2 )
+      const response = await order.deleteWaypoint( 2 )
       expect( Array.isArray( response ) ).toBeTruthy()
     })
   })
 })
 
-describe('[DCLIENT - ORDER]: Packages -- [/lib/DClient/Order.js]', () => {
+describe('[DCLIENT/ORDER]: Packages -- [src/DClient/Order.ts]', () => {
 
   test('Should throw Error <Expect <list> argument to be [Package or Package<array>]>', async () => {
-    try { await Order.addPackage() }
+    try { await order.addPackage() }
     catch( error ){
       expect( error.message ).toBe('Expect <list> argument to be [Package or Package<array>]')
     }
@@ -226,7 +248,7 @@ describe('[DCLIENT - ORDER]: Packages -- [/lib/DClient/Order.js]', () => {
         "careLevel": 3
       }
 
-      await Order.addPackage( packages )
+      await order.addPackage( packages )
     }
     catch( error ){
       expect( error.message ).toBe('body/0 must have required property \'waypointNo\'')
@@ -244,7 +266,7 @@ describe('[DCLIENT - ORDER]: Packages -- [/lib/DClient/Order.js]', () => {
         "note": "Wrap well"
       }
     ],
-    response = await Order.addPackage( packages )
+    response = await order.addPackage( packages )
     
     expect( Array.isArray( response ) ).toBeTruthy()
     PTC = response[0].PTC
@@ -252,14 +274,14 @@ describe('[DCLIENT - ORDER]: Packages -- [/lib/DClient/Order.js]', () => {
 
   describe('--------------- GET & FETCH', () => {
     test('Should throw Error: Expected Package Tracking Code', async () => {
-      try { await Order.getPackage() }
+      try { await order.getPackage() }
       catch( error ){
         expect( error.message ).toBe('Expected Package Tracking Code')
       }
     })
 
     test('Should throw Error: Package Not Found', async () => {
-      try { await Order.getPackage('FD-1234abcd') }
+      try { await order.getPackage('FD-1234abcd') }
       catch( error ){
         expect( error.message ).toBe('Package Not Found')
       }
@@ -267,7 +289,7 @@ describe('[DCLIENT - ORDER]: Packages -- [/lib/DClient/Order.js]', () => {
 
     test('Retreive order package details successfully', async () => {
       const 
-      response = await Order.getPackage( PTC ),
+      response = await order.getPackage( PTC ),
       exp = expect( response )
       
       exp.toHaveProperty('PTC')
@@ -277,7 +299,7 @@ describe('[DCLIENT - ORDER]: Packages -- [/lib/DClient/Order.js]', () => {
     })
 
     test('Fetch order packages successfully', async () => {
-      const response = await Order.fetchPackages()
+      const response = await order.fetchPackages()
       expect( Array.isArray( response ) ).toBeTruthy()
     })
   })
@@ -291,7 +313,7 @@ describe('[DCLIENT - ORDER]: Packages -- [/lib/DClient/Order.js]', () => {
           "careLevel": 4
         }
         
-        await Order.updatePackage('GD-1234acbd', updates )
+        await order.updatePackage('GD-1234acbd', updates )
       }
       catch( error ){
         expect( error.message ).toBe('Package Not Found')
@@ -304,7 +326,7 @@ describe('[DCLIENT - ORDER]: Packages -- [/lib/DClient/Order.js]', () => {
         "category": 'GR',
         "careLevel": 4
       },
-      response = await Order.updatePackage( PTC, updates )
+      response = await order.updatePackage( PTC, updates )
       
       expect( Array.isArray( response ) ).toBeTruthy()
       PTC = response[0].PTC // Update PTC
@@ -313,30 +335,30 @@ describe('[DCLIENT - ORDER]: Packages -- [/lib/DClient/Order.js]', () => {
 
   describe('--------------- DELETE', () => {
     test('Should throw Error: Expected Package Tracking Code', async () => {
-      try { await Order.deletePackage() }
+      try { await order.deletePackage() }
       catch( error ){
         expect( error.message ).toBe('Expected Package Tracking Code')
       }
     })
 
     test('Should throw Error: Package Not Found', async () => {
-      try { await Order.deletePackage('GD-1234acbd') }
+      try { await order.deletePackage('GD-1234acbd') }
       catch( error ){
         expect( error.message ).toBe('Package Not Found')
       }
     })
 
     test('Remove order package successfully', async () => {
-      const response = await Order.deletePackage( PTC )
+      const response = await order.deletePackage( PTC )
       expect( Array.isArray( response ) ).toBeTruthy()
     })
   })
 })
 
-describe('[DCLIENT - ORDER]: Initiate Service -- [/lib/DClient/Order.js]', () => {
+describe('[DCLIENT/ORDER]: Initiate Service -- [src/DClient/Order.ts]', () => {
 
   test('Should throw Error: Expect <payload> argument to be [OrderService]', async () => {
-    try { await Order.initiate() }
+    try { await order.initiate() }
     catch( error ){
       expect( error.message ).toBe('Expect <payload> argument to be [OrderService]')
     }
@@ -348,7 +370,7 @@ describe('[DCLIENT - ORDER]: Initiate Service -- [/lib/DClient/Order.js]', () =>
         "xpress": "standard"
       }
 
-      await Order.initiate( service )
+      await order.initiate( service )
     }
     catch( error ){
       expect( error.message ).toBe('body must have required property \'fees\'')
@@ -372,14 +394,14 @@ describe('[DCLIENT - ORDER]: Initiate Service -- [/lib/DClient/Order.js]', () =>
       },
       "xpress": "standard"
     },
-    response = await Order.initiate( service )
+    response = await order.initiate( service )
 
     expect( response ).toMatch(/\w+/)
   })
 
   describe('--------------- GET', () => {
     test('Should throw Error: Invalid Request', async () => {
-      try { await Order.getService('1234abcd') }
+      try { await order.getService('1234abcd') }
       catch( error ){
         expect( error.message ).toBe('Invalid Request')
       }
@@ -387,7 +409,7 @@ describe('[DCLIENT - ORDER]: Initiate Service -- [/lib/DClient/Order.js]', () =>
 
     test('Retreive order service details successfully', async () => {
       const
-      response = await Order.getService(),
+      response = await order.getService(),
       exp = expect( response )
       
       exp.toHaveProperty('fees')
@@ -403,7 +425,7 @@ describe('[DCLIENT - ORDER]: Initiate Service -- [/lib/DClient/Order.js]', () =>
           "payment.method": 123,
         }
         
-        await Order.updateService( updates )
+        await order.updateService( updates )
       }
       catch( error ){
         expect( error.message ).toBe('body/fees.total.amount must be number')
@@ -418,7 +440,7 @@ describe('[DCLIENT - ORDER]: Initiate Service -- [/lib/DClient/Order.js]', () =>
         "payment.paid": true,
         "xpress": "vip"
       },
-      response = await Order.updateService( updates ),
+      response = await order.updateService( updates ),
       exp = expect( response )
       
       exp.toHaveProperty('fees')
@@ -429,14 +451,14 @@ describe('[DCLIENT - ORDER]: Initiate Service -- [/lib/DClient/Order.js]', () =>
 
   describe('--------------- RATING', () => {
     test('Should throw error: Expect <rating> to be number betwee 0 to 5', async () => {
-      try { await Order.rateService() }
+      try { await order.rateService() }
       catch( error ){
         expect( error.message ).toBe('Expect <rating> to be number betwee 0 to 5')
       }
     })
 
     test('Should throw error: No agent assigned to the order', async () => {
-      try { await Order.rateService( 4.5 ) }
+      try { await order.rateService( 4.5 ) }
       catch( error ){
         expect( error.message ).toBe('No agent assigned to the order')
       }
@@ -444,15 +466,15 @@ describe('[DCLIENT - ORDER]: Initiate Service -- [/lib/DClient/Order.js]', () =>
 
     // TODO: Order must be assigned to an agent for this test to succeeed
     // test('Rate order service successfully', async () => {
-    //   const response = await Order.rateService( 4.5 )
+    //   const response = await order.rateService( 4.5 )
     //   expect( response ).toBeTruthy()
     // })
   })
 })
 
-describe('[DCLIENT - ORDER]: Operators -- [/lib/DClient/Order.js]', () => {
+describe('[DCLIENT/ORDER]: Operators -- [src/DClient/Order.ts]', () => {
   test('Should throw Error: Unknown order operator', async () => {
-    try { await Order.getOperator('any') }
+    try { await order.getOperator('any') }
     catch( error ){
       expect( error.message ).toBe('Unknown order operator')
     }
@@ -460,7 +482,7 @@ describe('[DCLIENT - ORDER]: Operators -- [/lib/DClient/Order.js]', () => {
 
   test('Get DSP operator on the order', async () => {
     const
-    response = await Order.getOperator('DSP'),
+    response = await order.getOperator('DSP'),
     exp = expect( response )
     
     exp.toHaveProperty('icode')
@@ -470,17 +492,17 @@ describe('[DCLIENT - ORDER]: Operators -- [/lib/DClient/Order.js]', () => {
 
   test('Get all operators on the order', async () => {
     const
-    response = await Order.getOperators(),
+    response = await order.getOperators(),
     exp = expect( response )
     
     exp.toHaveProperty('DSP')
   })
 })
 
-describe('[DCLIENT - ORDER]: Monitoring -- [/lib/DClient/Order.js]', () => {
+describe('[DCLIENT/ORDER]: Monitoring -- [src/DClient/Order.ts]', () => {
   test('Get order\'s current stage', async () => {
     const
-    response = await Order.getCurrentStage(),
+    response = await order.getCurrentStage(),
     exp = expect( response )
     
     exp.toHaveProperty('current')
@@ -489,7 +511,7 @@ describe('[DCLIENT - ORDER]: Monitoring -- [/lib/DClient/Order.js]', () => {
 
   test('Get order\'s current route', async () => {
     const
-    response = await Order.getCurrentRoute(),
+    response = await order.getCurrentRoute(),
     exp = expect( response )
     
     exp.toHaveProperty('itineary')

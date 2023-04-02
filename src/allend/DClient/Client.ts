@@ -1,37 +1,19 @@
 
-import type { Credentials, AccessOptions } from '../../types/access'
+import type { AccessOptions } from '../../types/access'
+import type { HTTPRequestOptions, GPSLocation } from '../../types'
 import Access from '../Access'
-import Map from './Map'
 
-import type { HTTPRequestOptions } from '../../types/access'
-import type { GPSLocation } from '../../types'
-import Order from './Order'
-import Event from './Event'
+export default class Client extends Access {
+  private clientId: string
 
-export default class DClient extends Access {
-  public clientId: string
-  public options: AccessOptions
+  constructor( clientId: string, access: AccessOptions ){
+    if( !clientId ) 
+      throw new Error('Undefined <clientId>')
 
-  constructor( clientId: string, creds: Credentials, options?: AccessOptions ){
-    super( creds, { autorefresh: true, ...options } )
-    
-    if( !clientId )
-      throw new Error('Undefined <clientId> required')
-
+    // Instanciate access
+    super( access )
     // ID/reference of the client on this session
     this.clientId = clientId
-    this.options = options || {}
-  }
-
-  async authenticate(){
-    // Retreive access token
-    await this.getToken()
-
-    return {
-      Map: new Map( this ),
-      Order: new Order( this ),
-      Event: new Event( this, this.creds.workspace )
-    }
   }
 
   async fetchActiveOrders(){

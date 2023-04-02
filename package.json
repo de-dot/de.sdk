@@ -16,28 +16,37 @@
   "author": "SCOREX Corporation",
   "private": false,
   "scripts": {
-    "compile": "rimraf ./dist && tsc && cp ./src/types/** ./dist",
+    "build:tsc": "rimraf ./dist && tsc && cp ./src/types/** ./dist",
+    "build:webpack": "WEBPACK_ENV=build webpack",
+    "compile": "yarn build:tsc && yarn build:webpack",
     "prepack": "yarn run compile",
     "test": "Echo 'Error: No test specified' && exit 1",
-    "test:access": "yarn compile && jest test/access.test.js",
-    "test:dclient": "yarn compile && jest test/dclient.test.js",
-    "test:order": "yarn compile && jest test/order.test.js",
-    "test:event": "yarn compile && jest test/event.test.js"
+    "test:auth": "yarn build:tsc && jest test/auth.test.js",
+    "test:client": "yarn build:tsc && jest test/client.test.js",
+    "test:order": "yarn build:tsc && jest test/order.test.js",
+    "test:event": "yarn build:tsc && jest test/event.test.js"
   },
   "dependencies": {
+    "events": "^3.3.0",
+    "iframe.io": "^0.0.8",
+    "node-fetch": "2.6.1",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
     "socket.io-client": "^4.6.1"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",
+    "@types/node-fetch": "^2.6.3",
     "@types/request": "^2.48.8",
     "@types/request-promise": "^4.1.48",
     "expect.js": "^0.3.1",
     "jest": "^29.5.0",
     "rimraf": "^4.4.0",
     "ts-jest": "^29.0.5",
-    "typescript": "^5.0.2"
+    "ts-loader": "^9.4.2",
+    "typescript": "^5.0.2",
+    "webpack": "^5.77.0",
+    "webpack-cli": "^5.0.1"
   },
   "directories": {
     "dist": "dist/",

@@ -1,4 +1,11 @@
 
+export type HTTPRequestOptions = {
+  url: string
+  method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE'
+  headers?: { [index: string]: string }
+  body?: any
+}
+
 export type GPSLocation = {
   lng: number
   lat: number
@@ -88,4 +95,11 @@ export type Message = {
 export type Peer = {
   utype: string,
   id: string
+}
+
+export type MapOptions = {
+  element: string
+  accessToken: string
+  version?: number
+  env?: 'dev' | 'prod'
 }

@@ -1,18 +1,18 @@
-
-import type DBClient from '.'
-import type { HTTPRequestOptions } from '../../types/access'
+import type { HTTPRequestOptions } from '../../types'
+import type { AccessOptions } from '../../types/access'
 import type { 
   Package, PackageOptions, 
   Waypoint, WaypointOptions,
   OrderService, OrderServiceOptions, OrderOperator, OrderStage
 } from '../../types'
+import Access from '../Access'
 
-export default class Order {
-  private ca: DBClient
+export default class Order extends Access {
   private intentToken: string // Active order's intent token
 
-  constructor( ca: DBClient ){
-    this.ca = ca
+  constructor( access: AccessOptions ){
+    super( access )
+    
     this.intentToken = ''
   }
 
@@ -30,7 +30,7 @@ export default class Order {
       method: 'POST',
       body: { clientId }
     },
-    { error, message, token } = await this.ca.request( options )
+    { error, message, token } = await this.request( options )
     if( error ) throw new Error( message )
     
     this.intentToken = token
@@ -47,7 +47,7 @@ export default class Order {
       method: 'DELETE',
       headers: { 'x-intent-token': token }
     },
-    { error, message } = await this.ca.request( options )
+    { error, message } = await this.request( options )
     if( error ) throw new Error( message )
     
     this.intentToken = ''
@@ -73,7 +73,7 @@ export default class Order {
       headers: { 'x-intent-token': token },
       body: !Array.isArray( list ) ? [ list ] : list
     },
-    { error, message, waypoints } = await this.ca.request( options )
+    { error, message, waypoints } = await this.request( options )
     if( error ) throw new Error( message )
     
     return waypoints as Waypoint[]
@@ -92,7 +92,7 @@ export default class Order {
       method: 'GET',
       headers: { 'x-intent-token': token }
     },
-    { error, message, waypoint } = await this.ca.request( options )
+    { error, message, waypoint } = await this.request( options )
     if( error ) throw new Error( message )
     
     return waypoint as Waypoint
@@ -109,7 +109,7 @@ export default class Order {
       method: 'GET',
       headers: { 'x-intent-token': token }
     },
-    { error, message, waypoints } = await this.ca.request( options )
+    { error, message, waypoints } = await this.request( options )
     if( error ) throw new Error( message )
     
     return waypoints as Waypoint[]
@@ -132,7 +132,7 @@ export default class Order {
       headers: { 'x-intent-token': token },
       body: updates
     },
-    { error, message, waypoints } = await this.ca.request( options )
+    { error, message, waypoints } = await this.request( options )
     if( error ) throw new Error( message )
     
     return waypoints as Waypoint[]
@@ -151,7 +151,7 @@ export default class Order {
       method: 'DELETE',
       headers: { 'x-intent-token': token }
     },
-    { error, message, waypoints } = await this.ca.request( options )
+    { error, message, waypoints } = await this.request( options )
     if( error ) throw new Error( message )
     
     return waypoints as Waypoint[]
@@ -176,7 +176,7 @@ export default class Order {
       headers: { 'x-intent-token': token },
       body: !Array.isArray( list ) ? [ list ] : list
     },
-    { error, message, packages } = await this.ca.request( options )
+    { error, message, packages } = await this.request( options )
     if( error ) throw new Error( message )
     
     return packages as Package[]
@@ -195,7 +195,7 @@ export default class Order {
       method: 'GET',
       headers: { 'x-intent-token': token }
     },
-    response = await this.ca.request( options )
+    response = await this.request( options )
     if( response.error ) throw new Error( response.message )
     
     return response.package as Package
@@ -212,7 +212,7 @@ export default class Order {
       method: 'GET',
       headers: { 'x-intent-token': token }
     },
-    { error, message, packages } = await this.ca.request( options )
+    { error, message, packages } = await this.request( options )
     if( error ) throw new Error( message )
     
     return packages as Package[]
@@ -235,7 +235,7 @@ export default class Order {
       headers: { 'x-intent-token': token },
       body: updates
     },
-    { error, message, packages } = await this.ca.request( options )
+    { error, message, packages } = await this.request( options )
     if( error ) throw new Error( message )
     
     return packages as Package[]
@@ -254,7 +254,7 @@ export default class Order {
       method: 'DELETE',
       headers: { 'x-intent-token': token }
     },
-    { error, message, packages } = await this.ca.request( options )
+    { error, message, packages } = await this.request( options )
     if( error ) throw new Error( message )
     
     return packages as Package[]
@@ -279,7 +279,7 @@ export default class Order {
       headers: { 'x-intent-token': token },
       body: payload
     },
-    { error, message, jrtoken } = await this.ca.request( options )
+    { error, message, jrtoken } = await this.request( options )
     if( error ) throw new Error( message )
     
     return jrtoken
@@ -296,7 +296,7 @@ export default class Order {
       method: 'GET',
       headers: { 'x-intent-token': token }
     },
-    { error, message, service } = await this.ca.request( options )
+    { error, message, service } = await this.request( options )
     if( error ) throw new Error( message )
     
     return service as OrderService
@@ -317,7 +317,7 @@ export default class Order {
       headers: { 'x-intent-token': token },
       body: updates
     },
-    { error, message, service } = await this.ca.request( options )
+    { error, message, service } = await this.request( options )
     if( error ) throw new Error( message )
     
     return service as OrderService
@@ -338,7 +338,7 @@ export default class Order {
       headers: { 'x-intent-token': token },
       body: { rating }
     },
-    { error, message } = await this.ca.request( options )
+    { error, message } = await this.request( options )
     if( error ) throw new Error( message )
     
     return true
@@ -362,7 +362,7 @@ export default class Order {
       method: 'GET',
       headers: { 'x-intent-token': token }
     },
-    { error, message, operators } = await this.ca.request( options )
+    { error, message, operators } = await this.request( options )
     if( error ) throw new Error( message )
     
     return operators[ type ] as OrderOperator
@@ -379,7 +379,7 @@ export default class Order {
       method: 'GET',
       headers: { 'x-intent-token': token }
     },
-    { error, message, operators } = await this.ca.request( options )
+    { error, message, operators } = await this.request( options )
     if( error ) throw new Error( message )
     
     return operators
@@ -400,7 +400,7 @@ export default class Order {
       method: 'GET',
       headers: { 'x-intent-token': token }
     },
-    { error, message, stage } = await this.ca.request( options )
+    { error, message, stage } = await this.request( options )
     if( error ) throw new Error( message )
     
     return stage as OrderStage
@@ -417,7 +417,7 @@ export default class Order {
       method: 'GET',
       headers: { 'x-intent-token': token }
     },
-    { error, message, route } = await this.ca.request( options )
+    { error, message, route } = await this.request( options )
     if( error ) throw new Error( message )
     
     return route as any
