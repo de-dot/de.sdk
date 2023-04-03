@@ -1,7 +1,7 @@
 
-import type { MapOptions } from '../../types'
-import IOF from 'iframe.io'
+import type { LngLat, MapLayerStyle, MapOptions } from '../../types'
 import { EventEmitter } from 'events'
+import IOF from 'iframe.io'
 
 const
 SANDBOX_RULES = ['allow-scripts', 'allow-same-origin'],
@@ -89,4 +89,75 @@ export default class Map extends EventEmitter {
     if( !token ) return
     this.options.accessToken = token
   }
+
+  setMapStyle( style: MapLayerStyle ): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject('Timeout'), 12000 )
+      // Set style
+      this.chn.emit('set:map:style', style, ( error: string | boolean ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve()
+      } )
+    })
+  }
+
+  getCurrentLocation(): Promise<GeolocationPosition> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject('Timeout'), 12000 )
+      // Get current location
+      this.chn.emit('get:current:location', ( error: string | boolean, location: GeolocationPosition ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve( location )
+      } )
+    } )
+  }
+
+  pinCurrentLocation(): Promise<LngLat | null> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject('Timeout'), 12000 )
+      // Pin user's current location on the map
+      this.chn.emit('pin:current:location', ( error: string | boolean, lngLat: LngLat | null ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve( lngLat )
+      } )
+    } )
+  }
+
+  resolvePlace( name: string ): Promise<LngLat | null> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject('Timeout'), 12000 )
+      // Get location coordinates from place name
+      this.chn.emit('resolve:place', name, ( error: string | boolean, data: any ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve( data )
+      } )
+    } )
+  }
+
+  resolveCoordinates( coords: LngLat | string ): Promise<LngLat | null> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject('Timeout'), 12000 )
+      // Get location place from coordinates
+      this.chn.emit('resolve:coordinates', coords, ( error: string | boolean, data: any ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve( data )
+      } )
+    } )
+  }
+
 }

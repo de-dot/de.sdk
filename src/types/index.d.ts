@@ -103,3 +103,4 @@ export type MapOptions = {
   version?: number
   env?: 'dev' | 'prod'
 }
+export type MapLayerStyle = 'streets' | 'outdoors' | 'light' | 'dark' | 'satellite'
