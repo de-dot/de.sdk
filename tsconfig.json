@@ -19,6 +19,6 @@
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true
   },
-  "include": ["./src/**/*", "./src/desc.d.ts"],
+  "include": ["./src/**/*"],
   "exclude": ["./dist"]
 }

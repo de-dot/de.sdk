@@ -1,6 +1,6 @@
 
 import type { AccessOptions } from '../../types/access'
-import type { HTTPRequestOptions, GPSLocation } from '../../types'
+import type { HTTPRequestOptions, GPSLocation  } from '../../types'
 import Access from '../Access'
 
 export default class Client extends Access {
@@ -46,7 +46,7 @@ export default class Client extends Access {
     return orders
   }
 
-  async periferals( location: GPSLocation ){
+  async periferals( location: GPSLocation  ){
     if( !this.accessToken )
       throw new Error('Authentication required')
 

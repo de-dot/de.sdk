@@ -6,6 +6,7 @@ export type HTTPRequestOptions = {
   body?: any
 }
 
+export type LngLat = [number, number]
 export type GPSLocation = {
   lng: number
   lat: number
@@ -13,10 +14,8 @@ export type GPSLocation = {
 }
 export type LivePosition = {
   id: string,
-  position: VehiclePosition
+  position: Vehicle
 }
-
-export type LngLat = [number, number]
 
 export type Waypoint = {
   no: number
@@ -48,14 +47,14 @@ export type Package = {
   careLevel: number
   category: string
   weight: number
-  note?: strong
+  note?: string
 }
 export type PackageOptions = {
   waypointNo?: number
   careLevel?: number
   category?: string
   weight?: number
-  note?: strong
+  note?: string
 }
 
 export type PaymentMode = 'cash' | 'card' | 'momo' | 'wigo'
@@ -118,6 +117,6 @@ export type Vehicle = {
   id: string
   status: 'ACTIVE' | 'BUSY'
   level: '1H' | '2H' | '3H'
-  location: GPSPosition
+  location: GPSLocation
   vehicle: 'moto' | 'car' | 'bike' | 'truck' | 'plane' | 'ship'
 }

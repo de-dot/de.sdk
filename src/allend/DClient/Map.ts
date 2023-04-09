@@ -8,15 +8,6 @@ SANDBOX_RULES = ['allow-scripts', 'allow-same-origin'],
 REQUIRED_FEATURES = ['geolocation']
 
 export type DataFn = ( data: string ) => void
-export interface Stream<T> {
-  sync: ( data: T ) => void
-  on: ( _event: 'data', fn: DataFn ) => this
-  setUpstream: ( stream: XStream ) => this
-  pipe: ( stream: XStream ) => this
-  error: ( error: Error ) => void
-  onclose: ( fn: () => void ) => this
-  close: () => void
-}
 
 export interface ControlVehicle {
   add: ( vehicle: Vehicle, callback?: () => void ) => void
@@ -24,11 +15,11 @@ export interface ControlVehicle {
   move: ( update: LivePosition, callback?: () => void ) => void
 }
 
-export class XStream implements Stream<any> {
+export class Stream {
   private _fns: DataFn[] = []
   private _exitFn = (() => {})
-  private _downStream?: XStream
-  private _upStream?: XStream
+  private _downStream?: Stream
+  private _upStream?: Stream
 
   sync( data: any ){
     this._fns.map( fn => fn( data ) )
@@ -39,12 +30,12 @@ export class XStream implements Stream<any> {
     return this
   }
 
-  setUpstream( stream: XStream ){
+  private setUpstream( stream: Stream ){
     this._upStream = stream
     return this
   }
 
-  pipe( stream: XStream ){
+  pipe( stream: Stream ){
     stream.setUpstream( this )
     this._downStream = stream
     return this
@@ -151,11 +142,11 @@ export default class Map extends EventEmitter {
     if( !this.chn ) return
     this.chn?.emit('pin:current:location', usertype || 'client' )
 
-    const stream = new XStream
+    const stream = new Stream
 
     this.chn
-    .on('current:location', ( location: GPSLocation ) => stream.sync( location ) )
-    .on('current:location:live', ( location: GPSLocation ) => stream.sync( location ) )
+    .on('current:location', ( location: GPSLocation  ) => stream.sync( location ) )
+    .on('current:location:live', ( location: GPSLocation  ) => stream.sync( location ) )
     .on('current:location:error', ( message: string ) => stream.error( new Error( message ) ) )
 
     // Listen to stream closed
@@ -171,11 +162,11 @@ export default class Map extends EventEmitter {
     return stream
   }
 
-  peerLocation( position: GPSLocation, caption?: Caption ){
+  peerLocation( position: GPSLocation , caption?: Caption ){
     if( !this.chn ) return
     this.chn?.emit('pin:peer:location', { id: 'peer', position, caption } )
     
-    const stream = new XStream
+    const stream = new Stream
     
     // Listen to incoming new position data
     stream.on('data', ({ position, caption }: any ) => {
@@ -195,7 +186,7 @@ export default class Map extends EventEmitter {
     this.chn?.emit('show:periferals', list )
     
     const
-    stream = new XStream,
+    stream = new Stream,
     vehicle: ControlVehicle = {
       add( data, callback ){
         // Maintain initial list of periferals: Prevent duplicated vehicle
@@ -327,7 +318,7 @@ export default class Map extends EventEmitter {
 
   direction(){
     if( !this.chn ) return
-    const stream = new XStream
+    const stream = new Stream
 
     stream.on('data', ({ status, direction, position }: any ) => {
       if( !direction || !position )
@@ -357,7 +348,7 @@ export default class Map extends EventEmitter {
 
   navigation( route: any ){
     if( !this.chn ) return
-    const stream = new XStream
+    const stream = new Stream
     
     // Set navigation route
     this.chn?.emit('set:navigation:route', route )
@@ -367,7 +358,7 @@ export default class Map extends EventEmitter {
 
       const
       { latitude, longitude, heading } = coords,
-      position: GPSLocation = { lng: longitude, lat: latitude, heading }
+      position: GPSLocation  = { lng: longitude, lat: latitude, heading }
 
       this.chn?.emit('set:navigation:position', position )
     } )

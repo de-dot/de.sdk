@@ -1,9 +1,9 @@
 
-export const Auth = require('./backend/Auth').default
+export * as Auth from './backend/Auth'
 
-const Map = require('./allend/DClient/Map').default
-const Order = require('./allend/DClient/Order').default
-const Event = require('./allend/DClient/Event').default
-const Client = require('./allend/DClient/Client').default
+import Map from './allend/DClient/Map'
+import Order from './allend/DClient/Order'
+import Event from './allend/DClient/Event'
+import Client from './allend/DClient/Client'
 
 export const DClient = { Client, Order, Event, Map }
