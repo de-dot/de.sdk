@@ -1,7 +1,7 @@
 
-import Map from './DClient/Map'
-const Order = require('./DClient/Order').default
-const Event = require('./DClient/Event').default
-const Client = require('./DClient/Client').default
+import Map, { MapControls } from './DClient/Map'
+import Order from './DClient/Order'
+import Event from './DClient/Event'
+import Client from './DClient/Client'
 
-export const DClient = { Client, Order, Event, Map }
+export const DClient = { Client, Order, Event, Map, MapControls }

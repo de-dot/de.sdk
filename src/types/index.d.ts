@@ -11,6 +11,10 @@ export type GPSLocation = {
   lat: number
   heading?: number
 }
+export type LivePosition = {
+  id: string,
+  position: VehiclePosition
+}
 
 export type LngLat = [number, number]
 
@@ -92,8 +96,13 @@ export type Message = {
   content: string
   timestamp: string
 }
+export type Caption = {
+	duration?: number
+	unit?: string
+	label?: string
+}
 export type Peer = {
-  utype: string,
+  utype: string
   id: string
 }
 
@@ -104,3 +113,11 @@ export type MapOptions = {
   env?: 'dev' | 'prod'
 }
 export type MapLayerStyle = 'streets' | 'outdoors' | 'light' | 'dark' | 'satellite'
+
+export type Vehicle = {
+  id: string
+  status: 'ACTIVE' | 'BUSY'
+  level: '1H' | '2H' | '3H'
+  location: GPSPosition
+  vehicle: 'moto' | 'car' | 'bike' | 'truck' | 'plane' | 'ship'
+}
