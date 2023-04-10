@@ -16,7 +16,7 @@
   "author": "SCOREX Corporation",
   "private": false,
   "scripts": {
-    "build:tsc": "rimraf ./dist && tsc && cp ./src/types/** ./dist",
+    "build:tsc": "rimraf ./dist && tsc",
     "build:webpack": "WEBPACK_ENV=build webpack",
     "compile": "yarn build:tsc && yarn build:webpack",
     "prepack": "yarn run compile",

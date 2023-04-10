@@ -1,9 +1,13 @@
 
-export * as Auth from './backend/Auth'
+import _Auth from './backend/Auth'
+import _Utils from './allend/Utils'
+import _Mapack from './allend/Mapack'
 
-import Map from './allend/DClient/Map'
 import Order from './allend/DClient/Order'
 import Event from './allend/DClient/Event'
 import Client from './allend/DClient/Client'
 
-export const DClient = { Client, Order, Event, Map }
+export const Auth = _Auth
+export const Utils = _Utils
+export const Mapack = _Mapack
+export const DClient = { Client, Order, Event }

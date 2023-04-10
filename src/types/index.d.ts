@@ -30,6 +30,7 @@ export type Waypoint = {
     email?: string
   }
 }
+export type WaypointIndex = 'origin' | 'destination' | number
 export type WaypointOptions = {
   no?: number
   type?: 'pickup' | 'dropoff'
@@ -112,6 +113,11 @@ export type MapOptions = {
   env?: 'dev' | 'prod'
 }
 export type MapLayerStyle = 'streets' | 'outdoors' | 'light' | 'dark' | 'satellite'
+export type MapWaypoint = {
+  index?: number
+  lngLat: LngLat
+  caption?: Caption
+}
 
 export type Vehicle = {
   id: string
