@@ -505,6 +505,7 @@ export default class Mapack extends EventEmitter {
 
             await this.controls.startNavigation()
             await this.controls.setInitialPosition( position )
+            
             initialize()
           } )
           .catch( reject )

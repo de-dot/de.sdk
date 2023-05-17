@@ -46,7 +46,7 @@ export default class Client extends Access {
     return orders
   }
 
-  async periferals( location: GPSLocation  ){
+  async periferals( location: GPSLocation ){
     if( !this.accessToken )
       throw new Error('Authentication required')
 
