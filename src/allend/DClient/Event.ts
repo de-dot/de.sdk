@@ -10,9 +10,11 @@ export default class Event extends Access {
 
   constructor( access: AccessOptions ){
     super( access )
-
+    
     // Socket server host
-    this.iosHost = access.env == 'prod' ? 'https://api.delidev.com' : 'http://api.delidev.io:24800'
+    this.iosHost = access.env == 'prod' ?
+                        'https://api.delidev.com' // Production server
+                        : 'http://api.delidev.io:24800' // Development & staging server
   }
 
   connect( clientId: string ): Promise<void> {
@@ -30,7 +32,7 @@ export default class Event extends Access {
       this.nsp.on('connect_error', reject )
     } )
   }
-  disconnect(){ 
+  disconnect(){
     this.nsp?.disconnect()
     return true
   }
@@ -39,15 +41,36 @@ export default class Event extends Access {
       this.nsp?.emit('JOIN', jrtoken, ( errmess?: string ) => {
         errmess ? reject( new Error( errmess ) ) : resolve( true )
       } )
-    })
+    } )
   }
 
-  onLeft( fn: ( peer: Peer ) => void ){ this.nsp?.on('LEFT', fn ) }
-  onConnected( fn: ( peer: Peer ) => void ){ this.nsp?.on('CONNECTED', fn ) }
-  onDisconnected( fn: ( peer: Peer ) => void ){ this.nsp?.on('DISCONNECTED', fn ) }
+  onLeft( fn: ( peer: Peer ) => void ){
+    this.nsp?.on('LEFT', fn )
+    return this
+  }
+  onConnected( fn: ( peer: Peer ) => void ){
+    this.nsp?.on('CONNECTED', fn )
+    return this
+  }
+  onDisconnected( fn: ( peer: Peer ) => void ){
+    this.nsp?.on('DISCONNECTED', fn )
+    return this
+  }
 
-  onRoute( fn: ( data: any ) => void ){ this.nsp?.on('ROUTE-CHANGE', fn ) }
-  onStage( fn: ( data: OrderStage ) => void ){ this.nsp?.on('STAGE-CHANGE', fn ) }
-  onLocation( fn: ( location: GPSLocation  ) => void ){ this.nsp?.on('LOCATION-CHANGE', fn ) }
-  onMessage( fn: ( payload: Message ) => void ){ this.nsp?.on('MESSAGE', fn ) }
+  onRoute( fn: ( data: any ) => void ){
+    this.nsp?.on('ROUTE-CHANGE', fn )
+    return this
+  }
+  onStage( fn: ( data: OrderStage ) => void ){
+    this.nsp?.on('STAGE-CHANGE', fn )
+    return this
+  }
+  onLocation( fn: ( location: GPSLocation  ) => void ){
+    this.nsp?.on('LOCATION-CHANGE', fn )
+    return this
+  }
+  onMessage( fn: ( payload: Message ) => void ){
+    this.nsp?.on('MESSAGE', fn )
+    return this
+  }
 }

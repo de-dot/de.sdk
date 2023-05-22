@@ -184,7 +184,7 @@ export default class Order extends Access {
 
   async getPackage( PTC: string, token?: string ): Promise<Package> {
     
-    if( !PTC ) throw new Error('Expected Package Tracking Code')
+    if( !PTC ) throw new Error('Expected <PTC> Package Tracking Code')
     
     token = token || this.intentToken
     if( !token ) throw new Error('Expected intent order token')

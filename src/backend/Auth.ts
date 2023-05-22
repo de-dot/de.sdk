@@ -2,7 +2,7 @@
 import type { AuthCredentials, AuthOptions, AuthRequestOptions } from '../types/auth'
 import req from 'request-promise'
 
-const EXPIRY_TIME = 3.75 // in 3 minutes 45 seconds
+const ACCESS_TOKEN_EXPIRY_DELAY = 3.75 // in 3 minutes 45 seconds
 
 export default class Auth {
   private version: number
@@ -76,7 +76,7 @@ export default class Auth {
     // Set auto-refresh token every 4 mins
     if( this.autorefresh ){
       clearTimeout( this.expiryTime )
-      this.expiryTime = setTimeout( () => this.refreshToken(), EXPIRY_TIME * 60 * 1000 )
+      this.expiryTime = setTimeout( () => this.refreshToken(), ACCESS_TOKEN_EXPIRY_DELAY * 60 * 1000 )
     }
     
     this.accessToken = token
@@ -100,7 +100,7 @@ export default class Auth {
       // Set auto-refresh token every 4 mins
       if( this.autorefresh ){
         clearTimeout( this.expiryTime )
-        this.expiryTime = setTimeout( () => this.refreshToken(), EXPIRY_TIME * 60 * 1000 )
+        this.expiryTime = setTimeout( () => this.refreshToken(), ACCESS_TOKEN_EXPIRY_DELAY * 60 * 1000 )
       }
       
       this.accessToken = token

@@ -1,8 +1,8 @@
 
-import type { GPSLocation, LngLat, MapLayerStyle, MapOptions, Vehicle, LivePosition, Caption, WaypointIndex, Waypoint, MapWaypoint } from '../types'
+import type { GPSLocation, LngLat, MapLayerStyle, MapOptions, Vehicle, LivePosition, Caption, WaypointIndex, MapWaypoint } from '../types'
 import { EventEmitter } from 'events'
 import IOF from 'iframe.io'
-import { Stream } from './Utils'
+import Stream from '../utils/stream'
 
 const
 SANDBOX_RULES = ['allow-scripts', 'allow-same-origin'],
@@ -430,14 +430,14 @@ export default class Mapack extends EventEmitter {
       this.controls.upsertRoute({ direction, position })
 
       switch( status ){
-        case 'STARTED':
         case 'STALE':
+        case 'STARTED':
         case 'LONG_STOP':
         case 'LOW_TRAFFIC':
-        case 'MODERATE_TRAFFIC':
         case 'HIGH_TRAFFIC':
+        case 'MODERATE_TRAFFIC':
         case 'SPEED_WARNING':
-        case 'ARRIVED':
+        case 'NEARBY':
         case 'ARRIVED': this.emit(`pe:${status.toLowerCase()}`); break
         case 'UNAVAILABLE': {
           this.emit(`pe:closed`)
@@ -462,21 +462,21 @@ export default class Mapack extends EventEmitter {
           stream.sync({ status, direction, position })
 
           switch( status ){
-            case 'STARTED':
             case 'STALE':
+            case 'STARTED':
             case 'LONG_STOP':
             case 'LOW_TRAFFIC':
-            case 'MODERATE_TRAFFIC':
             case 'HIGH_TRAFFIC':
+            case 'MODERATE_TRAFFIC':
             case 'SPEED_WARNING':
-            case 'ARRIVED':
+            case 'NEARBY':
             case 'ARRIVED': this.emit(`pe:${status.toLowerCase()}`); break
             case 'UNAVAILABLE': {
               this.emit(`pe:closed`)
               stream.isActive() && stream.close()
             } break
           }
-        } )
+        })
 
         stream
         // Listen location/position update
@@ -490,7 +490,7 @@ export default class Mapack extends EventEmitter {
         .onclose( () => {
           this.chn?.off('navigation:direction')
           this.controls.stopNavigation()
-        } )
+        })
 
         resolve( stream )
       }

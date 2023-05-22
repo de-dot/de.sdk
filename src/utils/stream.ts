@@ -1,7 +1,7 @@
 
 export type StreamDataListener = ( data: string ) => void
 
-export class Stream {
+export default class Stream {
   private _STALED: boolean = false
   private _CLOSED: boolean = false
   private _fns: StreamDataListener[] = []
@@ -57,7 +57,7 @@ export class Stream {
 
   isActive(){ return !this._CLOSED }
   
-  onerror( fn: ( error: Error ) => void ){ 
+  onerror( fn: ( error: Error ) => void ){
     this._errorFn = fn
     return this
   }
@@ -66,5 +66,3 @@ export class Stream {
     return this
   }
 }
-
-export default { Stream }

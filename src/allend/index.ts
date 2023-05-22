@@ -1,5 +1,5 @@
 
-import _Utils from './Utils'
+import _Utils from '../utils'
 import _Mapack from './Mapack'
 
 import Order from './DClient/Order'
