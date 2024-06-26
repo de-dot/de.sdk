@@ -5,6 +5,10 @@ export type HTTPRequestOptions = {
   headers?: { [index: string]: string }
   body?: any
 }
+export type HTTPResponse = {
+  error: boolean
+  message?: string
+}
 
 export type LngLat = [number, number]
 export type GPSLocation = {

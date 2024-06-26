@@ -1,4 +1,4 @@
-import type { HTTPRequestOptions } from '../../types'
+import type { HTTPRequestOptions, HTTPResponse } from '../../types'
 import type { AccessOptions } from '../../types/access'
 import type { 
   Package, PackageOptions, 
@@ -6,6 +6,43 @@ import type {
   OrderService, OrderServiceOptions, OrderOperator, OrderStage
 } from '../../types'
 import Access from '../Access'
+
+type IntentTokenResponse = HTTPResponse & {
+  token: string
+}
+type JRTokenResponse = HTTPResponse & {
+  jrtoken: string
+}
+
+type WaypointResponse = HTTPResponse & {
+  waypoint: Waypoint
+}
+type WaypointsResponse = HTTPResponse & {
+  waypoints: Waypoint[]
+}
+
+type PackageResponse = HTTPResponse & {
+  package: Package
+}
+type PackagesResponse = HTTPResponse & {
+  packages: Package[]
+}
+
+type OrderServiceResponse = HTTPResponse & {
+  service: OrderService
+}
+type OrderOperators = {
+  [index: string]: OrderOperator
+}
+type OrderOperatorsResponse = HTTPResponse & {
+  operators: OrderOperators
+}
+type OrderStageResponse = HTTPResponse & {
+  stage: OrderStage
+}
+type CurrentRouteResponse = HTTPResponse & {
+  route: any
+}
 
 export default class Order extends Access {
   private intentToken: string // Active order's intent token
@@ -30,7 +67,7 @@ export default class Order extends Access {
       method: 'POST',
       body: { clientId }
     },
-    { error, message, token } = await this.request( options )
+    { error, message, token } = await this.request<IntentTokenResponse>( options )
     if( error ) throw new Error( message )
     
     this.intentToken = token
@@ -47,7 +84,7 @@ export default class Order extends Access {
       method: 'DELETE',
       headers: { 'x-intent-token': token }
     },
-    { error, message } = await this.request( options )
+    { error, message } = await this.request<HTTPResponse>( options )
     if( error ) throw new Error( message )
     
     this.intentToken = ''
@@ -59,7 +96,6 @@ export default class Order extends Access {
    */
   
   async addWaypoint( list: Waypoint | Waypoint[], token?: string ): Promise<Waypoint[]> {
-
     if( !list )
       throw new Error('Expect <list> argument to be [Waypoint or Waypoint<array>]')
 
@@ -73,10 +109,10 @@ export default class Order extends Access {
       headers: { 'x-intent-token': token },
       body: !Array.isArray( list ) ? [ list ] : list
     },
-    { error, message, waypoints } = await this.request( options )
+    { error, message, waypoints } = await this.request<WaypointsResponse>( options )
     if( error ) throw new Error( message )
     
-    return waypoints as Waypoint[]
+    return waypoints
   }
 
   async getWaypoint( no: number, token?: string ): Promise<Waypoint> {
@@ -92,10 +128,10 @@ export default class Order extends Access {
       method: 'GET',
       headers: { 'x-intent-token': token }
     },
-    { error, message, waypoint } = await this.request( options )
+    { error, message, waypoint } = await this.request<WaypointResponse>( options )
     if( error ) throw new Error( message )
     
-    return waypoint as Waypoint
+    return waypoint
   }
 
   async fetchWaypoints( token?: string ): Promise<Waypoint[]> {
@@ -109,10 +145,10 @@ export default class Order extends Access {
       method: 'GET',
       headers: { 'x-intent-token': token }
     },
-    { error, message, waypoints } = await this.request( options )
+    { error, message, waypoints } = await this.request<WaypointsResponse>( options )
     if( error ) throw new Error( message )
     
-    return waypoints as Waypoint[]
+    return waypoints
   }
 
   async updateWaypoint( no: number, updates: WaypointOptions, token?: string ): Promise<Waypoint[]> {
@@ -132,10 +168,10 @@ export default class Order extends Access {
       headers: { 'x-intent-token': token },
       body: updates
     },
-    { error, message, waypoints } = await this.request( options )
+    { error, message, waypoints } = await this.request<WaypointsResponse>( options )
     if( error ) throw new Error( message )
     
-    return waypoints as Waypoint[]
+    return waypoints
   }
 
   async deleteWaypoint( no: number, token?: string ): Promise<Waypoint[]> {
@@ -151,10 +187,10 @@ export default class Order extends Access {
       method: 'DELETE',
       headers: { 'x-intent-token': token }
     },
-    { error, message, waypoints } = await this.request( options )
+    { error, message, waypoints } = await this.request<WaypointsResponse>( options )
     if( error ) throw new Error( message )
     
-    return waypoints as Waypoint[]
+    return waypoints
   }
 
   /**
@@ -162,7 +198,6 @@ export default class Order extends Access {
    */
 
   async addPackage( list: Package | Package[], token?: string ): Promise<Package[]> {
-
     if( !list )
       throw new Error('Expect <list> argument to be [Package or Package<array>]')
 
@@ -176,15 +211,15 @@ export default class Order extends Access {
       headers: { 'x-intent-token': token },
       body: !Array.isArray( list ) ? [ list ] : list
     },
-    { error, message, packages } = await this.request( options )
+    { error, message, packages } = await this.request<PackagesResponse>( options )
     if( error ) throw new Error( message )
     
-    return packages as Package[]
+    return packages
   }
 
   async getPackage( PTC: string, token?: string ): Promise<Package> {
-    
-    if( !PTC ) throw new Error('Expected <PTC> Package Tracking Code')
+    if( !PTC )
+      throw new Error('Expected <PTC> Package Tracking Code')
     
     token = token || this.intentToken
     if( !token ) throw new Error('Expected intent order token')
@@ -195,14 +230,14 @@ export default class Order extends Access {
       method: 'GET',
       headers: { 'x-intent-token': token }
     },
-    response = await this.request( options )
-    if( response.error ) throw new Error( response.message )
+    response = await this.request<PackageResponse>( options )
+    if( response.error )
+      throw new Error( response.message )
     
-    return response.package as Package
+    return response.package
   }
 
   async fetchPackages( token?: string ): Promise<Package[]> {
-
     token = token || this.intentToken
     if( !token ) throw new Error('Expected intent order token')
 
@@ -212,15 +247,15 @@ export default class Order extends Access {
       method: 'GET',
       headers: { 'x-intent-token': token }
     },
-    { error, message, packages } = await this.request( options )
+    { error, message, packages } = await this.request<PackagesResponse>( options )
     if( error ) throw new Error( message )
     
-    return packages as Package[]
+    return packages
   }
 
   async updatePackage( PTC: number, updates: PackageOptions, token?: string ): Promise<Package[]> {
-    
-    if( !PTC ) throw new Error('Expected Package Tracking Code')
+    if( !PTC )
+      throw new Error('Expected Package Tracking Code')
 
     if( !updates )
       throw new Error('Expect <updates: PackageOptions> to be object')
@@ -235,15 +270,15 @@ export default class Order extends Access {
       headers: { 'x-intent-token': token },
       body: updates
     },
-    { error, message, packages } = await this.request( options )
+    { error, message, packages } = await this.request<PackagesResponse>( options )
     if( error ) throw new Error( message )
     
-    return packages as Package[]
+    return packages
   }
 
   async deletePackage( PTC: number, token?: string ): Promise<Package[]> {
-    
-    if( !PTC ) throw new Error('Expected Package Tracking Code')
+    if( !PTC )
+      throw new Error('Expected Package Tracking Code')
     
     token = token || this.intentToken
     if( !token ) throw new Error('Expected intent order token')
@@ -254,10 +289,10 @@ export default class Order extends Access {
       method: 'DELETE',
       headers: { 'x-intent-token': token }
     },
-    { error, message, packages } = await this.request( options )
+    { error, message, packages } = await this.request<PackagesResponse>( options )
     if( error ) throw new Error( message )
     
-    return packages as Package[]
+    return packages
   }
 
   /**
@@ -265,7 +300,6 @@ export default class Order extends Access {
    */
   
   async initiate( payload: OrderService, token?: string ): Promise<string> {
-
     if( !payload )
       throw new Error('Expect <payload> argument to be [OrderService]')
 
@@ -279,14 +313,13 @@ export default class Order extends Access {
       headers: { 'x-intent-token': token },
       body: payload
     },
-    { error, message, jrtoken } = await this.request( options )
+    { error, message, jrtoken } = await this.request<JRTokenResponse>( options )
     if( error ) throw new Error( message )
     
     return jrtoken
   }
 
   async getService( token?: string ): Promise<OrderService>{
-    
     token = token || this.intentToken
     if( !token ) throw new Error('Expected intent order token')
 
@@ -296,14 +329,13 @@ export default class Order extends Access {
       method: 'GET',
       headers: { 'x-intent-token': token }
     },
-    { error, message, service } = await this.request( options )
+    { error, message, service } = await this.request<OrderServiceResponse>( options )
     if( error ) throw new Error( message )
     
-    return service as OrderService
+    return service
   }
 
   async updateService( updates: OrderServiceOptions, token?: string ): Promise<OrderService> {
-    
     if( !updates )
       throw new Error('Expect <updates: OrderServiceOptions> to be object')
 
@@ -317,14 +349,13 @@ export default class Order extends Access {
       headers: { 'x-intent-token': token },
       body: updates
     },
-    { error, message, service } = await this.request( options )
+    { error, message, service } = await this.request<OrderServiceResponse>( options )
     if( error ) throw new Error( message )
     
-    return service as OrderService
+    return service
   }
 
   async rateService( rating: number, token?: string ): Promise<boolean> {
-    
     if( !rating )
       throw new Error('Expect <rating> to be number betwee 0 to 5')
 
@@ -338,7 +369,7 @@ export default class Order extends Access {
       headers: { 'x-intent-token': token },
       body: { rating }
     },
-    { error, message } = await this.request( options )
+    { error, message } = await this.request<HTTPResponse>( options )
     if( error ) throw new Error( message )
     
     return true
@@ -349,7 +380,6 @@ export default class Order extends Access {
    */
 
   async getOperator( type: string, token?: string ): Promise<OrderOperator>{
-
     if( !['DSP', 'partner', 'warehouse', 'agent'].includes( type ) )
       throw new Error('Unknown order operator')
     
@@ -362,14 +392,13 @@ export default class Order extends Access {
       method: 'GET',
       headers: { 'x-intent-token': token }
     },
-    { error, message, operators } = await this.request( options )
+    { error, message, operators } = await this.request<OrderOperatorsResponse>( options )
     if( error ) throw new Error( message )
     
-    return operators[ type ] as OrderOperator
+    return operators[ type ]
   }
 
-  async getOperators( token?: string ): Promise<{[index: string]: OrderOperator }>{
-
+  async getOperators( token?: string ): Promise<OrderOperators>{
     token = token || this.intentToken
     if( !token ) throw new Error('Expected intent order token')
 
@@ -379,7 +408,7 @@ export default class Order extends Access {
       method: 'GET',
       headers: { 'x-intent-token': token }
     },
-    { error, message, operators } = await this.request( options )
+    { error, message, operators } = await this.request<OrderOperatorsResponse>( options )
     if( error ) throw new Error( message )
     
     return operators
@@ -390,7 +419,6 @@ export default class Order extends Access {
    */
 
   async getCurrentStage( token?: string ): Promise<OrderStage>{
-
     token = token || this.intentToken
     if( !token ) throw new Error('Expected intent order token')
 
@@ -400,14 +428,13 @@ export default class Order extends Access {
       method: 'GET',
       headers: { 'x-intent-token': token }
     },
-    { error, message, stage } = await this.request( options )
+    { error, message, stage } = await this.request<OrderStageResponse>( options )
     if( error ) throw new Error( message )
     
-    return stage as OrderStage
+    return stage
   }
 
   async getCurrentRoute( token?: string ): Promise<any>{
-
     token = token || this.intentToken
     if( !token ) throw new Error('Expected intent order token')
 
@@ -417,9 +444,9 @@ export default class Order extends Access {
       method: 'GET',
       headers: { 'x-intent-token': token }
     },
-    { error, message, route } = await this.request( options )
+    { error, message, route } = await this.request<CurrentRouteResponse>( options )
     if( error ) throw new Error( message )
     
-    return route as any
+    return route
   }
 }

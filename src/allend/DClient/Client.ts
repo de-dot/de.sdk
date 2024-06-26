@@ -1,7 +1,14 @@
 
 import type { AccessOptions } from '../../types/access'
-import type { HTTPRequestOptions, GPSLocation  } from '../../types'
+import type { HTTPRequestOptions, GPSLocation, OrderService, HTTPResponse, Vehicle  } from '../../types'
 import Access from '../Access'
+
+type OrderServiceResponse = HTTPResponse & {
+  orders: OrderService[]
+}
+type PeriferalsResponse = HTTPResponse & {
+  periferals: Vehicle[]
+}
 
 export default class Client extends Access {
   private clientId: string
@@ -25,7 +32,7 @@ export default class Client extends Access {
       url: `/client/${this.clientId}/orders/actives`,
       method: 'GET'
     },
-    { error, message, orders } = await this.request( options )
+    { error, message, orders } = await this.request<OrderServiceResponse>( options )
     if( error ) throw new Error( message )
     
     return orders
@@ -40,7 +47,7 @@ export default class Client extends Access {
       url: `/client/${this.clientId}/orders/history`,
       method: 'GET'
     },
-    { error, message, orders } = await this.request( options )
+    { error, message, orders } = await this.request<OrderServiceResponse>( options )
     if( error ) throw new Error( message )
     
     return orders
@@ -62,7 +69,7 @@ export default class Client extends Access {
       method: 'POST',
       body: location
     },
-    { error, message, periferals } = await this.request( options )
+    { error, message, periferals } = await this.request<PeriferalsResponse>( options )
     if( error ) throw new Error( message )
     
     return periferals

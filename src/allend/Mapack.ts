@@ -13,6 +13,8 @@ export interface ControlVehicle {
   remove: ( id: string, callback?: () => void ) => void
   move: ( update: LivePosition, callback?: () => void ) => void
 }
+export type LRSControlsListener = ( controls: ControlVehicle ) => void
+export type LRSErrorListener = ( error?: Error | boolean ) => void
 
 export default class Mapack extends EventEmitter {
   private isDev: boolean
@@ -21,6 +23,11 @@ export default class Mapack extends EventEmitter {
   private options: MapOptions
   private chn?: IOF
 
+  /**
+   * Mapbox control Client
+   * 
+   * @param options - Initial options
+   */
   constructor( options: MapOptions ){
     super()
 
@@ -33,13 +40,26 @@ export default class Mapack extends EventEmitter {
 
     this.isConnected = false
   }
-  
+
+  /**
+   * Manual controls of the map remotely
+   */
   controls = {
+    /**
+     * Refresh access token to remove server
+     * 
+     * @param token - Latest access token
+     */
     refreshToken: ( token: string ) => {
       if( !token ) return
       this.options.accessToken = token
     },
 
+    /**
+     * Update map style
+     * 
+     * @param style - Map style ID
+     */
     setMapStyle: ( style: MapLayerStyle ): Promise<void> => {
       return new Promise( ( resolve, reject ) => {
         // Set timeout
@@ -54,6 +74,9 @@ export default class Mapack extends EventEmitter {
       })
     },
 
+    /**
+     * @return - User's current GPS location
+     */
     getCurrentLocation: (): Promise<GPSLocation | null> => {
       return new Promise( ( resolve, reject ) => {
         // Set timeout
@@ -67,6 +90,11 @@ export default class Mapack extends EventEmitter {
         } )
       } )
     },
+    /**
+     * Pin user's current location on the current active map
+     * 
+     * @return - User's current GPS location coordinates or `null` when it failed
+     */
     pinCurrentLocation: (): Promise<LngLat | null> => {
       return new Promise( ( resolve, reject ) => {
         // Set timeout
@@ -81,6 +109,12 @@ export default class Mapack extends EventEmitter {
       } )
     },
 
+    /**
+     * Get a location coordinates of placed that matched this name
+     * 
+     * @param name - Place name to resolve
+     * @return - Array list of coordinates
+     */
     resolvePlace: ( name: string ): Promise<LngLat | null> => {
       return new Promise( ( resolve, reject ) => {
         // Set timeout
@@ -94,6 +128,12 @@ export default class Mapack extends EventEmitter {
         } )
       } )
     },
+    /**
+     * Get a location details of placed that matched this coordinates
+     * 
+     * @param coords - Array of coordinate
+     * @return - Array list of geocoding data
+     */
     resolveCoordinates: ( coords: LngLat | string ): Promise<LngLat | null> => {
       return new Promise( ( resolve, reject ) => {
         // Set timeout
@@ -107,7 +147,13 @@ export default class Mapack extends EventEmitter {
         } )
       } )
     },
-
+    
+    /**
+     * Set route origin
+     * 
+     * @param lngLat - Array of coordinates of the route origin
+     * @param caption - Caption information ot the origin
+     */
     setOrigin: ( lngLat: LngLat, caption: Caption ): Promise<void> => {
       return new Promise( ( resolve, reject ) => {
         this.chn?.emit('set:route:origin', { lngLat, caption }, ( error: string | boolean ) => {
@@ -116,6 +162,23 @@ export default class Mapack extends EventEmitter {
         } )
       } )
     },
+    /**
+     * Remove added route origin
+     */
+    removeOrigin: (): Promise<void> => {
+      return new Promise( ( resolve, reject ) => {
+        this.chn?.emit('remove:route:origin', ( error: string | boolean ) => {
+          if( error ) return reject( error )
+          resolve()
+        } )
+      } )
+    },
+    /**
+     * Set route destination
+     * 
+     * @param lngLat - Array of coordinates of the route destination
+     * @param caption - Caption information ot the destination
+     */
     setDestination: ( lngLat: LngLat, caption: Caption ): Promise<void> => {
       return new Promise( ( resolve, reject ) => {
         this.chn?.emit('set:route:destination', { lngLat, caption }, ( error: string | boolean ) => {
@@ -124,6 +187,24 @@ export default class Mapack extends EventEmitter {
         } )
       } )
     },
+    /**
+     * Remove added route destination
+     */
+    removeDestination: (): Promise<void> => {
+      return new Promise( ( resolve, reject ) => {
+        this.chn?.emit('remove:route:destination', ( error: string | boolean ) => {
+          if( error ) return reject( error )
+          resolve()
+        } )
+      } )
+    },
+    /**
+     * Set a route waypoint
+     * 
+     * @param lngLat - Array of coordinates of the route waypoint
+     * @param index - (Optional) Define unique order index of the waypoint on the route
+     * @param caption - (Optional) Caption information ot the waypoint
+     */
     addWaypoint: ( lngLat: LngLat, caption: Caption ): Promise<void> => {
       return new Promise( ( resolve, reject ) => {
         this.chn?.emit('add:route:waypoint', { lngLat, caption }, ( error: string | boolean ) => {
@@ -132,6 +213,13 @@ export default class Mapack extends EventEmitter {
         } )
       } )
     },
+    /**
+     * Update a route waypoint specs
+     * 
+     * @param index - Order index of the waypoint to update
+     * @param lngLat - Array of coordinates of the route waypoint
+     * @param caption - (Optional) Caption information ot the waypoint
+     */
     updateWaypoint: ( index: number, lngLat: LngLat, caption?: Caption ): Promise<void> => {
       return new Promise( ( resolve, reject ) => {
         this.chn?.emit('update:route:waypoint', { index, lngLat, caption }, ( error: string | boolean ) => {
@@ -140,6 +228,11 @@ export default class Mapack extends EventEmitter {
         } )
       } )
     },
+    /**
+     * Remove added route waypoint
+     * 
+     * @param index - Order index of the waypoint to be removed
+     */
     removeWaypoint: ( index: number ): Promise<void> => {
       return new Promise( ( resolve, reject ) => {
         this.chn?.emit('remove:route:waypoint', index, ( error: string | boolean ) => {
@@ -148,7 +241,12 @@ export default class Mapack extends EventEmitter {
         } )
       } )
     },
-
+    /**
+     * Set a caption details of a route point
+     * 
+     * @param index - Order index of targeted route waypoint
+     * @param caption - Caption information to set
+     */
     setWaypointCaption: ( index: WaypointIndex, caption?: Caption ): Promise<void> => {
       return new Promise( ( resolve, reject ) => {
         this.chn?.emit('set:waypoint:caption', { index, caption }, ( error: string | boolean ) => {
@@ -157,6 +255,12 @@ export default class Mapack extends EventEmitter {
         } )
       } )
     },
+    /**
+     * Update the caption details of a route point
+     * 
+     * @param index - Order index of targeted route waypoint
+     * @param caption - Caption information to update
+     */
     updateWaypointCaption: ( index: WaypointIndex, caption?: Caption ): Promise<void> => {
       return new Promise( ( resolve, reject ) => {
         this.chn?.emit('update:waypoint:caption', { index, caption }, ( error: string | boolean ) => {
@@ -166,6 +270,11 @@ export default class Mapack extends EventEmitter {
       } )
     },
 
+    /**
+     * Set all the route waypoints
+     * 
+     * @param itinerary - Array of `lngLat` coordinates and captions of the route waypoints
+     */
     setRoute: ( itinerary: MapWaypoint[] ): Promise<void> => {
       return new Promise( ( resolve, reject ) => {
         this.chn?.emit('set:route', itinerary, ( error: string | boolean ) => {
@@ -174,14 +283,24 @@ export default class Mapack extends EventEmitter {
         } )
       } )
     },
-    upsertRoute: ( route: any ): Promise<void> => {
+
+    /**
+     * Refresh navigation direction data with fresh
+     * coordinates.
+     */
+    upsertDirection: ( route: any ): Promise<void> => {
       return new Promise( ( resolve, reject ) => {
-        this.chn?.emit('upsert:navigation:route', route, ( error: string | boolean ) => {
+        this.chn?.emit('upsert:navigation:direction', route, ( error: string | boolean ) => {
           if( error ) return reject( error )
           resolve()
         } )
       } )
     },
+    /**
+     * Initialize navigation direction on the map
+     * 
+     * @position - Current position of the subject
+     */
     setInitialPosition: ( position: GPSLocation ): Promise<void> => {
       return new Promise( ( resolve, reject ) => {
         this.chn?.emit('initial:navigation:position', position, ( error: string | boolean ) => {
@@ -190,6 +309,9 @@ export default class Mapack extends EventEmitter {
         } )
       } )
     },
+    /**
+     * Load & Start navigation direction on the map
+     */
     startNavigation: (): Promise<void> => {
       return new Promise( ( resolve, reject ) => {
         this.chn?.emit('navigation:load', ( error: string | boolean ) => {
@@ -198,6 +320,11 @@ export default class Mapack extends EventEmitter {
         } )
       } )
     },
+    /**
+     * Stop initiated navigation and remove from the map
+     * 
+     * @return - Instance of the navigator
+     */
     stopNavigation: (): Promise<void> => {
       return new Promise( ( resolve, reject ) => {
         this.chn?.emit('navigation:dismiss', ( error: string | boolean ) => {
@@ -206,6 +333,12 @@ export default class Mapack extends EventEmitter {
         } )
       } )
     },
+    /**
+     * Move from current location to the next location
+     * 
+     * @position - Current position of the subject
+     * @return - Instance of the navigator
+     */
     navigate: ( position: GPSLocation ): Promise<void> => {
       return new Promise( ( resolve, reject ) => {
         this.chn?.emit('navigation:navigate', position, ( error: string | boolean ) => {
@@ -216,6 +349,11 @@ export default class Mapack extends EventEmitter {
     }
   }
 
+  /**
+   * Listen to embedded iframe load
+   * 
+   * @param e - DOM EventTarget object
+   */
   private onload( e: Event ){
     const iframe = e.target as HTMLIFrameElement
 
@@ -240,8 +378,11 @@ export default class Mapack extends EventEmitter {
     // .on('event', ( _event: string, ...args: any[] ) => this.emit( _event, ...args ) )
   }
 
+  /**
+   * Embed the gateway into a web UI using
+   * an iframe.
+   */
   private render(){
-    // Embed delivery gateway
     const container = document.getElementById( this.options.element )
     if( !container ) throw new Error(`HTML Element Container <#${this.options.element}> Not Found`)
     
@@ -261,11 +402,18 @@ export default class Mapack extends EventEmitter {
     element.onload = this.onload.bind( this )
   }
 
+  /**
+   * Handle gateway embedding network error
+   */
   private networkError(){
     this.isConnected = false
     this.emit('error', new Error('Internet network problem') )
   }
 
+  /**
+   * Initiate embedding of gateway into current UI by 
+   * check network and remote gateway availability.
+   */
   load(){
     window
     .fetch( this.baseURL, { mode: 'no-cors' })
@@ -273,13 +421,24 @@ export default class Mapack extends EventEmitter {
     .catch( this.networkError.bind( this ) )
   }
 
+  /**
+   * @return - Boolean that tells whether the gateway is 
+   * loaded and ready for interaction
+   */
   isReady(){ return this.chn && this.isConnected }
 
+  /**
+   * Create new stream through which user's current location
+   * details will be pushed to the API level.
+   * 
+   * @param usertype - (Default: `client`) Type of user at the current location
+   * @return - Readable stream
+   */
   myLocation( usertype?: 'client' | 'agent' ){
     if( !this.chn ) return
     this.chn?.emit('pin:current:location', usertype || 'client' )
 
-    const stream = new Stream
+    const stream = new Stream()
 
     this.chn
     .on('current:location', ( location: GPSLocation  ) => stream.sync( location ) )
@@ -301,6 +460,14 @@ export default class Mapack extends EventEmitter {
     return stream
   }
 
+  /**
+   * Create new stream through which the current location details
+   * of user's peer (Eg. `agent`) will be pushed to the API level.
+   * 
+   * @param position - Peer's current GPS location
+   * @param caption - (Optional) Caption information of the peer
+   * @return - Readable stream
+   */
   peerLocation( position: GPSLocation , caption?: Caption ){
     if( !this.chn ) return
     this.chn?.emit('pin:peer:location', { id: 'peer', position, caption } )
@@ -321,6 +488,15 @@ export default class Mapack extends EventEmitter {
     return stream
   }
 
+  /**
+   * Open a live stream through which the current location details
+   * and profile information of all periferals vehicles around 
+   * this user (Eg. `bike`, `car`, ...) will be pushed to the 
+   * API level.
+   * 
+   * @param list - List of detected periferals vehicles around this user.
+   * @return - Live Readable Stream (LRS)
+   */
   periferals( list: Vehicle[] ){
     if( !this.chn ) return
 
@@ -332,47 +508,96 @@ export default class Mapack extends EventEmitter {
     const
     stream = new Stream,
     controls: ControlVehicle = {
-      add( vehicle, callback ){
-        if( _CLOSED ) return
+      /**
+       * Add new vehicle to the periferals list
+       * 
+       * @param vehicle - GPS location and profile of the vehicle
+       */
+      add( vehicle ): Promise<void> {
+        return new Promise( ( resolve, reject ) => {
+          if( _CLOSED ) return
 
-        // Maintain initial list of periferals: Prevent duplicated vehicle
-        for( let x = 0; x < list.length; x++ )
-          if( list[x].id === vehicle.id ){
-            list.splice( x, 1 )
-            self.chn?.emit('remove:periferal:vehicle', vehicle.id )
-            break
-          }
-        
-        // Add new vehicle
-        list.push( vehicle )
-        self.chn?.emit('add:periferal:vehicle', vehicle, () => {
-          typeof callback == 'function' && callback()
-          self.emit('periferals--stream', 'add', vehicle )
+          // Maintain initial list of periferals: Prevent duplicated vehicle
+          for( let x = 0; x < list.length; x++ )
+            if( list[x].id === vehicle.id ){
+              list.splice( x, 1 )
+              self.chn?.emit('remove:periferal:vehicle', vehicle.id )
+              break
+            }
+          
+          // Track response timeout
+          let TIMEOUT: any
+          
+          // Add new vehicle
+          list.push( vehicle )
+          self.chn?.emit('add:periferal:vehicle', vehicle, () => {
+            clearTimeout( TIMEOUT )
+            resolve()
+
+            self.emit('periferals--stream', 'add', vehicle )
+          } )
+
+          setTimeout( () => reject('Add vehicle timeout'), 8000 )
+        })
+      },
+
+      /**
+       * Remove a vehicle from the periferals list
+       * 
+       * @param id - ID of targeted vehicle
+       */
+      remove( id ): Promise<void> {
+        return new Promise( ( resolve, reject ) => {
+          if( _CLOSED ) return
+          
+          // Track response timeout
+          let TIMEOUT: any
+
+          list = list.filter( each => { return each.id !== id } )
+          self.chn?.emit('remove:periferal:vehicle', id, () => {
+            clearTimeout( TIMEOUT )
+            resolve()
+
+            self.emit('periferals--stream', 'remove', id )
+          } )
+
+          setTimeout( () => reject('Remove vehicle timeout'), 8000 )
         } )
       },
-      remove( id, callback ){
-        if( _CLOSED ) return
+      
+      /**
+       * Change vehicles position on the map
+       * 
+       * @param location - New GPS location of the vehicle
+       */
+      move( location ): Promise<void> {
+        return new Promise( ( resolve, reject ) => {
+          if( _CLOSED ) return
+          
+          // Track response timeout
+          let TIMEOUT: any
+          
+          self.chn?.emit('move:periferal:vehicle', location, () => {
+            clearTimeout( TIMEOUT )
+            resolve()
 
-        list = list.filter( each => { return each.id !== id } )
-        self.chn?.emit('remove:periferal:vehicle', id, () => {
-          typeof callback == 'function' && callback()
-          self.emit('periferals--stream', 'remove', id )
-        } )
-      },
-      move( update, callback ){
-        if( _CLOSED ) return
-        
-        self.chn?.emit('move:periferal:vehicle', update, () => {
-          typeof callback == 'function' && callback()
-          self.emit('periferals--stream', 'move', update )
+            self.emit('periferals--stream', 'move', location )
+          } )
+
+          setTimeout( () => reject('Remove vehicle timeout'), 8000 )
         } )
       }
-    },
-    live = ( fn: ( controls: ControlVehicle ) => void ) => {
+    }
+
+    const
+    /**
+     * 
+     */
+    live = ( fn: LRSControlsListener ) => {
       fn( controls )
       return stream
     },
-    close = ( fn?: ( error?: Error | boolean ) => void ) => {
+    close = ( fn?: LRSErrorListener ) => {
       if( _CLOSED ) return
 
       this.chn?.emit('remove:periferals', ( error: string | boolean ) => {
@@ -390,14 +615,20 @@ export default class Mapack extends EventEmitter {
     // Listen to stream closed
     stream
     .onerror( error => console.error('[Stream Error] ', error ) )
-    .onclose( ( callback?: () => void ) => {
-      this.off('periferals--stream', callback || (() => {}) )
+    .onclose( ( fn?: () => void ) => {
+      this.off('periferals--stream', fn || (() => {}) )
       close()
     })
     
     return { live, pipe: stream.pipe, close }
   }
 
+  /**
+   * Set service pickup point.
+   * 
+   * @param location - Location coordinates
+   * @param caption - (Optional) Caption information of the pickup point
+   */
   async pickupPoint( location: LngLat, caption?: Caption ): Promise<void> {
     // Default pickup caption
     const _caption: Caption = { 
@@ -405,9 +636,15 @@ export default class Mapack extends EventEmitter {
       ...(caption || {})
     }
     
-    return await this.controls.setOrigin( location as LngLat, _caption )
+    await this.controls.setOrigin( location as LngLat, _caption )
   }
 
+  /**
+   * Set service dropoff point.
+   * 
+   * @param location - Location coordinates
+   * @param caption - (Optional) Caption information of the pickup point
+   */
   async dropoffPoint( location: LngLat, caption?: Caption ): Promise<void> {
     // Default destination caption
     const _caption: Caption = {
@@ -415,10 +652,17 @@ export default class Mapack extends EventEmitter {
       ...(caption || {})
     }
     
-    return await this.controls.setDestination( location as LngLat, _caption )
+    await this.controls.setDestination( location as LngLat, _caption )
   }
 
-  direction(){
+  /**
+   * Create new stream through which navigation details of
+   * this user's peer will be display on the user's map also
+   * pushed to the API level.
+   * 
+   * @return - Readable stream
+   */
+  peerDirection(){
     if( !this.chn ) return
     const stream = new Stream
 
@@ -427,7 +671,7 @@ export default class Mapack extends EventEmitter {
       if( !direction || !position )
         return stream.error( new Error('Invalid Data') )
         
-      this.controls.upsertRoute({ direction, position })
+      this.controls.upsertDirection({ direction, position })
 
       switch( status ){
         case 'STALE':
@@ -450,7 +694,15 @@ export default class Mapack extends EventEmitter {
     return stream
   }
 
-  navigation( itinerary: any ){
+  /**
+   * Initiate user (Eg. agent) live navigation on the map 
+   * and create a new stream through which the navigation details 
+   * will be pushed to the API level.
+   * 
+   * @param route - Set the complete route of the service.
+   * @return - Readable stream
+   */
+  navigation( route: any ){
     return new Promise( ( resolve, reject ) => {
       if( !this.chn ) return
 
@@ -495,9 +747,9 @@ export default class Mapack extends EventEmitter {
         resolve( stream )
       }
       
-      // Set route itinerary
+      // Set route
       this.controls
-          .setRoute( itinerary )
+          .setRoute( route )
           .then( async () => {
             // Initialize navigation point to current location
             const position = await this.controls.getCurrentLocation()

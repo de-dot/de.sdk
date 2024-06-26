@@ -19,8 +19,7 @@ export default class Access {
     this.baseURL = options.env === 'prod' ? 'https://api.delidev.com' : 'http://api.delidev.io:24800'
   }
 
-  async request( options: HTTPRequestOptions ): Promise<any> {
-
+  async request<Response>( options: HTTPRequestOptions ): Promise<Response> {
     const rawOptions: any = {
       method: 'GET',
       headers: {
@@ -59,7 +58,7 @@ export default class Access {
       fetch = ( await import('node-fetch') ).default as any
 
     // console.log( options )
-    return await ( await fetch( url, options ) ).json()
+    return await ( await fetch( url, options ) ).json() as Response
   }
 
   setToken( token: string ): void { this.accessToken = token }

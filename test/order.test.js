@@ -276,7 +276,7 @@ describe('[DCLIENT/ORDER]: Packages -- [src/DClient/Order.ts]', () => {
     test('Should throw Error: Expected Package Tracking Code', async () => {
       try { await order.getPackage() }
       catch( error ){
-        expect( error.message ).toBe('Expected Package Tracking Code')
+        expect( error.message ).toBe('Expected <PTC> Package Tracking Code')
       }
     })
 
