@@ -1,5 +1,5 @@
 
-import type { GPSLocation, LngLat, MapLayerStyle, MapOptions, Vehicle, LivePosition, Caption, WaypointIndex, MapWaypoint } from '../types'
+import type { GPSLocation, LngLat, MapLayerStyle, MapOptions, LivePosition, Caption, WaypointIndex, MapWaypoint, Entity } from '../types'
 import { EventEmitter } from 'events'
 import IOF from 'iframe.io'
 import Stream from '../utils/stream'
@@ -8,12 +8,12 @@ const
 SANDBOX_RULES = ['allow-scripts', 'allow-same-origin'],
 REQUIRED_FEATURES = ['geolocation']
 
-export interface ControlVehicle {
-  add: ( vehicle: Vehicle, callback?: () => void ) => void
+export interface ControlEntity {
+  add: ( entity: Entity, callback?: () => void ) => void
   remove: ( id: string, callback?: () => void ) => void
   move: ( update: LivePosition, callback?: () => void ) => void
 }
-export type LRSControlsListener = ( controls: ControlVehicle ) => void
+export type LRSControlsListener = ( controls: ControlEntity ) => void
 export type LRSErrorListener = ( error?: Error | boolean ) => void
 
 export default class Mapack extends EventEmitter {
@@ -490,14 +490,14 @@ export default class Mapack extends EventEmitter {
 
   /**
    * Open a live stream through which the current location details
-   * and profile information of all periferals vehicles around 
+   * and profile information of all periferals entities around 
    * this user (Eg. `bike`, `car`, ...) will be pushed to the 
    * API level.
    * 
-   * @param list - List of detected periferals vehicles around this user.
+   * @param list - List of detected periferals entities around this user.
    * @return - Live Readable Stream (LRS)
    */
-  periferals( list: Vehicle[] ){
+  periferals( list: Entity[] ){
     if( !this.chn ) return
 
     const self = this
@@ -507,44 +507,44 @@ export default class Mapack extends EventEmitter {
     
     const
     stream = new Stream,
-    controls: ControlVehicle = {
+    controls: ControlEntity = {
       /**
-       * Add new vehicle to the periferals list
+       * Add new entity to the periferals list
        * 
-       * @param vehicle - GPS location and profile of the vehicle
+       * @param entity - GPS location and profile of the entity
        */
-      add( vehicle ): Promise<void> {
+      add( entity ): Promise<void> {
         return new Promise( ( resolve, reject ) => {
           if( _CLOSED ) return
 
-          // Maintain initial list of periferals: Prevent duplicated vehicle
+          // Maintain initial list of periferals: Prevent duplicated entity
           for( let x = 0; x < list.length; x++ )
-            if( list[x].id === vehicle.id ){
+            if( list[x].id === entity.id ){
               list.splice( x, 1 )
-              self.chn?.emit('remove:periferal:vehicle', vehicle.id )
+              self.chn?.emit('remove:periferal:entity', entity.id )
               break
             }
           
           // Track response timeout
           let TIMEOUT: any
           
-          // Add new vehicle
-          list.push( vehicle )
-          self.chn?.emit('add:periferal:vehicle', vehicle, () => {
+          // Add new entity
+          list.push( entity )
+          self.chn?.emit('add:periferal:entity', entity, () => {
             clearTimeout( TIMEOUT )
             resolve()
 
-            self.emit('periferals--stream', 'add', vehicle )
+            self.emit('periferals--stream', 'add', entity )
           } )
 
-          setTimeout( () => reject('Add vehicle timeout'), 8000 )
+          setTimeout( () => reject('Add entity timeout'), 8000 )
         })
       },
 
       /**
-       * Remove a vehicle from the periferals list
+       * Remove an entity (vehicle, premises) from the periferals list
        * 
-       * @param id - ID of targeted vehicle
+       * @param id - ID of targeted entity
        */
       remove( id ): Promise<void> {
         return new Promise( ( resolve, reject ) => {
@@ -554,21 +554,21 @@ export default class Mapack extends EventEmitter {
           let TIMEOUT: any
 
           list = list.filter( each => { return each.id !== id } )
-          self.chn?.emit('remove:periferal:vehicle', id, () => {
+          self.chn?.emit('remove:periferal:entity', id, () => {
             clearTimeout( TIMEOUT )
             resolve()
 
             self.emit('periferals--stream', 'remove', id )
           } )
 
-          setTimeout( () => reject('Remove vehicle timeout'), 8000 )
+          setTimeout( () => reject('Remove entity timeout'), 8000 )
         } )
       },
       
       /**
-       * Change vehicles position on the map
+       * Change mobile entities position on the map
        * 
-       * @param location - New GPS location of the vehicle
+       * @param location - New GPS location of the entity
        */
       move( location ): Promise<void> {
         return new Promise( ( resolve, reject ) => {
@@ -577,14 +577,14 @@ export default class Mapack extends EventEmitter {
           // Track response timeout
           let TIMEOUT: any
           
-          self.chn?.emit('move:periferal:vehicle', location, () => {
+          self.chn?.emit('move:periferal:entity', location, () => {
             clearTimeout( TIMEOUT )
             resolve()
 
             self.emit('periferals--stream', 'move', location )
           } )
 
-          setTimeout( () => reject('Remove vehicle timeout'), 8000 )
+          setTimeout( () => reject('Remove entity timeout'), 8000 )
         } )
       }
     }

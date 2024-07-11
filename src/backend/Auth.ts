@@ -26,7 +26,6 @@ export default class Auth {
   }
 
   private async request( options: AuthRequestOptions ){
-    
     const rawOptions: any = {
       url: '',
       method: 'GET',

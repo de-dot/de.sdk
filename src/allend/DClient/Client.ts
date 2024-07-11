@@ -1,13 +1,13 @@
 
 import type { AccessOptions } from '../../types/access'
-import type { HTTPRequestOptions, GPSLocation, OrderService, HTTPResponse, Vehicle  } from '../../types'
+import type { HTTPRequestOptions, GPSLocation, OrderService, HTTPResponse, Entity  } from '../../types'
 import Access from '../Access'
 
 type OrderServiceResponse = HTTPResponse & {
   orders: OrderService[]
 }
 type PeriferalsResponse = HTTPResponse & {
-  periferals: Vehicle[]
+  periferals: Entity[]
 }
 
 export default class Client extends Access {

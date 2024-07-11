@@ -123,10 +123,11 @@ export type MapWaypoint = {
   caption?: Caption
 }
 
-export type Vehicle = {
+export type Entity = {
   id: string
   status: 'ACTIVE' | 'BUSY'
   level: '1H' | '2H' | '3H'
   location: GPSLocation
-  vehicle: 'moto' | 'car' | 'bike' | 'truck' | 'plane' | 'ship'
+  static?: boolean
+  type: 'moto' | 'car' | 'bike' | 'truck' | 'plane' | 'ship' | 'restaurant' | 'hotel' | 'store' | 'office' | 'warehouse'
 }
