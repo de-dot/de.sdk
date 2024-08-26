@@ -11,9 +11,11 @@ export type HTTPResponse = {
 }
 
 export type LngLat = [number, number]
-export type GPSLocation = {
+export type Coordinates = {
   lng: number
   lat: number
+}
+export type GPSLocation = Coordinates & {
   heading?: number
 }
 export type LivePosition = {
@@ -25,7 +27,7 @@ export type Waypoint = {
   no: number
   type: 'pickup' | 'dropoff'
   description: string
-  coordinates: LngLat
+  coordinates: Coordinates
   address?: string
   contact: {
     type: string
@@ -39,7 +41,7 @@ export type WaypointOptions = {
   no?: number
   type?: 'pickup' | 'dropoff'
   description?: string
-  coordinates?: LngLat
+  coordinates?: Coordinates
   address?: string
   'contact.type'?: string
   'contact.reference'?: string
@@ -119,7 +121,7 @@ export type MapOptions = {
 export type MapLayerStyle = 'streets' | 'outdoors' | 'light' | 'dark' | 'satellite'
 export type MapWaypoint = {
   index?: number
-  lngLat: LngLat
+  coords: Coordinates
   caption?: Caption
 }
 

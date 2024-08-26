@@ -1,5 +1,5 @@
 
-import type { GPSLocation, LngLat, MapLayerStyle, MapOptions, LivePosition, Caption, WaypointIndex, MapWaypoint, Entity } from '../types'
+import type { GPSLocation, Coordinates, MapLayerStyle, MapOptions, LivePosition, Caption, WaypointIndex, MapWaypoint, Entity } from '../types'
 import { EventEmitter } from 'events'
 import IOF from 'iframe.io'
 import Stream from '../utils/stream'
@@ -36,7 +36,7 @@ export default class Mapack extends EventEmitter {
       throw new Error('Invalid Access Token')
 
     this.isDev = this.options.env == 'dev' || false
-    this.baseURL = this.isDev ? 'http://localhost:4800' : 'https://msi.delidev.com'
+    this.baseURL = this.isDev ? 'http://localhost:4800' : 'https://msi.dedot.io'
 
     this.isConnected = false
   }
@@ -95,16 +95,16 @@ export default class Mapack extends EventEmitter {
      * 
      * @return - User's current GPS location coordinates or `null` when it failed
      */
-    pinCurrentLocation: (): Promise<LngLat | null> => {
+    pinCurrentLocation: (): Promise<Coordinates | null> => {
       return new Promise( ( resolve, reject ) => {
         // Set timeout
         const timeout = setTimeout( () => reject('Timeout'), 12000 )
         // Pin user's current location on the map
-        this.chn?.emit('pin:current:location', ( error: string | boolean, lngLat: LngLat | null ) => {
+        this.chn?.emit('pin:current:location', ( error: string | boolean, location: Coordinates | null ) => {
           if( error ) return reject( error )
 
           clearTimeout( timeout )
-          resolve( lngLat )
+          resolve( location )
         } )
       } )
     },
@@ -115,7 +115,7 @@ export default class Mapack extends EventEmitter {
      * @param name - Place name to resolve
      * @return - Array list of coordinates
      */
-    resolvePlace: ( name: string ): Promise<LngLat | null> => {
+    resolvePlace: ( name: string ): Promise<Coordinates | null> => {
       return new Promise( ( resolve, reject ) => {
         // Set timeout
         const timeout = setTimeout( () => reject('Timeout'), 12000 )
@@ -131,10 +131,10 @@ export default class Mapack extends EventEmitter {
     /**
      * Get a location details of placed that matched this coordinates
      * 
-     * @param coords - Array of coordinate
+     * @param coords - Coordinates
      * @return - Array list of geocoding data
      */
-    resolveCoordinates: ( coords: LngLat | string ): Promise<LngLat | null> => {
+    resolveCoordinates: ( coords: Coordinates | string ): Promise<Coordinates | null> => {
       return new Promise( ( resolve, reject ) => {
         // Set timeout
         const timeout = setTimeout( () => reject('Timeout'), 12000 )
@@ -151,12 +151,12 @@ export default class Mapack extends EventEmitter {
     /**
      * Set route origin
      * 
-     * @param lngLat - Array of coordinates of the route origin
+     * @param coords - Coordinates of the route origin
      * @param caption - Caption information ot the origin
      */
-    setOrigin: ( lngLat: LngLat, caption: Caption ): Promise<void> => {
+    setOrigin: ( coords: Coordinates, caption: Caption ): Promise<void> => {
       return new Promise( ( resolve, reject ) => {
-        this.chn?.emit('set:route:origin', { lngLat, caption }, ( error: string | boolean ) => {
+        this.chn?.emit('set:route:origin', { coords, caption }, ( error: string | boolean ) => {
           if( error ) return reject( error )
           resolve()
         } )
@@ -176,12 +176,12 @@ export default class Mapack extends EventEmitter {
     /**
      * Set route destination
      * 
-     * @param lngLat - Array of coordinates of the route destination
+     * @param coords - Coordinates of the route destination
      * @param caption - Caption information ot the destination
      */
-    setDestination: ( lngLat: LngLat, caption: Caption ): Promise<void> => {
+    setDestination: ( coords: Coordinates, caption: Caption ): Promise<void> => {
       return new Promise( ( resolve, reject ) => {
-        this.chn?.emit('set:route:destination', { lngLat, caption }, ( error: string | boolean ) => {
+        this.chn?.emit('set:route:destination', { coords, caption }, ( error: string | boolean ) => {
           if( error ) return reject( error )
           resolve()
         } )
@@ -201,13 +201,13 @@ export default class Mapack extends EventEmitter {
     /**
      * Set a route waypoint
      * 
-     * @param lngLat - Array of coordinates of the route waypoint
+     * @param coords - Coordinates of the route waypoint
      * @param index - (Optional) Define unique order index of the waypoint on the route
      * @param caption - (Optional) Caption information ot the waypoint
      */
-    addWaypoint: ( lngLat: LngLat, caption: Caption ): Promise<void> => {
+    addWaypoint: ( coords: Coordinates, caption: Caption ): Promise<void> => {
       return new Promise( ( resolve, reject ) => {
-        this.chn?.emit('add:route:waypoint', { lngLat, caption }, ( error: string | boolean ) => {
+        this.chn?.emit('add:route:waypoint', { coords, caption }, ( error: string | boolean ) => {
           if( error ) return reject( error )
           resolve()
         } )
@@ -217,12 +217,12 @@ export default class Mapack extends EventEmitter {
      * Update a route waypoint specs
      * 
      * @param index - Order index of the waypoint to update
-     * @param lngLat - Array of coordinates of the route waypoint
+     * @param coords - Coordinates of the route waypoint
      * @param caption - (Optional) Caption information ot the waypoint
      */
-    updateWaypoint: ( index: number, lngLat: LngLat, caption?: Caption ): Promise<void> => {
+    updateWaypoint: ( index: number, coords: Coordinates, caption?: Caption ): Promise<void> => {
       return new Promise( ( resolve, reject ) => {
-        this.chn?.emit('update:route:waypoint', { index, lngLat, caption }, ( error: string | boolean ) => {
+        this.chn?.emit('update:route:waypoint', { index, coords, caption }, ( error: string | boolean ) => {
           if( error ) return reject( error )
           resolve()
         } )
@@ -273,7 +273,7 @@ export default class Mapack extends EventEmitter {
     /**
      * Set all the route waypoints
      * 
-     * @param itinerary - Array of `lngLat` coordinates and captions of the route waypoints
+     * @param itinerary - Array of coordinates and captions of the route waypoints
      */
     setRoute: ( itinerary: MapWaypoint[] ): Promise<void> => {
       return new Promise( ( resolve, reject ) => {
@@ -365,6 +365,7 @@ export default class Mapack extends EventEmitter {
 
     this.chn
     .once('connect', () => {
+      console.log('----------- mapack connect', { ...this.options, origin: window.origin })
       this.chn?.emit('bind', { ...this.options, origin: window.origin }, ( error: string | boolean ) => {
         if( error )
           return this.emit('error', new Error( error as string ) )
@@ -629,14 +630,14 @@ export default class Mapack extends EventEmitter {
    * @param location - Location coordinates
    * @param caption - (Optional) Caption information of the pickup point
    */
-  async pickupPoint( location: LngLat, caption?: Caption ): Promise<void> {
+  async pickupPoint( location: Coordinates, caption?: Caption ): Promise<void> {
     // Default pickup caption
     const _caption: Caption = { 
       label: 'Pickup point',
       ...(caption || {})
     }
     
-    await this.controls.setOrigin( location as LngLat, _caption )
+    await this.controls.setOrigin( location, _caption )
   }
 
   /**
@@ -645,14 +646,14 @@ export default class Mapack extends EventEmitter {
    * @param location - Location coordinates
    * @param caption - (Optional) Caption information of the pickup point
    */
-  async dropoffPoint( location: LngLat, caption?: Caption ): Promise<void> {
+  async dropoffPoint( location: Coordinates, caption?: Caption ): Promise<void> {
     // Default destination caption
     const _caption: Caption = {
       label: 'Destination point',
       ...(caption || {})
     }
     
-    await this.controls.setDestination( location as LngLat, _caption )
+    await this.controls.setDestination( location, _caption )
   }
 
   /**

@@ -10,13 +10,13 @@ export default class Access {
 
   constructor( options: AccessOptions ){
     if( !options ) throw new Error('Undefined Access Configuration')
-    if( !options.workspace ) throw new Error('Undefined Workspace Reference. Check https://doc.delidev.com/sdk/auth')
-    if( !options.accessToken ) throw new Error('Undefined Access Token. Check https://doc.delidev.com/sdk/auth')
+    if( !options.workspace ) throw new Error('Undefined Workspace Reference. Check https://doc.dedot.io/sdk/auth')
+    if( !options.accessToken ) throw new Error('Undefined Access Token. Check https://doc.dedot.io/sdk/auth')
     
     this.version = options.version || 1
     this.accessToken = options.accessToken
     this.remoteOrigin = options.remoteOrigin
-    this.baseURL = options.env === 'prod' ? 'https://api.delidev.com' : 'http://api.delidev.io:24800'
+    this.baseURL = options.env === 'prod' ? 'https://api.dedot.com' : 'http://api.dedot.io:24800'
   }
 
   async request<Response>( options: HTTPRequestOptions ): Promise<Response> {

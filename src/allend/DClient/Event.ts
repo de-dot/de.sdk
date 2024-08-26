@@ -13,8 +13,8 @@ export default class Event extends Access {
     
     // Socket server host
     this.iosHost = access.env == 'prod' ?
-                        'https://api.delidev.com' // Production server
-                        : 'http://api.delidev.io:24800' // Development & staging server
+                        'https://api.dedot.io' // Production server
+                        : 'http://api.dedot.io:24800' // Development & staging server
   }
 
   connect( clientId: string ): Promise<void> {

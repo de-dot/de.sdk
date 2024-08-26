@@ -13,15 +13,15 @@ export default class Auth {
   public accessToken?: string
 
   constructor( creds: AuthCredentials, options?: AuthOptions ){
-    if( !creds ) throw new Error('Undefined Credentials. Check https://doc.delidev.com/sdk/auth')
-    if( !creds.workspace ) throw new Error('Undefined Workspace Reference. Check https://doc.delidev.com/sdk/auth')
-    if( !creds.remoteOrigin ) throw new Error('Undefined Remote Origin. Check https://doc.delidev.com/sdk/auth')
-    if( !creds.appId ) throw new Error('Undefined App ID. Check https://doc.delidev.com/sdk/auth')
-    if( !creds.appSecret ) throw new Error('Undefined App Secret. Check https://doc.delidev.com/sdk/auth')
+    if( !creds ) throw new Error('Undefined Credentials. Check https://doc.dedot.io/sdk/auth')
+    if( !creds.workspace ) throw new Error('Undefined Workspace Reference. Check https://doc.dedot.io/sdk/auth')
+    if( !creds.remoteOrigin ) throw new Error('Undefined Remote Origin. Check https://doc.dedot.io/sdk/auth')
+    if( !creds.appId ) throw new Error('Undefined App ID. Check https://doc.dedot.io/sdk/auth')
+    if( !creds.appSecret ) throw new Error('Undefined App Secret. Check https://doc.dedot.io/sdk/auth')
 
     this.creds = creds
     this.version = options?.version || 1
-    this.baseURL = options?.env === 'prod' ? 'https://api.delidev.com' : 'http://api.delidev.io:24800'
+    this.baseURL = options?.env === 'prod' ? 'https://api.dedot.io' : 'http://api.dedot.io:24800'
     this.autorefresh = options?.autorefresh || false
   }
 

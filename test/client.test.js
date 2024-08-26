@@ -67,7 +67,7 @@ describe('[DCLIENT/CLIENT]: Orders -- [src/DClient/Client.ts]', () => {
 describe('[DCLIENT/CLIENT]: Periferals -- [src/DClient/Client.ts]', () => {
   test('Should throw Error <Undefined epicenter location>', async () => {
     expect.assertions(1)
-
+    
     expect( async () => await client.periferals() )
         .rejects.toThrow('Undefined epicenter location')
   })
@@ -86,6 +86,8 @@ describe('[DCLIENT/CLIENT]: Periferals -- [src/DClient/Client.ts]', () => {
     const
     location = { lng: 4.4409, lat: 2.23001, heading: 20 },
     results = await client.periferals( location )
+
+    console.log('Periferals:', results )
 
     expect( Array.isArray( results ) ).toBeTruthy()
   })
