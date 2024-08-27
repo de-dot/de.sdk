@@ -380,7 +380,7 @@ export default class Order extends Access {
    */
 
   async getOperator( type: string, token?: string ): Promise<OrderOperator>{
-    if( !['DSP', 'partner', 'warehouse', 'agent'].includes( type ) )
+    if( !['LSP', 'partner', 'warehouse', 'agent'].includes( type ) )
       throw new Error('Unknown order operator')
     
     token = token || this.intentToken

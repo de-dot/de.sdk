@@ -1,7 +1,7 @@
 
 import _Utils from './utils'
 import _Auth from './backend/Auth'
-import _Mapack from './allend/Mapack'
+import _Mapack from './allend/Mapkit'
 import Order from './allend/DClient/Order'
 import Event from './allend/DClient/Event'
 import Client from './allend/DClient/Client'

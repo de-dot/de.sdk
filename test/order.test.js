@@ -4,9 +4,9 @@ const { Auth, DClient } = require('../dist')
 const
 clientId = '1234567890',
 remoteOrigin = 'http://localhost:5000'
-workspace = 'RFNQOkRTUC1CMDk4LUMyQUNDRjY=',
-appId = '79kapUEkBZj4GaP24dxxmW6D',
-appSecret = 'xvjLXbpmVUGGLPIpiYa9qJoiqq3nEolRrDSaW7O7EsJsNnGv'
+workspace = 'ZGV2ZWxvcGVyOkRQSS0wQTlCLUU5M0IwNEE=',
+appId = 'Gl9aZqlW5vRNUJJeOmcyTBZv',
+appSecret = 'g2WDocFkoAzYdxsc7VbdYV7cSbUN1mv0yIul9WoVprWWexyB'
 
 let
 order,
@@ -480,9 +480,9 @@ describe('[DCLIENT/ORDER]: Operators -- [src/DClient/Order.ts]', () => {
     }
   })
 
-  test('Get DSP operator on the order', async () => {
+  test('Get LSP operator on the order', async () => {
     const
-    response = await order.getOperator('DSP'),
+    response = await order.getOperator('LSP'),
     exp = expect( response )
     
     exp.toHaveProperty('icode')
@@ -494,8 +494,10 @@ describe('[DCLIENT/ORDER]: Operators -- [src/DClient/Order.ts]', () => {
     const
     response = await order.getOperators(),
     exp = expect( response )
+
+    console.log( response )
     
-    exp.toHaveProperty('DSP')
+    exp.toHaveProperty('LSP')
   })
 })
 

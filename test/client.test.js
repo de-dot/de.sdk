@@ -3,9 +3,9 @@ const { Auth, DClient } = require('../dist')
 
 const
 remoteOrigin = 'http://localhost:5000'
-workspace = 'RFNQOkRTUC1CMDk4LUMyQUNDRjY=',
-appId = '79kapUEkBZj4GaP24dxxmW6D',
-appSecret = 'xvjLXbpmVUGGLPIpiYa9qJoiqq3nEolRrDSaW7O7EsJsNnGv'
+workspace = 'ZGV2ZWxvcGVyOkRQSS0wQTlCLUU5M0IwNEE=',
+appId = 'Gl9aZqlW5vRNUJJeOmcyTBZv',
+appSecret = 'g2WDocFkoAzYdxsc7VbdYV7cSbUN1mv0yIul9WoVprWWexyB'
 
 let
 client,
