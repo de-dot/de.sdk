@@ -1,5 +1,5 @@
 
-import type { GPSLocation, Coordinates, MapLayerStyle, MapOptions, LivePosition, Caption, WaypointIndex, MapWaypoint, Entity } from '../types'
+import type { GPSLocation, Coordinates, MapLayerStyle, MapOptions, LivePosition, Caption, WaypointIndex, MapWaypoint, Entity, SearchPlace, Itinerary } from '../types'
 import { EventEmitter } from 'events'
 import IOF from 'iframe.io'
 import Stream from '../utils/stream'
@@ -147,6 +147,45 @@ export default class Mapack extends EventEmitter {
         } )
       } )
     },
+
+    /**
+     * Search a location or places
+     * 
+     * @param input - Place in string
+     * @return - Autocompletion list matched places
+     */
+    searchQuery: ( input: string ): Promise<string[]> => {
+      return new Promise( ( resolve, reject ) => {
+        // Set timeout
+        const timeout = setTimeout( () => reject('Timeout'), 12000 )
+        // Launch search query
+        this.chn?.emit('search:query', input, ( error: string | boolean, data: any ) => {
+          if( error ) return reject( error )
+
+          clearTimeout( timeout )
+          resolve( data )
+        } )
+      } )
+    },
+    /**
+     * Select a suggested place by the search
+     * 
+     * @param index - Index of place in suggested list
+     * @return - More details of selected place
+     */
+    searchSelect: ( index: number ): Promise<SearchPlace | null> => {
+      return new Promise( ( resolve, reject ) => {
+        // Set timeout
+        const timeout = setTimeout( () => reject('Timeout'), 12000 )
+        // Get place's details
+        this.chn?.emit('search:select', index, ( error: string | boolean, data: SearchPlace | null ) => {
+          if( error ) return reject( error )
+
+          clearTimeout( timeout )
+          resolve( data )
+        } )
+      } )
+    },
     
     /**
      * Set route origin
@@ -275,7 +314,7 @@ export default class Mapack extends EventEmitter {
      * 
      * @param itinerary - Array of coordinates and captions of the route waypoints
      */
-    setRoute: ( itinerary: MapWaypoint[] ): Promise<void> => {
+    setRoute: ( itinerary: Itinerary ): Promise<void> => {
       return new Promise( ( resolve, reject ) => {
         this.chn?.emit('set:route', itinerary, ( error: string | boolean ) => {
           if( error ) return reject( error )
@@ -360,12 +399,11 @@ export default class Mapack extends EventEmitter {
     // Remove all previous listeners when iframe reloaded
     this.chn && this.chn.removeListeners()
 
-    this.chn = new IOF({ type: 'WINDOW', debug: this.isDev })
+    this.chn = new IOF({ type: 'WINDOW' })
     this.chn.initiate( iframe.contentWindow as Window, this.baseURL )
 
     this.chn
     .once('connect', () => {
-      console.log('----------- mapack connect', { ...this.options, origin: window.origin })
       this.chn?.emit('bind', { ...this.options, origin: window.origin }, ( error: string | boolean ) => {
         if( error )
           return this.emit('error', new Error( error as string ) )
@@ -443,7 +481,9 @@ export default class Mapack extends EventEmitter {
 
     this.chn
     .on('current:location', ( location: GPSLocation  ) => stream.sync( location ) )
-    .on('current:location:live', ( location: GPSLocation  ) => stream.sync( location ) )
+    .on('live:location:start', ( location: GPSLocation  ) => stream.sync( location ) )
+    .on('live:location:update', ( location: GPSLocation  ) => stream.sync( location ) )
+    .on('live:location:end', ( location: GPSLocation  ) => stream.sync( location ) )
     .on('current:location:error', ( message: string ) => stream.error( new Error( message ) ) )
 
     // Listen to stream closed
@@ -700,10 +740,10 @@ export default class Mapack extends EventEmitter {
    * and create a new stream through which the navigation details 
    * will be pushed to the API level.
    * 
-   * @param route - Set the complete route of the service.
+   * @param itinerary - Route origin, waypoints, destination
    * @return - Readable stream
    */
-  navigation( route: any ){
+  navigation( itinerary: Itinerary ){
     return new Promise( ( resolve, reject ) => {
       if( !this.chn ) return
 
@@ -750,16 +790,16 @@ export default class Mapack extends EventEmitter {
       
       // Set route
       this.controls
-          .setRoute( route )
+          .setRoute( itinerary )
           .then( async () => {
             // Initialize navigation point to current location
-            const position = await this.controls.getCurrentLocation()
+            const position = itinerary.origin?.coords || await this.controls.getCurrentLocation()
             if( !position ) return reject('Unable to get current location')
+
+            initialize()
 
             await this.controls.startNavigation()
             await this.controls.setInitialPosition( position )
-            
-            initialize()
           } )
           .catch( reject )
     } )

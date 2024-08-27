@@ -22,6 +22,11 @@ export type LivePosition = {
   id: string,
   position: Vehicle
 }
+export type SearchPlace = {
+  name: string
+  location: Coordinates,
+  address: string
+}
 
 export type Waypoint = {
   no: number
@@ -123,6 +128,11 @@ export type MapWaypoint = {
   index?: number
   coords: Coordinates
   caption?: Caption
+}
+export type Itinerary = {
+	origin?: MapWaypoint
+	destination?: MapWaypoint
+	waypoints?: MapWaypoint[]
 }
 
 export type Entity = {
