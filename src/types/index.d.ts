@@ -1,3 +1,6 @@
+export type TObject<T> = {
+  [index: string]: T
+}
 
 export type HTTPRequestOptions = {
   url: string

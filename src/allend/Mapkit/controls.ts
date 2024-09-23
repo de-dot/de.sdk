@@ -1,4 +1,5 @@
 import type { GPSLocation, Coordinates, MapLayerStyle, MapOptions, Caption, WaypointIndex, SearchPlace, Itinerary } from '../../types'
+
 import IOF from 'iframe.io'
 
 export default class Controls {
