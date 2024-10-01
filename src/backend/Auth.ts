@@ -2,7 +2,7 @@
 import type { AuthCredentials, AuthOptions, AuthRequestOptions } from '../types/auth'
 import req from 'request-promise'
 
-const ACCESS_TOKEN_EXPIRY_DELAY = 3.75 // in 3 minutes 45 seconds
+const ACCESS_TOKEN_EXPIRY = 3.75 // in 3 minutes 45 seconds
 
 export default class Auth {
   private version: number
@@ -75,21 +75,21 @@ export default class Auth {
     // Set auto-refresh token every 4 mins
     if( this.autorefresh ){
       clearTimeout( this.expiryTime )
-      this.expiryTime = setTimeout( () => this.refreshToken(), ACCESS_TOKEN_EXPIRY_DELAY * 60 * 1000 )
+      this.expiryTime = setTimeout( () => this.rotateToken(), ACCESS_TOKEN_EXPIRY * 60 * 1000 )
     }
     
     this.accessToken = token
     return token
   }
 
-  async refreshToken(){
+  async rotateToken(){
     if( !this.accessToken )
       throw new Error('No access token found')
 
     try {
       const
       options: AuthRequestOptions = {
-        url: '/access/refresh',
+        url: '/access/token/rotate',
         method: 'PATCH',
         body: { secret: this.creds.appSecret }
       },
@@ -99,7 +99,7 @@ export default class Auth {
       // Set auto-refresh token every 4 mins
       if( this.autorefresh ){
         clearTimeout( this.expiryTime )
-        this.expiryTime = setTimeout( () => this.refreshToken(), ACCESS_TOKEN_EXPIRY_DELAY * 60 * 1000 )
+        this.expiryTime = setTimeout( () => this.rotateToken(), ACCESS_TOKEN_EXPIRY * 60 * 1000 )
       }
       
       this.accessToken = token
