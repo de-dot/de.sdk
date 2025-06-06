@@ -1,6 +1,18 @@
-import type { GPSLocation, Coordinates, MapLayerStyle, MapOptions, Caption, WaypointIndex, SearchPlace, Itinerary } from '../../types'
-
+import type {
+  GPSLocation,
+  Coordinates,
+  MapLayerStyle,
+  Caption,
+  Itinerary,
+  MapOptions,
+  SearchPlace,
+  WaypointIndex
+} from '../../types'
 import IOF from 'iframe.io'
+
+const 
+FUNCTION_EVENT_TIMEOUT = 12000,
+FUNCTION_EVENT_TIMEOUT_MESSAGE = 'Event timeout'
 
 export default class Controls {
   private options: MapOptions
@@ -29,7 +41,7 @@ export default class Controls {
   setMapStyle( style: MapLayerStyle ): Promise<void> {
     return new Promise( ( resolve, reject ) => {
       // Set timeout
-      const timeout = setTimeout( () => reject('Timeout'), 12000 )
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Set style
       this.chn.emit('set:map:style', style, ( error: string | boolean ) => {
         if( error ) return reject( error )
@@ -46,7 +58,7 @@ export default class Controls {
   getCurrentLocation(): Promise<GPSLocation | null> {
     return new Promise( ( resolve, reject ) => {
       // Set timeout
-      const timeout = setTimeout( () => reject('Timeout'), 12000 )
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Get current location
       this.chn.emit('get:current:location', ( error: string | boolean, location: GPSLocation ) => {
         if( error ) return reject( error )
@@ -64,7 +76,7 @@ export default class Controls {
   pinCurrentLocation(): Promise<Coordinates | null> {
     return new Promise( ( resolve, reject ) => {
       // Set timeout
-      const timeout = setTimeout( () => reject('Timeout'), 12000 )
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Pin user's current location on the map
       this.chn.emit('pin:current:location', ( error: string | boolean, location: Coordinates | null ) => {
         if( error ) return reject( error )
@@ -84,7 +96,7 @@ export default class Controls {
   resolvePlace( name: string ): Promise<Coordinates | null> {
     return new Promise( ( resolve, reject ) => {
       // Set timeout
-      const timeout = setTimeout( () => reject('Timeout'), 12000 )
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Get location coordinates from place name
       this.chn.emit('resolve:place', name, ( error: string | boolean, data: any ) => {
         if( error ) return reject( error )
@@ -103,7 +115,7 @@ export default class Controls {
   resolveCoordinates( coords: Coordinates | string ): Promise<Coordinates | null> {
     return new Promise( ( resolve, reject ) => {
       // Set timeout
-      const timeout = setTimeout( () => reject('Timeout'), 12000 )
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Get location place from coordinates
       this.chn.emit('resolve:coordinates', coords, ( error: string | boolean, data: any ) => {
         if( error ) return reject( error )
@@ -123,7 +135,7 @@ export default class Controls {
   searchQuery( input: string ): Promise<string[]> {
     return new Promise( ( resolve, reject ) => {
       // Set timeout
-      const timeout = setTimeout( () => reject('Timeout'), 12000 )
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Launch search query
       this.chn.emit('search:query', input, ( error: string | boolean, data: any ) => {
         if( error ) return reject( error )
@@ -142,7 +154,7 @@ export default class Controls {
   searchSelect( index: number ): Promise<SearchPlace | null> {
     return new Promise( ( resolve, reject ) => {
       // Set timeout
-      const timeout = setTimeout( () => reject('Timeout'), 12000 )
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Get place's details
       this.chn.emit('search:select', index, ( error: string | boolean, data: SearchPlace | null ) => {
         if( error ) return reject( error )
