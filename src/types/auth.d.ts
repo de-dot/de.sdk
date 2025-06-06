@@ -8,8 +8,8 @@ export type AuthOptions = {
 export type AuthCredentials = {
   workspace: string
   remoteOrigin: string
-  appId: string
-  appSecret: string
+  cid: string
+  secret: string
 }
 
 export type SocketAuthCredentials = {

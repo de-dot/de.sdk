@@ -1,4 +1,3 @@
-
 import type { AuthCredentials, AuthOptions, AuthRequestOptions } from '../types/auth'
 import req from 'request-promise'
 
@@ -16,8 +15,8 @@ export default class Auth {
     if( !creds ) throw new Error('Undefined Credentials. Check https://doc.dedot.io/sdk/auth')
     if( !creds.workspace ) throw new Error('Undefined Workspace Reference. Check https://doc.dedot.io/sdk/auth')
     if( !creds.remoteOrigin ) throw new Error('Undefined Remote Origin. Check https://doc.dedot.io/sdk/auth')
-    if( !creds.appId ) throw new Error('Undefined App ID. Check https://doc.dedot.io/sdk/auth')
-    if( !creds.appSecret ) throw new Error('Undefined App Secret. Check https://doc.dedot.io/sdk/auth')
+    if( !creds.cid ) throw new Error('Undefined Connector ID. Check https://doc.dedot.io/sdk/auth')
+    if( !creds.secret ) throw new Error('Undefined Connector Secret. Check https://doc.dedot.io/sdk/auth')
 
     this.creds = creds
     this.version = options?.version || 1
@@ -59,15 +58,11 @@ export default class Auth {
 
   async getToken(){
     const
-    { workspace, appId, appSecret } = this.creds,
+    { workspace, cid, secret } = this.creds,
     options: AuthRequestOptions = {
       url: '/access/token',
       method: 'POST',
-      body: {
-        workspace,
-        id: appId,
-        secret: appSecret
-      }
+      body: this.creds
     },
     { error, message, token } = await this.request( options )
     if( error ) throw new Error( message )
@@ -91,7 +86,7 @@ export default class Auth {
       options: AuthRequestOptions = {
         url: '/access/token/rotate',
         method: 'PATCH',
-        body: { secret: this.creds.appSecret }
+        body: { secret: this.creds.secret }
       },
       { error, message, token } = await this.request( options )
       if( error ) throw new Error( message )
