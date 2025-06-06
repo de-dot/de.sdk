@@ -1815,10 +1815,10 @@ human-signals@^2.1.0:
   resolved "https://registry.yarnpkg.com/human-signals/-/human-signals-2.1.0.tgz#dc91fcba42e4d06e4abaed33b3e7a3c02f514ea0"
   integrity sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==
 
-iframe.io@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/iframe.io/-/iframe.io-1.0.3.tgz#b8d2cba2e97973439e609a13be831e74c017354e"
-  integrity sha512-xFwqvnGKof0Ugk8WqwhrWD/fBs4BDL4nDKhUz9nczU/ME7AiZ4oUnn5fbkuNVVPbTcDKkF3F4jLkhsH6/gPUYA==
+iframe.io@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/iframe.io/-/iframe.io-1.0.5.tgz#096292c56300a753a293b31eaa049d861193dc08"
+  integrity sha512-v97po9D4vYshI1AZzzSGVdffHjBL4VBaIvAwe5fRq9fZq2zrY1AeJ8LP1tZ1j0kiZWZSthIB/hnPbJIPgwAe1g==
 
 import-local@^3.0.2:
   version "3.1.0"
