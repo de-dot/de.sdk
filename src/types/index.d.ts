@@ -1,7 +1,3 @@
-export type TObject<T> = {
-  [index: string]: T
-}
-
 export type HTTPRequestOptions = {
   url: string
   method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE'

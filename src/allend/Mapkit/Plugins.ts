@@ -1,18 +1,24 @@
-import type { MapOptions, TObject } from '../../types'
+import type { MapOptions } from '../../types'
 
 import IOF from 'iframe.io'
 import Handles from './Handles'
 import Controls from './Controls'
-import Stream from '../../utils/stream'
+import Utils from '../../utils'
 
-export type Plugin = () => void
+export type PluginHook = {
+  handles: Handles,
+  controls: Controls,
+  map: MapOptions,
+  utils: typeof Utils
+}
+export type Plugin<PluginAPI, PluginOptions = {}> = ( hooks: PluginHook, options?: PluginOptions ) => PluginAPI
 
 export default class Plugins {
   private chn: IOF
   private handles: Handles
   private controls: Controls
   private options: MapOptions
-  private LIST: TObject<Plugin>  = {}
+  private ACTIVE_PLUGINS: Record<string, Plugin<any>>  = {}
 
   constructor( chn: IOF, handles: Handles, controls: Controls, options: MapOptions ){
     this.chn = chn
@@ -21,7 +27,26 @@ export default class Plugins {
     this.controls = controls
   }
 
-  mount( list: TObject<Plugin> ){
+  mount( list: Record<string, Plugin<any>> ){
+    Object.entries( list ).forEach( ([name, plugin]) => {
+      // TODO: Allow api level permission settings
 
+      // TODO: Put validation checks in place
+
+      this.ACTIVE_PLUGINS[ name ] = plugin
+    } )
+  }
+
+  use<API, Options>( name: string, options?: Record<string, Options> ){
+    if( !(name in this.ACTIVE_PLUGINS) )
+      throw new Error(`Undefined <${name}> plugin`)
+
+    const plugin: Plugin<API> = this.ACTIVE_PLUGINS[ name ]
+    return plugin({
+      handles: this.handles,
+      controls: this.controls,
+      map: this.options,
+      utils: Utils
+    }, options )
   }
 }

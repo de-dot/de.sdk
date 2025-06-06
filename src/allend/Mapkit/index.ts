@@ -1,15 +1,15 @@
-import type { MapOptions, TObject } from '../../types'
+import type { MapOptions } from '../../types'
 
 import { EventEmitter } from 'events'
 import IOF from 'iframe.io'
 import Handles from './Handles'
 import Controls from './Controls'
-import Plugins, { Plugin } from './Plugins'
+import Plugins, { type Plugin } from './Plugins'
 
 const
 SANDBOX_RULES = ['allow-scripts', 'allow-same-origin'],
 REQUIRED_FEATURES = ['geolocation'],
-REGISTERED_PLUGINS: TObject<Plugin> = {}
+REGISTERED_PLUGINS: Record<string, Plugin<any>> = {}
 
 export default class Mapack extends EventEmitter {
   private isDev: boolean
@@ -57,11 +57,13 @@ export default class Mapack extends EventEmitter {
           return this.emit('error', new Error( error as string ) )
       
         this.isConnected = true
-        this.emit('loaded', this.chn )
       })
     })
     .on('error', ( error: Error | string ) => this.emit('error', typeof error == 'object' ? error : new Error( error ) ) )
-    .on('ready', () => this.emit('ready') )
+    .on('ready', () => {
+      this.emit('ready')
+      this.emit('loaded', this.chn )
+    })
     // .on('event', ( _event: string, ...args: any[] ) => this.emit( _event, ...args ) )
   }
 
@@ -103,7 +105,7 @@ export default class Mapack extends EventEmitter {
    */
   load(){
     return new Promise( ( resolve, reject ) => {
-      const loaded = ( chn: IOF ) => {
+      const initializeAPI = ( chn: IOF ) => {
         const
         /**
          * Manual controls of the map remotely
@@ -118,12 +120,12 @@ export default class Mapack extends EventEmitter {
          */
         plugins = new Plugins( chn, handles, controls, this.options )
         plugins.mount( REGISTERED_PLUGINS )
-
+        
         resolve({ controls, handles, plugins })
       }
 
       this
-      .once('loaded', loaded )
+      .once('loaded', initializeAPI )
       .once('error', reject )
 
       window
@@ -145,7 +147,7 @@ export default class Mapack extends EventEmitter {
    * @param name - Name of the plugin that will be later used to access the plugin object interface
    * @param fn - Function containing the logic of the plugin
    */
-  plugin( name: string, fn: Plugin ){
+  plugin<T>( name: string, fn: Plugin<T> ){
     REGISTERED_PLUGINS[ name ] = fn
   }
 }
