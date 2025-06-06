@@ -1,4 +1,13 @@
-import type { Coordinates, GPSLocation, Entity, MapOptions, Caption, Itinerary, LivePosition } from '../../types'
+import type {
+  Coordinates,
+  GPSLocation,
+  Entity,
+  MapOptions,
+  Caption,
+  Itinerary,
+  LivePosition,
+  PickedLocation
+} from '../../types'
 
 import IOF from 'iframe.io'
 import { EventEmitter } from 'events'
@@ -24,6 +33,17 @@ export default class Handles extends EventEmitter {
     this.chn = chn
     this.options = options
     this.controls = controls
+  }
+
+  /**
+   * Listen when user manually picked a location
+   * on the map.
+   * 
+   * @param fn - Event listener function
+   * @return - void
+   */
+  onPickLocation( fn: ( location: PickedLocation ) => void ){
+    this.chn.on('pick:location', fn )
   }
 
   /**

@@ -14,6 +14,13 @@ export type Coordinates = {
   lng: number
   lat: number
 }
+export type PickedLocation = {
+  point: {
+    x: number,
+    y: number
+  }
+  coordinates: Coordinates
+}
 export type GPSLocation = Coordinates & {
   heading?: number
 }
