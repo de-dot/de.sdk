@@ -91,26 +91,26 @@ export default class Handles extends EventEmitter {
 
   /**
    * Open a live stream through which the current location details
-   * and profile information of all periferals entities around 
+   * and profile information of all nearby entities around 
    * this user (Eg. `bike`, `car`, ...) will be pushed to the 
    * API level.
    * 
-   * @param list - List of detected periferals entities around this user.
+   * @param list - List of detected nearby entities around this user.
    * @return - Live Readable Stream (LRS)
    */
-  periferals( list: Entity[] ){
+  nearby( list: Entity[] ){
     if( !this.chn ) return
 
     const self = this
     let _CLOSED = false
     
-    this.chn?.emit('show:periferals', list )
+    this.chn?.emit('show:nearby', list )
     
     const
     stream = new Stream,
     controls: ControlEntity = {
       /**
-       * Add new entity to the periferals list
+       * Add new entity to the nearby list
        * 
        * @param entity - GPS location and profile of the entity
        */
@@ -118,11 +118,11 @@ export default class Handles extends EventEmitter {
         return new Promise( ( resolve, reject ) => {
           if( _CLOSED ) return
 
-          // Maintain initial list of periferals: Prevent duplicated entity
+          // Maintain initial list of nearby: Prevent duplicated entity
           for( let x = 0; x < list.length; x++ )
             if( list[x].id === entity.id ){
               list.splice( x, 1 )
-              self.chn?.emit('remove:periferal:entity', entity.id )
+              self.chn?.emit('remove:nearby:entity', entity.id )
               break
             }
           
@@ -131,11 +131,11 @@ export default class Handles extends EventEmitter {
           
           // Add new entity
           list.push( entity )
-          self.chn?.emit('add:periferal:entity', entity, () => {
+          self.chn?.emit('add:nearby:entity', entity, () => {
             clearTimeout( TIMEOUT )
             resolve()
 
-            self.emit('periferals--stream', 'add', entity )
+            self.emit('nearby--stream', 'add', entity )
           } )
 
           setTimeout( () => reject('Add entity timeout'), 8000 )
@@ -143,7 +143,7 @@ export default class Handles extends EventEmitter {
       },
 
       /**
-       * Remove an entity (vehicle, premises) from the periferals list
+       * Remove an entity (vehicle, premises) from the nearby list
        * 
        * @param id - ID of targeted entity
        */
@@ -155,11 +155,11 @@ export default class Handles extends EventEmitter {
           let TIMEOUT: any
 
           list = list.filter( each => { return each.id !== id } )
-          self.chn?.emit('remove:periferal:entity', id, () => {
+          self.chn?.emit('remove:nearby:entity', id, () => {
             clearTimeout( TIMEOUT )
             resolve()
 
-            self.emit('periferals--stream', 'remove', id )
+            self.emit('nearby--stream', 'remove', id )
           } )
 
           setTimeout( () => reject('Remove entity timeout'), 8000 )
@@ -178,11 +178,11 @@ export default class Handles extends EventEmitter {
           // Track response timeout
           let TIMEOUT: any
           
-          self.chn?.emit('move:periferal:entity', location, () => {
+          self.chn?.emit('move:nearby:entity', location, () => {
             clearTimeout( TIMEOUT )
             resolve()
 
-            self.emit('periferals--stream', 'move', location )
+            self.emit('nearby--stream', 'move', location )
           } )
 
           setTimeout( () => reject('Remove entity timeout'), 8000 )
@@ -201,7 +201,7 @@ export default class Handles extends EventEmitter {
     close = ( fn?: LRSErrorListener ) => {
       if( _CLOSED ) return
 
-      this.chn?.emit('remove:periferals', ( error: string | boolean ) => {
+      this.chn?.emit('remove:nearby', ( error: string | boolean ) => {
         if( typeof error == 'string' ) 
           return typeof fn == 'function' && fn( new Error( error ) )
 
@@ -212,12 +212,12 @@ export default class Handles extends EventEmitter {
       })
     }
     
-    this.on('periferals--stream', ( action, dataset ) => stream.sync({ action, dataset, list }) )
+    this.on('nearby--stream', ( action, dataset ) => stream.sync({ action, dataset, list }) )
     // Listen to stream closed
     stream
     .onerror( error => console.error('[Stream Error] ', error ) )
     .onclose( ( fn?: () => void ) => {
-      this.off('periferals--stream', fn || (() => {}) )
+      this.off('nearby--stream', fn || (() => {}) )
       close()
     })
     

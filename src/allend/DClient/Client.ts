@@ -6,8 +6,8 @@ import Access from '../Access'
 type OrderServiceResponse = HTTPResponse & {
   orders: OrderService[]
 }
-type PeriferalsResponse = HTTPResponse & {
-  periferals: Entity[]
+type NearbyResponse = HTTPResponse & {
+  nearby: Entity[]
 }
 
 export default class Client extends Access {
@@ -53,7 +53,7 @@ export default class Client extends Access {
     return orders
   }
 
-  async periferals( location: GPSLocation ){
+  async nearby( location: GPSLocation ){
     if( !this.accessToken )
       throw new Error('Authentication required')
 
@@ -65,13 +65,13 @@ export default class Client extends Access {
 
     const
     options: HTTPRequestOptions = {
-      url: `/client/${this.clientId}/periferals`,
+      url: `/client/${this.clientId}/nearby`,
       method: 'POST',
       body: location
     },
-    { error, message, periferals } = await this.request<PeriferalsResponse>( options )
+    { error, message, nearby } = await this.request<NearbyResponse>( options )
     if( error ) throw new Error( message )
     
-    return periferals
+    return nearby
   }
 }

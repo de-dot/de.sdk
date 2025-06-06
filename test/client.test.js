@@ -64,30 +64,30 @@ describe('[DCLIENT/CLIENT]: Orders -- [src/DClient/Client.ts]', () => {
   })
 })
 
-describe('[DCLIENT/CLIENT]: Periferals -- [src/DClient/Client.ts]', () => {
+describe('[DCLIENT/CLIENT]: Nearby -- [src/DClient/Client.ts]', () => {
   test('Should throw Error <Undefined epicenter location>', async () => {
     expect.assertions(1)
     
-    expect( async () => await client.periferals() )
+    expect( async () => await client.nearby() )
         .rejects.toThrow('Undefined epicenter location')
   })
 
   test('Should throw Error <Invalid location coordinates>', async () => {
     try {
       const location = { lng: 4.4409 }
-      await client.periferals( location )
+      await client.nearby( location )
     }
     catch( error ){
       expect( error.message ).toBe('Invalid location coordinates')
     }
   })
 
-  test('Return periferal list if found any', async () => {
+  test('Return nearby list if found any', async () => {
     const
     location = { lng: 4.4409, lat: 2.23001, heading: 20 },
-    results = await client.periferals( location )
+    results = await client.nearby( location )
 
-    console.log('Periferals:', results )
+    console.log('Nearby:', results )
 
     expect( Array.isArray( results ) ).toBeTruthy()
   })
