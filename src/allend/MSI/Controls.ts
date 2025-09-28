@@ -10,8 +10,8 @@ import type {
   UserLocationOptions,
   DragPickContentType,
   DragPickContent,
+  MapWaypoint,
   Journey,
-  Waypoint,
   RouteOptions,
   ActiveDirection
 } from '../../types'
@@ -390,7 +390,7 @@ export default class Controls {
    * @param routeId - Route identifier
    * @param point - Waypoint specification for origin
    */
-  setRouteOrigin( routeId: string, point: Waypoint ): Promise<void> {
+  setRouteOrigin( routeId: string, point: MapWaypoint ): Promise<void> {
     return new Promise( ( resolve, reject ) => {
       // Set timeout
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
@@ -427,7 +427,7 @@ export default class Controls {
    * @param routeId - Route identifier
    * @param point - Waypoint specification for destination
    */
-  setRouteDestination( routeId: string, point: Waypoint ): Promise<void> {
+  setRouteDestination( routeId: string, point: MapWaypoint ): Promise<void> {
     return new Promise( ( resolve, reject ) => {
       // Set timeout
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
@@ -464,7 +464,7 @@ export default class Controls {
    * @param routeId - Route identifier
    * @param point - Waypoint specification
    */
-  addRouteWaypoint( routeId: string, point: Waypoint ): Promise<void> {
+  addRouteWaypoint( routeId: string, point: MapWaypoint ): Promise<void> {
     return new Promise( ( resolve, reject ) => {
       // Set timeout
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
@@ -483,7 +483,7 @@ export default class Controls {
    * @param routeId - Route identifier
    * @param point - Waypoint specification with index
    */
-  updateRouteWaypoint( routeId: string, point: Waypoint ): Promise<void> {
+  updateRouteWaypoint( routeId: string, point: MapWaypoint ): Promise<void> {
     return new Promise( ( resolve, reject ) => {
       // Set timeout
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
@@ -575,38 +575,18 @@ export default class Controls {
       } )
     } )
   }
-  /**
-   * Cast a route with a path and options
-   * 
-   * @param direction - Active direction
-   * @param position - Current position
-   * @param options - Route options
-   */
-  castRoute( direction: ActiveDirection, position: GPSLocation, options?: RouteOptions ): Promise<void> {
-    return new Promise( ( resolve, reject ) => {
-      // Set timeout
-      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
-      // Set route
-      this.chn.emit('cast:route', { direction, position, options }, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
-        clearTimeout( timeout )
-        resolve()
-      } )
-    } )
-  }
 
   /**
    * Mount navigation route
    * 
    * @param routeId - Route identifier for navigation
    */
-  navigationMount( routeId: string | number ): Promise<void> {
+  mountNavigation( routeId: string | number ): Promise<void> {
     return new Promise( ( resolve, reject ) => {
       // Set timeout
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Mount navigation
-      this.chn.emit('navigation:mount', routeId, ( error: string | boolean ) => {
+      this.chn.emit('mount:navigation', routeId, ( error: string | boolean ) => {
         if( error ) return reject( error )
 
         clearTimeout( timeout )
@@ -617,12 +597,12 @@ export default class Controls {
   /**
    * Unmount navigation route
    */
-  navigationUnmount(): Promise<void> {
+  unmountNavigation(): Promise<void> {
     return new Promise( ( resolve, reject ) => {
       // Set timeout
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Unmount navigation
-      this.chn.emit('navigation:unmount', ( error: string | boolean ) => {
+      this.chn.emit('unmount:navigation', ( error: string | boolean ) => {
         if( error ) return reject( error )
 
         clearTimeout( timeout )
@@ -633,12 +613,12 @@ export default class Controls {
   /**
    * Load navigation direction
    */
-  navigationLoad(): Promise<void> {
+  loadNavigation(): Promise<void> {
     return new Promise( ( resolve, reject ) => {
       // Set timeout
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Load navigation
-      this.chn.emit('navigation:load', ( error: string | boolean ) => {
+      this.chn.emit('load:navigation', ( error: string | boolean ) => {
         if( error ) return reject( error )
 
         clearTimeout( timeout )
@@ -674,7 +654,7 @@ export default class Controls {
       // Set timeout
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Navigate
-      this.chn.emit('navigation:navigate', position, ( error: string | boolean ) => {
+      this.chn.emit('navigate:navigation:direction', position, ( error: string | boolean ) => {
         if( error ) return reject( error )
 
         clearTimeout( timeout )
@@ -707,12 +687,12 @@ export default class Controls {
   /**
    * Dismiss navigation
    */
-  navigationDismiss(): Promise<void> {
+  dismissNavigation(): Promise<void> {
     return new Promise( ( resolve, reject ) => {
       // Set timeout
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Dismiss navigation
-      this.chn.emit('navigation:dismiss', ( error: string | boolean ) => {
+      this.chn.emit('dismiss:navigation', ( error: string | boolean ) => {
         if( error ) return reject( error )
 
         clearTimeout( timeout )

@@ -1,4 +1,3 @@
-
 export type AuthOptions = {
   env?: 'dev' | 'prod'
   version?: number

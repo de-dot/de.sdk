@@ -1,4 +1,3 @@
-
 export type AccessOptions = {
   env?: 'dev' | 'prod'
   version?: number

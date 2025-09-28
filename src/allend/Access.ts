@@ -1,4 +1,3 @@
-
 import type { AccessOptions } from '../types/access'
 import type { HTTPRequestOptions } from '../types'
 

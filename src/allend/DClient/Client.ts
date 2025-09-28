@@ -1,4 +1,3 @@
-
 import type { AccessOptions } from '../../types/access'
 import type { HTTPRequestOptions, GPSLocation, OrderService, HTTPResponse, Entity  } from '../../types'
 import Access from '../Access'

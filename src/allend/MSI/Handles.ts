@@ -258,7 +258,7 @@ export default class Handles extends EventEmitter {
       ...(caption || {})
     }
     
-    await this.controls?.setRouteOrigin( location, _caption )
+    await this.controls?.setRouteOrigin('main', { coords: location, caption: _caption } )
   }
 
   /**
@@ -274,7 +274,7 @@ export default class Handles extends EventEmitter {
       ...(caption || {})
     }
     
-    await this.controls?.setRouteDestination( location, _caption )
+    await this.controls?.setRouteDestination('main', { coords: location, caption: _caption } )
   }
 
   /**
@@ -293,7 +293,7 @@ export default class Handles extends EventEmitter {
       if( !direction || !position )
         return stream.error( new Error('Invalid Data') )
         
-      this.controls?.castRoute({ routeId: 'peer-direction', ...direction }, position, options )
+      this.controls?.casting('peer-direction', direction, position, options )
 
       switch( status ){
         case 'STALE':
@@ -363,7 +363,7 @@ export default class Handles extends EventEmitter {
         .onerror( error => console.error('[Stream Error] ', error ) )
         .onclose( () => {
           this.chn?.off('navigation:direction')
-          this.controls?.navigationUnmount()
+          this.controls?.unmountNavigation()
         })
 
         resolve( stream )
@@ -378,7 +378,7 @@ export default class Handles extends EventEmitter {
 
                       initialize()
 
-                      await this.controls?.navigationMount( journey.routeId )
+                      await this.controls?.mountNavigation( journey.routeId )
                       await this.controls?.setInitialNavigationPosition( position as GPSLocation )
                     } )
                     .catch( reject )
