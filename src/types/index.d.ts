@@ -24,10 +24,90 @@ export type PickedLocation = {
 export type GPSLocation = Coordinates & {
   heading?: number
 }
-export type LivePosition = {
-  id: string,
-  position: Vehicle
+export type ActivePosition = {
+  id: string
+  position: GPSLocation
+  caption?: Caption
 }
+
+/**
+ * Configuration options for AnimatedPolyline
+ */
+export type AnimatedRouteNativePathType = 'dot' | 'solid'
+export type AnimatedRouteNativeMethods = 'dot:flow'
+                                          | 'dot:fade'
+                                          | 'dot:pulse'
+                                          | 'dot:directional'
+                                          | 'solid:flow'
+                                          | 'solid:fade'
+                                          | 'solid:pulse'
+                                          | 'solid:directional'
+export interface AnimatedRouteRules {
+  styles?: any;
+  speed?: number; // pixels per frame
+  fadeLength?: number; // length of fade effect in pixels
+}
+export interface AnimatedRoute {
+  key: number | null
+  currentOffset: number
+  rules: Required<AnimatedRouteRules>
+  startTime?: number;
+  polyline?: any
+  engine: any
+  path: Coordinates[]
+
+  /**
+   * Create the polyline
+   */
+  create( pathType?: AnimatedRouteNativePathType ): void;
+
+  /**
+   * Animation methods
+   */
+  apply: Record<string, () => void>;
+
+  /**
+   * Stop the current animation
+   */
+  stop(): void;
+
+  /**
+   * Remove the polyline from the map and stop animation
+   */
+  remove(): void;
+}
+export type AnimatedRouteOptions = AnimatedRouteNativeMethods | {
+  handler?: new (engine: Engine, path: Coordinates[], rules?: AnimatedRouteRules) => AnimatedRoute
+  method?: string
+  rules?: AnimatedRouteRules
+}
+
+export type Journey = {
+  routeId: string | number
+  origin?: Waypoint
+  destination?: Waypoint
+  waypoints?: Waypoint[]
+  options?: RouteOptions
+}
+export type ActiveDirection = {
+  routeId: string | number
+  profile: string
+  origin?: Coordinates
+  destination?: Coordinates
+  waypoints: Coordinates[]
+  route: any
+}
+export type RouteOptions = {
+  id?: string | number
+  mode?: 'default' | 'navigation'
+  profile?: 'driving-traffic' | 'driving' | 'cycling' | 'biking' | 'walking' | 'transit'
+  unit?: 'metric' | 'imperial',
+  preference?: 'TRAFFIC_AWARE' | 'TRAFFIC_UNAWARE'
+  pointless?: boolean
+  styles?: any
+  animation?: AnimatedRouteOptions
+}
+
 export type SearchPlace = {
   name: string
   location: Coordinates,
@@ -135,11 +215,6 @@ export type MapWaypoint = {
   coords: Coordinates
   caption?: Caption
 }
-export type Itinerary = {
-	origin?: MapWaypoint
-	destination?: MapWaypoint
-	waypoints?: MapWaypoint[]
-}
 
 export type Entity = {
   id: string
@@ -148,4 +223,53 @@ export type Entity = {
   location: GPSLocation
   static?: boolean
   type: 'moto' | 'car' | 'bike' | 'truck' | 'plane' | 'ship' | 'restaurant' | 'hotel' | 'store' | 'office' | 'warehouse'
+}
+export type EntitySpecs = {
+  id: string
+  status: 'ACTIVE' | 'BUSY'
+  level: '1H' | '2H' | '3H'
+  location: GPSLocation
+  static?: boolean
+  type: 'moto' | 'car' | 'bike' | 'truck' | 'plane' | 'ship' | 'restaurant' | 'hotel' | 'store' | 'office' | 'warehouse'
+}
+
+export interface UserLocationOptions {
+  // Base point styling options
+  borderRadius?: number
+  borderColor?: string
+  borderOpacity?: number
+  dotColor?: string
+  showInnerDot?: boolean
+  noRing?: boolean
+  
+  // User location specific options
+  showDirectionArrow?: boolean
+  arrowColor?: string
+  arrowSize?: number
+  pulseAnimation?: boolean
+  accuracyCircle?: boolean
+  accuracyColor?: string
+  accuracyOpacity?: number
+  
+  // Callbacks
+  onLocationUpdate?: ( location: GPSLocation ) => void
+  onLocationError?: ( error: GeolocationPositionError ) => void
+}
+export type DragPickOptions = {
+  snapToRoad?: boolean
+  pinPoints?: boolean
+  pointOptions?: CustomPointOptions
+}
+export type DragPickContentType = 'duration' | 'distance' | 'preloader'
+export type DragPickContent = {
+  time?: number
+  unit?: 'min' | 'sec' | 'hr' | 'km' | 'mi' | 'm'
+  distance?: number
+  preloader?: boolean
+}
+export type DragPickEvent = 'dragstart' | 'dragend' | 'zoom_changed' | 'idle'
+export interface DragPickInterface {
+  enable( origin?: Coordinates ): void
+  disable(): void
+  content( type: DragPickContentType, content: DragPickContent ): void
 }

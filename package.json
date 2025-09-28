@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "events": "^3.3.0",
-    "iframe.io": "^1.0.5",
+    "iframe.io": "^1.1.0",
     "node-fetch": "2.6.1",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
@@ -56,7 +56,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/de-livery/de.sdk"
+    "url": "git://github.com/de-dot/de.sdk"
   },
   "keywords": []
 }

@@ -4,9 +4,10 @@ import type {
   Entity,
   MapOptions,
   Caption,
-  Itinerary,
-  LivePosition,
-  PickedLocation
+  Journey,
+  ActivePosition,
+  PickedLocation,
+  RouteOptions
 } from '../../types'
 
 import IOF from 'iframe.io'
@@ -17,7 +18,7 @@ import Stream from '../../utils/stream'
 export interface ControlEntity {
   add: ( entity: Entity, callback?: () => void ) => void
   remove: ( id: string, callback?: () => void ) => void
-  move: ( update: LivePosition, callback?: () => void ) => void
+  move: ( update: ActivePosition, callback?: () => void ) => void
 }
 export type LRSControlsListener = ( controls: ControlEntity ) => void
 export type LRSErrorListener = ( error?: Error | boolean ) => void
@@ -257,7 +258,7 @@ export default class Handles extends EventEmitter {
       ...(caption || {})
     }
     
-    await this.controls?.setOrigin( location, _caption )
+    await this.controls?.setRouteOrigin( location, _caption )
   }
 
   /**
@@ -273,7 +274,7 @@ export default class Handles extends EventEmitter {
       ...(caption || {})
     }
     
-    await this.controls?.setDestination( location, _caption )
+    await this.controls?.setRouteDestination( location, _caption )
   }
 
   /**
@@ -283,7 +284,7 @@ export default class Handles extends EventEmitter {
    * 
    * @return - Readable stream
    */
-  peerDirection(){
+  peerDirection( options?: RouteOptions ){
     if( !this.chn ) return
     const stream = new Stream
 
@@ -292,7 +293,7 @@ export default class Handles extends EventEmitter {
       if( !direction || !position )
         return stream.error( new Error('Invalid Data') )
         
-      this.controls?.upsertDirection({ direction, position })
+      this.controls?.castRoute({ routeId: 'peer-direction', ...direction }, position, options )
 
       switch( status ){
         case 'STALE':
@@ -320,10 +321,10 @@ export default class Handles extends EventEmitter {
    * and create a new stream through which the navigation details 
    * will be pushed to the API level.
    * 
-   * @param itinerary - Route origin, waypoints, destination
+   * @param journey - Route origin, waypoints, destination
    * @return - Readable stream
    */
-  navigation( itinerary: Itinerary ){
+  navigation( journey: Journey ){
     return new Promise( ( resolve, reject ) => {
       if( !this.chn ) return
 
@@ -362,23 +363,23 @@ export default class Handles extends EventEmitter {
         .onerror( error => console.error('[Stream Error] ', error ) )
         .onclose( () => {
           this.chn?.off('navigation:direction')
-          this.controls?.stopNavigation()
+          this.controls?.navigationUnmount()
         })
 
         resolve( stream )
       }
       
       // Set route
-      this.controls?.setRoute( itinerary )
+      this.controls?.setRoute( journey )
                     .then( async () => {
                       // Initialize navigation point to current location
-                      const position = itinerary.origin?.coords || await this.controls?.getCurrentLocation()
+                      const position = journey.origin || await this.controls?.getCurrentLocation()
                       if( !position ) return reject('Unable to get current location')
 
                       initialize()
 
-                      await this.controls?.startNavigation()
-                      await this.controls?.setInitialPosition( position )
+                      await this.controls?.navigationMount( journey.routeId )
+                      await this.controls?.setInitialNavigationPosition( position as GPSLocation )
                     } )
                     .catch( reject )
     } )

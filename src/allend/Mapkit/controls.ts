@@ -3,10 +3,17 @@ import type {
   Coordinates,
   MapLayerStyle,
   Caption,
-  Itinerary,
   MapOptions,
   SearchPlace,
-  WaypointIndex
+  EntitySpecs,
+  ActivePosition,
+  UserLocationOptions,
+  DragPickContentType,
+  DragPickContent,
+  Journey,
+  Waypoint,
+  RouteOptions,
+  ActiveDirection
 } from '../../types'
 import IOF from 'iframe.io'
 
@@ -88,6 +95,111 @@ export default class Controls {
   }
 
   /**
+   * Set live location tracking options
+   * 
+   * @param options - User location tracking options
+   */
+  setLiveLocationOptions( options: UserLocationOptions ): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Set live location options
+      this.chn.emit('set:live:options', options, ( error: string | boolean ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve()
+      } )
+    } )
+  }
+  /**
+   * Start tracking user's live location
+   */
+  trackLiveLocation(): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Start live location tracking
+      this.chn.emit('track:live:location', ( error: string | boolean ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve()
+      } )
+    } )
+  }
+  /**
+   * Stop tracking user's live location
+   */
+  untrackLiveLocation(): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Stop live location tracking
+      this.chn.emit('untrack:live:location', ( error: string | boolean ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve()
+      } )
+    } )
+  }
+
+  /**
+   * Enable drag pick functionality
+   * 
+   * @param location - (Optional) Initial location for drag pick
+   */
+  enableDragPickLocation( location?: Coordinates ): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Enable drag pick
+      this.chn.emit('enable:dragpick:location', location, ( error: string | boolean ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve()
+      } )
+    } )
+  }
+  /**
+   * Disable drag pick functionality
+   */
+  disableDragPickLocation(): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Disable drag pick
+      this.chn.emit('disable:dragpick:location', ( error: string | boolean ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve()
+      } )
+    } )
+  }
+  /**
+   * Set drag pick content
+   * 
+   * @param type - Content type for drag pick
+   * @param content - Content data for drag pick
+   */
+  setDragPickContent( type: DragPickContentType, content: DragPickContent ): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Set drag pick content
+      this.chn.emit('set:dragpick:content', { type, content }, ( error: string | boolean ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve()
+      } )
+    } )
+  }
+
+  /**
    * Get a location coordinates of placed that matched this name
    * 
    * @param name - Place name to resolve
@@ -164,28 +276,147 @@ export default class Controls {
       } )
     } )
   }
-  
+
   /**
-   * Set route origin
+   * Show nearby entities around coordinates
    * 
-   * @param coords - Coordinates of the route origin
-   * @param caption - Caption information ot the origin
+   * @param list - Array of entity specifications
    */
-  setOrigin( coords: Coordinates, caption: Caption ): Promise<void> {
+  showNearby( list: EntitySpecs[] ): Promise<void> {
     return new Promise( ( resolve, reject ) => {
-      this.chn.emit('set:route:origin', { coords, caption }, ( error: string | boolean ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Show nearby entities
+      this.chn.emit('show:nearby', list, ( error: string | boolean ) => {
         if( error ) return reject( error )
+
+        clearTimeout( timeout )
         resolve()
       } )
     } )
   }
   /**
-   * Remove added route origin
+   * Remove all displaying nearby entities
    */
-  removeOrigin(): Promise<void> {
+  removeNearby(): Promise<void> {
     return new Promise( ( resolve, reject ) => {
-      this.chn.emit('remove:route:origin', ( error: string | boolean ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Remove nearby entities
+      this.chn.emit('remove:nearby', ( error: string | boolean ) => {
         if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve()
+      } )
+    } )
+  }
+  /**
+   * Add a new nearby entity
+   * 
+   * @param entity - Entity specification
+   */
+  addNearbyEntity( entity: EntitySpecs ): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Add nearby entity
+      this.chn.emit('add:nearby:entity', entity, ( error: string | boolean ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve()
+      } )
+    } )
+  }
+  /**
+   * Update a nearby entity position
+   * 
+   * @param activePosition - Entity ID and new position
+   */
+  moveNearbyEntity( activePosition: ActivePosition ): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Move nearby entity
+      this.chn.emit('move:nearby:entity', activePosition, ( error: string | boolean ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve()
+      } )
+    } )
+  }
+  /**
+   * Remove a nearby entity
+   * 
+   * @param id - Entity ID to remove
+   */
+  removeNearbyEntity( id: string ): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Remove nearby entity
+      this.chn.emit('remove:nearby:entity', id, ( error: string | boolean ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve()
+      } )
+    } )
+  }
+
+  /**
+   * Set complete route with journey specifications
+   * 
+   * @param journey - Journey specifications including route ID, origin, destination, waypoints, and options
+   */
+  setRoute( journey: Journey ): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Set route
+      this.chn.emit('set:route', journey, ( error: string | boolean ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve()
+      } )
+    } )
+  }
+  /**
+   * Set route origin
+   * 
+   * @param routeId - Route identifier
+   * @param point - Waypoint specification for origin
+   */
+  setRouteOrigin( routeId: string, point: Waypoint ): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Set route origin
+      this.chn.emit('set:route:origin', { routeId, point }, ( error: string | boolean ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve()
+      } )
+    } )
+  }
+  /**
+   * Remove route origin
+   * 
+   * @param routeId - Route identifier
+   */
+  removeRouteOrigin( routeId: string ): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Remove route origin
+      this.chn.emit('remove:route:origin', { routeId }, ( error: string | boolean ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
         resolve()
       } )
     } )
@@ -193,173 +424,298 @@ export default class Controls {
   /**
    * Set route destination
    * 
-   * @param coords - Coordinates of the route destination
-   * @param caption - Caption information ot the destination
+   * @param routeId - Route identifier
+   * @param point - Waypoint specification for destination
    */
-  setDestination( coords: Coordinates, caption: Caption ): Promise<void> {
+  setRouteDestination( routeId: string, point: Waypoint ): Promise<void> {
     return new Promise( ( resolve, reject ) => {
-      this.chn.emit('set:route:destination', { coords, caption }, ( error: string | boolean ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Set route destination
+      this.chn.emit('set:route:destination', { routeId, point }, ( error: string | boolean ) => {
         if( error ) return reject( error )
+
+        clearTimeout( timeout )
         resolve()
       } )
     } )
   }
   /**
-   * Remove added route destination
-   */
-  removeDestination(): Promise<void> {
-    return new Promise( ( resolve, reject ) => {
-      this.chn.emit('remove:route:destination', ( error: string | boolean ) => {
-        if( error ) return reject( error )
-        resolve()
-      } )
-    } )
-  }
-  /**
-   * Set a route waypoint
+   * Remove route destination
    * 
-   * @param coords - Coordinates of the route waypoint
-   * @param index - (Optional) Define unique order index of the waypoint on the route
-   * @param caption - (Optional) Caption information ot the waypoint
+   * @param routeId - Route identifier
    */
-  addWaypoint( coords: Coordinates, caption: Caption ): Promise<void> {
+  removeRouteDestination( routeId: string ): Promise<void> {
     return new Promise( ( resolve, reject ) => {
-      this.chn.emit('add:route:waypoint', { coords, caption }, ( error: string | boolean ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Remove route destination
+      this.chn.emit('remove:route:destination', { routeId }, ( error: string | boolean ) => {
         if( error ) return reject( error )
+
+        clearTimeout( timeout )
         resolve()
       } )
     } )
   }
   /**
-   * Update a route waypoint specs
+   * Add a route waypoint
    * 
-   * @param index - Order index of the waypoint to update
-   * @param coords - Coordinates of the route waypoint
-   * @param caption - (Optional) Caption information ot the waypoint
+   * @param routeId - Route identifier
+   * @param point - Waypoint specification
    */
-  updateWaypoint( index: number, coords: Coordinates, caption?: Caption ): Promise<void> {
+  addRouteWaypoint( routeId: string, point: Waypoint ): Promise<void> {
     return new Promise( ( resolve, reject ) => {
-      this.chn.emit('update:route:waypoint', { index, coords, caption }, ( error: string | boolean ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Add route waypoint
+      this.chn.emit('add:route:waypoint', { routeId, point }, ( error: string | boolean ) => {
         if( error ) return reject( error )
+
+        clearTimeout( timeout )
         resolve()
       } )
     } )
   }
   /**
-   * Remove added route waypoint
+   * Update a route waypoint
    * 
-   * @param index - Order index of the waypoint to be removed
+   * @param routeId - Route identifier
+   * @param point - Waypoint specification with index
    */
-  removeWaypoint( index: number ): Promise<void> {
+  updateRouteWaypoint( routeId: string, point: Waypoint ): Promise<void> {
     return new Promise( ( resolve, reject ) => {
-      this.chn.emit('remove:route:waypoint', index, ( error: string | boolean ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Update route waypoint
+      this.chn.emit('update:route:waypoint', { routeId, point }, ( error: string | boolean ) => {
         if( error ) return reject( error )
+
+        clearTimeout( timeout )
         resolve()
       } )
     } )
   }
   /**
-   * Set a caption details of a route point
+   * Remove a route waypoint
    * 
-   * @param index - Order index of targeted route waypoint
+   * @param routeId - Route identifier
+   * @param index - Waypoint index to remove
+   */
+  removeRouteWaypoint( routeId: string, index: number ): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Remove route waypoint
+      this.chn.emit('remove:route:waypoint', { routeId, index }, ( error: string | boolean ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve()
+      } )
+    } )
+  }
+
+  /**
+   * Set waypoint caption
+   * 
+   * @param routeId - Route identifier
+   * @param id - Waypoint identifier (string or number)
    * @param caption - Caption information to set
    */
-  setWaypointCaption( index: WaypointIndex, caption?: Caption ): Promise<void> {
+  setWaypointCaption( routeId: string, id: string | number, caption: Caption ): Promise<void> {
     return new Promise( ( resolve, reject ) => {
-      this.chn.emit('set:waypoint:caption', { index, caption }, ( error: string | boolean ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Set waypoint caption
+      this.chn.emit('set:waypoint:caption', { routeId, id, caption }, ( error: string | boolean ) => {
         if( error ) return reject( error )
+
+        clearTimeout( timeout )
         resolve()
       } )
     } )
   }
   /**
-   * Update the caption details of a route point
+   * Update waypoint caption
    * 
-   * @param index - Order index of targeted route waypoint
+   * @param routeId - Route identifier
+   * @param id - Waypoint identifier (string or number)
    * @param caption - Caption information to update
    */
-  updateWaypointCaption( index: WaypointIndex, caption?: Caption ): Promise<void> {
+  updateWaypointCaption( routeId: string, id: string | number, caption: Caption ): Promise<void> {
     return new Promise( ( resolve, reject ) => {
-      this.chn.emit('update:waypoint:caption', { index, caption }, ( error: string | boolean ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Update waypoint caption
+      this.chn.emit('update:waypoint:caption', { routeId, id, caption }, ( error: string | boolean ) => {
         if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve()
+      } )
+    } )
+  }
+  /**
+   * Remove waypoint caption
+   * 
+   * @param routeId - Route identifier
+   * @param id - Waypoint identifier (string or number)
+   */
+  removeWaypointCaption( routeId: string, id: string | number ): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Remove waypoint caption
+      this.chn.emit('remove:waypoint:caption', { routeId, id }, ( error: string | boolean ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve()
+      } )
+    } )
+  }
+  /**
+   * Cast a route with a path and options
+   * 
+   * @param direction - Active direction
+   * @param position - Current position
+   * @param options - Route options
+   */
+  castRoute( direction: ActiveDirection, position: GPSLocation, options?: RouteOptions ): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Set route
+      this.chn.emit('cast:route', { direction, position, options }, ( error: string | boolean ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
         resolve()
       } )
     } )
   }
 
   /**
-   * Set all the route waypoints
+   * Mount navigation route
    * 
-   * @param itinerary - Array of coordinates and captions of the route waypoints
+   * @param routeId - Route identifier for navigation
    */
-  setRoute( itinerary: Itinerary ): Promise<void> {
+  navigationMount( routeId: string | number ): Promise<void> {
     return new Promise( ( resolve, reject ) => {
-      this.chn.emit('set:route', itinerary, ( error: string | boolean ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Mount navigation
+      this.chn.emit('navigation:mount', routeId, ( error: string | boolean ) => {
         if( error ) return reject( error )
-        resolve()
-      } )
-    } )
-  }
 
-  /**
-   * Refresh navigation direction data with fresh
-   * coordinates.
-   */
-  upsertDirection( route: any ): Promise<void> {
-    return new Promise( ( resolve, reject ) => {
-      this.chn.emit('upsert:navigation:direction', route, ( error: string | boolean ) => {
-        if( error ) return reject( error )
+        clearTimeout( timeout )
         resolve()
       } )
     } )
   }
   /**
-   * Initialize navigation direction on the map
-   * 
-   * @position - Current position of the subject
+   * Unmount navigation route
    */
-  setInitialPosition( position: GPSLocation ): Promise<void> {
+  navigationUnmount(): Promise<void> {
     return new Promise( ( resolve, reject ) => {
-      this.chn.emit('initial:navigation:position', position, ( error: string | boolean ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Unmount navigation
+      this.chn.emit('navigation:unmount', ( error: string | boolean ) => {
         if( error ) return reject( error )
+
+        clearTimeout( timeout )
         resolve()
       } )
     } )
   }
   /**
-   * Load & Start navigation direction on the map
+   * Load navigation direction
    */
-  startNavigation(): Promise<void> {
+  navigationLoad(): Promise<void> {
     return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Load navigation
       this.chn.emit('navigation:load', ( error: string | boolean ) => {
         if( error ) return reject( error )
+
+        clearTimeout( timeout )
         resolve()
       } )
     } )
   }
   /**
-   * Stop initiated navigation and remove from the map
+   * Set initial navigation position
    * 
-   * @return - Instance of the navigator
+   * @param position - Initial GPS location for navigation
    */
-  stopNavigation(): Promise<void> {
+  setInitialNavigationPosition( position: GPSLocation ): Promise<void> {
     return new Promise( ( resolve, reject ) => {
-      this.chn.emit('navigation:dismiss', ( error: string | boolean ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Set initial navigation position
+      this.chn.emit('initial:navigation:position', position, ( error: string | boolean ) => {
         if( error ) return reject( error )
+
+        clearTimeout( timeout )
         resolve()
       } )
     } )
   }
   /**
-   * Move from current location to the next location
+   * Navigate to new position
    * 
-   * @position - Current position of the subject
-   * @return - Instance of the navigator
+   * @param position - Current GPS location for navigation update
    */
   navigate( position: GPSLocation ): Promise<void> {
     return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Navigate
       this.chn.emit('navigation:navigate', position, ( error: string | boolean ) => {
         if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve()
+      } )
+    } )
+  }
+  /**
+   * Upsert navigation direction data
+   * 
+   * @param routeId - Route identifier for navigation
+   * @param direction - Direction data
+   * @param position - (Optional) Current GPS position
+   * @params options - Route options
+   */
+  casting( routeId: string | number, direction: any, position?: GPSLocation, options?: RouteOptions ): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Casting navigation direction
+      this.chn.emit('casting:navigation:direction', { routeId, direction, position, options }, ( error: string | boolean ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve()
+      } )
+    } )
+  }
+  /**
+   * Dismiss navigation
+   */
+  navigationDismiss(): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Dismiss navigation
+      this.chn.emit('navigation:dismiss', ( error: string | boolean ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
         resolve()
       } )
     } )
