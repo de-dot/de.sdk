@@ -324,7 +324,7 @@ export default class Handles extends EventEmitter {
    * @param journey - Route origin, waypoints, destination
    * @return - Readable stream
    */
-  navigation( journey: Journey ){
+  navigation( journey: Journey ): Promise<Stream> {
     return new Promise( ( resolve, reject ) => {
       if( !this.chn ) return
 

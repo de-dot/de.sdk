@@ -1,7 +1,12 @@
 import type { AuthCredentials, AuthOptions, AuthRequestOptions } from '../types/auth'
-import req from 'request-promise'
 
 const ACCESS_TOKEN_EXPIRY = 3.75 // in 3 minutes 45 seconds
+
+type AuthResponse = {
+  error: boolean
+  message: string
+  token: string
+}
 
 export default class Auth {
   private version: number
@@ -24,9 +29,8 @@ export default class Auth {
     this.autorefresh = options?.autorefresh || false
   }
 
-  private async request( options: AuthRequestOptions ){
+  private async request<T>( options: AuthRequestOptions ): Promise<T>{
     const rawOptions: any = {
-      url: '',
       method: 'GET',
       headers: {
         /**
@@ -36,9 +40,7 @@ export default class Auth {
          */
         'origin': this.creds.remoteOrigin,
         'x-user-agent': `De.remote/${this.version}.0`
-      },
-      json: true,
-      simple: false
+      }
     }
 
     if( this.accessToken )
@@ -48,15 +50,19 @@ export default class Auth {
       rawOptions.headers['content-type'] = 'application/json'
 
     options = { ...rawOptions, ...options }
+    if( !options.url )
+      throw new Error('Undefined request <url>')
 
-    if( !options.url ) throw new Error('Undefined request <url>')
-    options.url = `${this.baseURL}/v${this.version}/${options.url.replace(/^\//, '')}`
-
-    // console.log( options )
-    return await req( options )
+    console.log('Auth request', `${this.baseURL}/v${this.version}/${options.url.replace(/^\//, '')}`, options )
+    
+    const
+    fetch = ( await import('node-fetch') ).default,
+    response = await fetch(`${this.baseURL}/v${this.version}/${options.url.replace(/^\//, '')}`, options )
+    
+    return await response.json() as T
   }
 
-  async getToken(){
+  async getToken(): Promise<string>{
     const
     { workspace, cid, secret } = this.creds,
     options: AuthRequestOptions = {
@@ -64,7 +70,7 @@ export default class Auth {
       method: 'POST',
       body: this.creds
     },
-    { error, message, token } = await this.request( options )
+    { error, message, token } = await this.request<AuthResponse>( options )
     if( error ) throw new Error( message )
 
     // Set auto-refresh token every 4 mins
@@ -88,7 +94,7 @@ export default class Auth {
         method: 'PATCH',
         body: { secret: this.creds.secret }
       },
-      { error, message, token } = await this.request( options )
+      { error, message, token } = await this.request<AuthResponse>( options )
       if( error ) throw new Error( message )
 
       // Set auto-refresh token every 4 mins

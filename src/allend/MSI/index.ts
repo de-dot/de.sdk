@@ -11,7 +11,13 @@ SANDBOX_RULES = ['allow-scripts', 'allow-same-origin'],
 REQUIRED_FEATURES = ['geolocation'],
 REGISTERED_PLUGINS: Record<string, Plugin<any>> = {}
 
-export default class Mapack extends EventEmitter {
+export interface MSIInterface {
+  controls: Controls,
+  handles: Handles,
+  plugins: Plugins
+}
+
+export default class MSI extends EventEmitter {
   private isDev: boolean
   private baseURL: string
   private isConnected: boolean
@@ -61,6 +67,7 @@ export default class Mapack extends EventEmitter {
     })
     .on('error', ( error: Error | string ) => this.emit('error', typeof error == 'object' ? error : new Error( error ) ) )
     .on('ready', () => {
+      console.log('Ready by ready-event')
       this.emit('ready')
       this.emit('loaded', this.chn )
     })
@@ -103,7 +110,7 @@ export default class Mapack extends EventEmitter {
    * Initiate embedding of gateway into current UI by 
    * check network and remote gateway availability.
    */
-  load(){
+  load(): Promise<MSIInterface> {
     return new Promise( ( resolve, reject ) => {
       const initializeAPI = ( chn: IOF ) => {
         const

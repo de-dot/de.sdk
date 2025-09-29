@@ -84,9 +84,9 @@ export type AnimatedRouteOptions = AnimatedRouteNativeMethods | {
 
 export type Journey = {
   routeId: string | number
-  origin?: Waypoint
-  destination?: Waypoint
-  waypoints?: Waypoint[]
+  origin?: MapWaypoint
+  destination?: MapWaypoint
+  waypoints?: MapWaypoint[]
   options?: RouteOptions
 }
 export type ActiveDirection = {
@@ -219,16 +219,16 @@ export type MapWaypoint = {
 export type Entity = {
   id: string
   status: 'ACTIVE' | 'BUSY'
-  level: '1H' | '2H' | '3H'
-  location: GPSLocation
+  grade: '1H' | '2H' | '3H'
+  currentLocation: GPSLocation
   static?: boolean
   type: 'moto' | 'car' | 'bike' | 'truck' | 'plane' | 'ship' | 'restaurant' | 'hotel' | 'store' | 'office' | 'warehouse'
 }
 export type EntitySpecs = {
   id: string
   status: 'ACTIVE' | 'BUSY'
-  level: '1H' | '2H' | '3H'
-  location: GPSLocation
+  grade: '1H' | '2H' | '3H'
+  currentLocation: GPSLocation
   static?: boolean
   type: 'moto' | 'car' | 'bike' | 'truck' | 'plane' | 'ship' | 'restaurant' | 'hotel' | 'store' | 'office' | 'warehouse'
 }
