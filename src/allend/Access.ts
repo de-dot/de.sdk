@@ -18,7 +18,7 @@ export default class Access {
     this.baseURL = options.env === 'prod' ? 'https://api.dedot.com' : 'http://api.dedot.io:24800'
   }
 
-  async request<Response>( options: HTTPRequestOptions ): Promise<Response> {
+  async request<Response>({ url, ...options }: HTTPRequestOptions ): Promise<Response> {
     const rawOptions: any = {
       method: 'GET',
       headers: {
@@ -37,7 +37,8 @@ export default class Access {
 
     if( options.body ){
       rawOptions.headers['content-type'] = 'application/json'
-      options.body = JSON.stringify( options.body )
+      if( typeof options.body === 'object' )
+        options.body = JSON.stringify( options.body )
     }
 
     if( typeof options.headers == 'object' )
@@ -48,8 +49,7 @@ export default class Access {
 
     options = { ...rawOptions, ...options }
 
-    if( !options.url ) throw new Error('Undefined request <url>')
-    const url = `${this.baseURL}/v${this.version}/${options.url.replace(/^\//, '')}`
+    url = `${this.baseURL}/v${this.version}/${url.replace(/^\//, '')}`
 
     // Support fetch for in both node & browser environment
     let fetch = globalThis?.window && globalThis?.fetch

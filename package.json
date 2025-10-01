@@ -28,8 +28,8 @@
   },
   "dependencies": {
     "events": "^3.3.0",
-    "node-fetch": "2.6.1",
     "iframe.io": "^1.1.0",
+    "node-fetch": "2.6.1",
     "socket.io-client": "^4.6.1"
   },
   "devDependencies": {
