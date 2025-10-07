@@ -151,7 +151,7 @@ npm install @de./sdk
 ### CDN Installation
 
 ```html
-<script src="https://cdn.dedot.io/sdk/v2/de.sdk.min.js"></script>
+<script src="https://cdn.dedot.io/sdk/v2/dedot.min.js"></script>
 ```
 
 ### Basic Initialization
@@ -163,8 +163,8 @@ import De from '@de./sdk';
 const msi = new De.MSI({
   element: 'map-container',        // DOM element ID
   accessToken: 'your-access-token',
-  workspace: 'your-workspace-id',
-  env: 'prod'                      // or 'dev'
+  env: 'prod',                     // or 'dev'
+  version: 1                       // API version (optional)
 });
 
 // Load and get access to all components
@@ -183,16 +183,16 @@ const access = new De.Access({
   workspace: 'your-workspace-id',
   accessToken: 'your-access-token',
   remoteOrigin: window.location.origin,
-  env: 'prod',
-  version: 1
+  env: 'prod',                     // 'dev' | 'prod'
+  version: 1                       // API version (optional)
 });
 
 // 2. Initialize MSI for map interface
 const msi = new De.MSI({
   element: 'map-container',
   accessToken: 'your-access-token',
-  workspace: 'your-workspace-id',
-  env: 'prod'
+  env: 'prod',
+  version: 1
 });
 
 // 3. Load MSI components
@@ -215,15 +215,16 @@ const { Client, Order, Event } = De.DClient;
 interface MapOptions {
   element: string;              // Required: DOM element ID
   accessToken: string;          // Required: Authentication token
-  workspace?: string;           // Workspace identifier
   env?: 'dev' | 'prod';        // Environment (default: 'prod')
-  
-  // Optional map settings
-  style?: MapLayerStyle;        // Initial map style
-  center?: Coordinates;         // Initial map center
-  zoom?: number;                // Initial zoom level (0-22)
-  bearing?: number;             // Map rotation (0-360)
-  pitch?: number;               // 3D tilt (0-60)
+  version?: number;             // API version (default: 1)
+}
+
+interface AccessOptions {
+  workspace: string;            // Required: Workspace identifier
+  accessToken: string;          // Required: Authentication token
+  remoteOrigin?: string;        // Optional: Origin for CORS
+  env?: 'dev' | 'prod';        // Environment (default: 'prod')
+  version?: number;             // API version (default: 1)
 }
 ```
 
@@ -234,28 +235,29 @@ interface MapOptions {
 const msi = new De.MSI({
   element: 'map-container',
   accessToken: 'your-token',
-  workspace: 'your-workspace'
+  env: 'prod'
 });
 
 const { controls, handles } = await msi.load();
 
 // Set delivery route
 await handles.pickupPoint(
-  [40.7128, -74.0060],
-  { label: 'Warehouse A', description: '123 Main St' }
+  { lng: -74.0060, lat: 40.7128 },
+  { label: 'Warehouse A', duration: 5, unit: 'min' }
 );
 
 await handles.dropoffPoint(
-  [40.7580, -73.9855],
-  { label: 'Customer', description: '456 Park Ave' }
+  { lng: -73.9855, lat: 40.7580 },
+  { label: 'Customer' }
 );
 
 // Track delivery vehicle
 const vehicleStream = handles.nearby([{
   id: 'vehicle-1',
-  type: 'delivery-van',
-  position: [40.7200, -74.0050],
-  caption: { label: 'Driver: John Doe' }
+  type: 'car',
+  status: 'ACTIVE',
+  grade: '2H',
+  currentLocation: { lng: -74.0050, lat: 40.7200 }
 }]);
 
 console.log('Delivery tracking active!');
@@ -429,7 +431,7 @@ Change map appearance.
 
 ```typescript
 await controls.setMapStyle('dark');
-// Options: 'streets' | 'satellite' | 'dark' | 'light'
+// Options: 'streets' | 'outdoors' | 'light' | 'dark' | 'satellite'
 ```
 
 #### Search & Geocoding
@@ -451,11 +453,9 @@ Get details of a search result.
 const place = await controls.searchSelect(0);
 console.log(place);
 // {
-//   id: 'place-xyz',
 //   name: 'Starbucks',
-//   coordinates: [lat, lng],
-//   address: '123 Main St, New York, NY',
-//   category: 'cafe'
+//   location: { lng: -73.985428, lat: 40.748817 },
+//   address: '123 Main St, New York, NY'
 // }
 ```
 
@@ -465,7 +465,7 @@ Get coordinates from place name (geocoding).
 
 ```typescript
 const coords = await controls.resolvePlace('Empire State Building');
-// Returns: [40.748817, -73.985428]
+// Returns: { lng: -73.985428, lat: 40.748817 }
 ```
 
 **`resolveCoordinates(coords: Coordinates): Promise<any | null>`**
@@ -473,7 +473,7 @@ const coords = await controls.resolvePlace('Empire State Building');
 Get place details from coordinates (reverse geocoding).
 
 ```typescript
-const place = await controls.resolveCoordinates([40.7128, -74.0060]);
+const place = await controls.resolveCoordinates({ lng: -74.0060, lat: 40.7128 });
 console.log(place);
 // {
 //   name: 'Lower Manhattan',
@@ -491,12 +491,12 @@ Enable interactive location picker.
 
 ```typescript
 // Enable with initial position
-await controls.enableDragPickLocation([40.7128, -74.0060]);
+await controls.enableDragPickLocation({ lng: -74.0060, lat: 40.7128 });
 
-// Listen for picked location (using handles)
-handles.onPickLocation((location) => {
+// Listen for picked location
+controls.on('pick:location', (location) => {
   console.log('User picked:', location.coordinates);
-  console.log('Address:', location.address);
+  console.log('Point:', location.point);
 });
 
 // Disable when done
@@ -505,13 +505,24 @@ await controls.disableDragPickLocation();
 
 **`setDragPickContent(type: DragPickContentType, content: DragPickContent): Promise<void>`**
 
-Customize the drag picker appearance.
+Customize the drag picker content display.
 
 ```typescript
-await controls.setDragPickContent('custom', {
-  icon: 'pin',
-  color: '#FF6B6B',
-  size: 40
+// Show duration
+await controls.setDragPickContent('duration', {
+  time: 15,
+  unit: 'min'
+});
+
+// Show distance
+await controls.setDragPickContent('distance', {
+  distance: 5.2,
+  unit: 'km'
+});
+
+// Show preloader
+await controls.setDragPickContent('preloader', {
+  preloader: true
 });
 ```
 
@@ -525,35 +536,84 @@ Create a complete route with origin, waypoints, and destination.
 await controls.setRoute({
   routeId: 'delivery-route-1',
   origin: {
-    coords: [40.7128, -74.0060],
+    coords: { lng: -74.0060, lat: 40.7128 },
     caption: {
       label: 'Warehouse',
-      sublabel: 'Brooklyn Distribution Center',
-      description: '123 Industrial Blvd'
+      duration: 5,
+      unit: 'min'
     }
   },
   destination: {
-    coords: [40.7580, -73.9855],
+    coords: { lng: -73.9855, lat: 40.7580 },
     caption: {
       label: 'Customer',
-      sublabel: 'John Smith',
-      description: '456 Park Ave, Apt 12B'
+      duration: 15,
+      unit: 'min'
     }
   },
   waypoints: [
     {
-      coords: [40.7489, -73.9680],
+      coords: { lng: -73.9680, lat: 40.7489 },
       caption: { label: 'Stop 1: Package Pickup' },
       index: 0
     }
   ],
   options: {
-    mode: 'driving',
-    avoidTolls: false,
-    avoidHighways: false,
-    optimize: true
+    mode: 'navigation',
+    profile: 'driving-traffic',
+    unit: 'metric',
+    preference: 'TRAFFIC_AWARE',
+    animation: 'dot:flow'
   }
 });
+```
+
+**Route Options Explained:**
+
+```typescript
+interface RouteOptions {
+  id?: string | number;
+  mode?: 'default' | 'navigation';
+  
+  // Profile determines routing algorithm
+  profile?: 'driving-traffic'  // Real-time traffic (recommended)
+    | 'driving'                 // Standard driving
+    | 'cycling'                 // Bicycle routes
+    | 'biking'                  // Bike paths
+    | 'walking'                 // Pedestrian routes
+    | 'transit';                // Public transport
+  
+  unit?: 'metric' | 'imperial';
+  
+  // Traffic preference
+  preference?: 'TRAFFIC_AWARE'    // Use real-time traffic
+    | 'TRAFFIC_UNAWARE';          // Ignore traffic
+  
+  pointless?: boolean;  // Hide waypoint markers
+  styles?: any;         // Custom route styling
+  
+  // Animated route options
+  animation?: 'dot:flow'         // Flowing dots
+    | 'dot:fade'                 // Fading dots
+    | 'dot:pulse'                // Pulsing dots
+    | 'dot:directional'          // Directional dots
+    | 'solid:flow'               // Flowing solid line
+    | 'solid:fade'               // Fading solid line
+    | 'solid:pulse'              // Pulsing solid line
+    | 'solid:directional'        // Directional solid line
+    | AnimatedRouteCustomOptions;
+}
+
+// Custom animation options
+interface AnimatedRouteCustomOptions {
+  handler?: new (engine: Engine, path: Coordinates[], rules?: AnimatedRouteRules) => AnimatedRoute;
+  method?: string;
+  rules?: {
+    styles?: any;
+    speed?: number;        // pixels per frame
+    fadeLength?: number;   // fade effect length in pixels
+  };
+}
 ```
 
 **`setRouteOrigin(routeId: string, point: MapWaypoint): Promise<void>`**
@@ -626,7 +686,7 @@ Fit multiple routes in view simultaneously.
 
 ```typescript
 await controls.fitRoutesBounds({
-  routeIds: ['route-1', 'route-2', 'route-3'],
+  includes: ['route-1', 'route-2', 'route-3'],
   margin: 80
 });
 ```
@@ -641,15 +701,18 @@ Display multiple entities (vehicles, warehouses, etc.) on map.
 await controls.showNearby([
   {
     id: 'vehicle-1',
-    type: 'delivery-van',
-    position: [40.7128, -74.0060],
-    caption: { label: 'Van #101', sublabel: 'Driver: John' }
+    type: 'car',
+    status: 'ACTIVE',
+    grade: '2H',
+    currentLocation: { lng: -74.0060, lat: 40.7128 }
   },
   {
     id: 'warehouse-1',
     type: 'warehouse',
-    position: [40.7200, -74.0100],
-    caption: { label: 'Distribution Center A' }
+    status: 'ACTIVE',
+    grade: '1H',
+    currentLocation: { lng: -74.0100, lat: 40.7200 },
+    static: true
   }
 ]);
 ```
@@ -661,9 +724,10 @@ Add single entity to map.
 ```typescript
 await controls.addNearbyEntity({
   id: 'truck-5',
-  type: 'freight-truck',
-  position: [40.7300, -74.0200],
-  caption: { label: 'Truck #505', description: '18-wheeler' }
+  type: 'truck',
+  status: 'BUSY',
+  grade: '3H',
+  currentLocation: { lng: -74.0200, lat: 40.7300 }
 });
 ```
 
@@ -674,7 +738,8 @@ Update entity's position (for real-time tracking).
 ```typescript
 await controls.moveNearbyEntity({
   id: 'vehicle-1',
-  position: [40.7130, -74.0065]
+  position: { lng: -74.0065, lat: 40.7130, heading: 90 },
+  caption: { label: 'Van #101', duration: 5, unit: 'min' }
 });
 ```
 
@@ -990,11 +1055,11 @@ Set pickup location with visual marker.
 
 ```typescript
 await handles.pickupPoint(
-  [40.7128, -74.0060],
+  { lng: -74.0060, lat: 40.7128 },
   {
     label: 'Warehouse A',
-    sublabel: 'Brooklyn Distribution Center',
-    description: '123 Industrial Blvd'
+    duration: 5,
+    unit: 'min'
   }
 );
 ```
@@ -1005,11 +1070,11 @@ Set delivery destination with marker.
 
 ```typescript
 await handles.dropoffPoint(
-  [40.7580, -73.9855],
+  { lng: -73.9855, lat: 40.7580 },
   {
     label: 'Customer Address',
-    sublabel: 'John Smith',
-    description: '456 Park Ave, Apt 12B - Use front entrance'
+    duration: 15,
+    unit: 'min'
   }
 );
 ```
@@ -3924,109 +3989,352 @@ describe('De. SDK - Integration Tests', () => {
 ### Core Types
 
 ```typescript
-// Coordinates
-type Coordinates = [number, number]; // [latitude, longitude]
+// HTTP Request Types
+interface HTTPRequestOptions {
+  url: string;
+  method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
+  headers?: { [index: string]: string };
+  body?: any;
+}
 
-interface RTLocation {
-  latitude: number;
-  longitude: number;
-  accuracy: number;      // meters
-  heading?: number;      // degrees (0-360)
-  speed?: number;        // meters/second
+interface HTTPResponse {
+  error: boolean;
+  message?: string;
+}
+
+// Coordinates
+type LngLat = [number, number]; // [longitude, latitude]
+
+interface Coordinates {
+  lng: number;  // longitude
+  lat: number;  // latitude
+}
+
+interface RTLocation extends Coordinates {
+  heading?: number;  // degrees (0-360)
+}
+
+interface PickedLocation {
+  point: {
+    x: number;
+    y: number;
+  };
+  coordinates: Coordinates;
+}
+
+interface ActivePosition {
+  id: string;
+  position: RTLocation;
+  caption?: Caption;
 }
 
 // Captions
 interface Caption {
-  label: string;
-  sublabel?: string;
-  description?: string;
+  duration?: number;
+  unit?: string;
+  label?: string;
 }
 
 // Waypoints
 interface MapWaypoint {
+  index?: number;
   coords: Coordinates;
   caption?: Caption;
-  index?: number;
 }
 
-// Journey
+interface Waypoint {
+  no: number;
+  type: 'pickup' | 'dropoff';
+  description: string;
+  coordinates: Coordinates;
+  address?: string;
+  contact: {
+    type: string;
+    reference: string;
+    phone?: string;
+    email?: string;
+  };
+}
+
+type WaypointIndex = 'origin' | 'destination' | number;
+
+interface WaypointOptions {
+  no?: number;
+  type?: 'pickup' | 'dropoff';
+  description?: string;
+  coordinates?: Coordinates;
+  address?: string;
+  'contact.type'?: string;
+  'contact.reference'?: string;
+  'contact.phone'?: string;
+  'contact.email'?: string;
+}
+
+// Journey & Routes
 interface Journey {
-  routeId: string;
-  origin: MapWaypoint | RTLocation;
-  destination: MapWaypoint;
+  routeId: string | number;
+  origin?: MapWaypoint;
+  destination?: MapWaypoint;
   waypoints?: MapWaypoint[];
   options?: RouteOptions;
 }
 
+interface ActiveDirection {
+  routeId: string | number;
+  profile: string;
+  origin?: Coordinates;
+  destination?: Coordinates;
+  waypoints: Coordinates[];
+  route: any;
+}
+
+type RouteID = string | number;
+
+interface RoutesFitBoundsOptions {
+  includes?: RouteID[];
+  margin?: number;
+}
+
 interface RouteOptions {
-  mode?: 'driving' | 'walking' | 'cycling';
-  avoidTolls?: boolean;
-  avoidHighways?: boolean;
-  optimize?: boolean;
-  announceInstructions?: boolean;
+  id?: string | number;
+  mode?: 'default' | 'navigation';
+  profile?: 'driving-traffic' | 'driving' | 'cycling' | 'biking' | 'walking' | 'transit';
+  unit?: 'metric' | 'imperial';
+  preference?: 'TRAFFIC_AWARE' | 'TRAFFIC_UNAWARE';
+  pointless?: boolean;
+  styles?: any;
+  animation?: AnimatedRouteOptions;
+}
+
+// Animated Routes
+type AnimatedRouteNativePathType = 'dot' | 'solid';
+
+type AnimatedRouteNativeMethods = 
+  | 'dot:flow'
+  | 'dot:fade'
+  | 'dot:pulse'
+  | 'dot:directional'
+  | 'solid:flow'
+  | 'solid:fade'
+  | 'solid:pulse'
+  | 'solid:directional';
+
+interface AnimatedRouteRules {
+  styles?: any;
+  speed?: number;        // pixels per frame
+  fadeLength?: number;   // length of fade effect in pixels
+}
+
+interface AnimatedRoute {
+  key: number | null;
+  currentOffset: number;
+  rules: Required<AnimatedRouteRules>;
+  startTime?: number;
+  polyline?: any;
+  engine: any;
+  path: Coordinates[];
+  
+  create(pathType?: AnimatedRouteNativePathType): void;
+  apply: Record<string, () => void>;
+  stop(): void;
+  remove(): void;
+}
+
+type AnimatedRouteOptions = AnimatedRouteNativeMethods | {
+  handler?: new (engine: Engine, path: Coordinates[], rules?: AnimatedRouteRules) => AnimatedRoute;
+  method?: string;
+  rules?: AnimatedRouteRules;
+};
+
+// Search
+interface SearchPlace {
+  name: string;
+  location: Coordinates;
+  address: string;
 }
 
 // Entities
 interface Entity {
   id: string;
-  type: string;
-  position: Coordinates | RTLocation;
-  caption?: Caption;
-  metadata?: Record<string, any>;
+  status: 'ACTIVE' | 'BUSY';
+  grade: '1H' | '2H' | '3H';
+  currentLocation: RTLocation;
+  static?: boolean;
+  type: 'moto' | 'car' | 'bike' | 'truck' | 'plane' | 'ship' | 'restaurant' | 'hotel' | 'store' | 'office' | 'warehouse';
 }
 
 interface EntitySpecs {
-  id?: string;
-  type: string;
-  position?: Coordinates;
-  radius?: number;
-  coordinates?: Coordinates;
-  label?: string;
-  caption?: Caption;
-}
-
-interface ActivePosition {
   id: string;
-  position: Coordinates;
-}
-
-// Locations
-interface PickedLocation {
-  coordinates: Coordinates;
-  address?: string;
-  placeName?: string;
-}
-
-interface SearchPlace {
-  id: string;
-  name: string;
-  coordinates: Coordinates;
-  address?: string;
-  category?: string;
+  status: 'ACTIVE' | 'BUSY';
+  grade: '1H' | '2H' | '3H';
+  currentLocation: RTLocation;
+  static?: boolean;
+  type: 'moto' | 'car' | 'bike' | 'truck' | 'plane' | 'ship' | 'restaurant' | 'hotel' | 'store' | 'office' | 'warehouse';
 }
 
 // Map
-type MapLayerStyle = 'streets' | 'satellite' | 'dark' | 'light';
-
-interface UserLocationOptions {
-  accuracy?: 'high' | 'medium' | 'low';
-  updateInterval?: number;  // milliseconds
-  showAccuracyCircle?: boolean;
+interface MapOptions {
+  element: string;
+  accessToken: string;
+  version?: number;
+  env?: 'dev' | 'prod';
 }
 
-interface RoutesFitBoundsOptions {
-  routeIds: string[];
-  margin?: number;
+type MapLayerStyle = 'streets' | 'outdoors' | 'light' | 'dark' | 'satellite';
+
+// User Location
+interface UserLocationOptions {
+  // Base point styling options
+  borderRadius?: number;
+  borderColor?: string;
+  borderOpacity?: number;
+  dotColor?: string;
+  showInnerDot?: boolean;
+  noRing?: boolean;
+  
+  // User location specific options
+  showDirectionArrow?: boolean;
+  arrowColor?: string;
+  arrowSize?: number;
+  pulseAnimation?: boolean;
+  accuracyCircle?: boolean;
+  accuracyColor?: string;
+  accuracyOpacity?: number;
+  
+  // Callbacks
+  onLocationUpdate?: (location: RTLocation) => void;
+  onLocationError?: (error: GeolocationPositionError) => void;
 }
 
 // Drag Pick
-type DragPickContentType = 'marker' | 'pin' | 'custom' | 'html';
+interface DragPickOptions {
+  snapToRoad?: boolean;
+  pinPoints?: boolean;
+  pointOptions?: CustomPointOptions;
+}
+
+type DragPickContentType = 'duration' | 'distance' | 'preloader';
 
 interface DragPickContent {
-  icon?: string;
-  color?: string;
-  size?: number;
-  html?: string;
+  time?: number;
+  unit?: 'min' | 'sec' | 'hr' | 'km' | 'mi' | 'm';
+  distance?: number;
+  preloader?: boolean;
+}
+
+type DragPickEvent = 'dragstart' | 'dragend' | 'zoom_changed' | 'idle';
+
+interface DragPickInterface {
+  enable(origin?: Coordinates): void;
+  disable(): void;
+  content(type: DragPickContentType, content: DragPickContent): void;
+}
+
+// Package
+interface Package {
+  waypointNo: number;
+  careLevel: number;
+  category: string;
+  weight: number;
+  note?: string;
+}
+
+interface PackageOptions {
+  waypointNo?: number;
+  careLevel?: number;
+  category?: string;
+  weight?: number;
+  note?: string;
+}
+
+// Order Service
+type PaymentMode = 'cash' | 'card' | 'momo' | 'wigo';
+
+interface OrderService {
+  fees: {
+    total: {
+      amount: number;
+      currency: string;
+    };
+    tax: number;
+    discount: number;
+  };
+  payment: {
+    mode: PaymentMode;
+    paid: boolean;
+  };
+  xpress: string;
+}
+
+interface OrderServiceOptions {
+  'fees.total.amount'?: number;
+  'fees.total.currency'?: string;
+  'fees.tax'?: string;
+  'fees.discount'?: string;
+  'payment.mode'?: PaymentMode;
+  'payment.option'?: string;
+  'payment.paid'?: boolean;
+  xpress?: string;
+}
+
+interface OrderOperator {}
+
+interface OrderStage {
+  current: string;
+  status: string;
+}
+
+// Messages
+interface Message {
+  type: 'text' | 'location' | 'media';
+  sender: string;
+  content: string;
+  timestamp: string;
+}
+
+interface Peer {
+  utype: string;
+  id: string;
+}
+```
+
+### Authentication Types
+
+```typescript
+interface AuthOptions {
+  env?: 'dev' | 'prod';
+  version?: number;
+  autorefresh?: boolean;
+  onNewToken?: (token: string) => void;
+}
+
+interface AuthCredentials {
+  workspace: string;
+  remoteOrigin: string;
+  cid: string;
+  secret: string;
+}
+
+interface SocketAuthCredentials {
+  utype: string;
+  id: string;
+  remoteOrigin: string;
+  accessToken: string;
+}
+
+interface AuthRequestOptions {
+  url: string;
+  method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
+  headers?: { [index: string]: string };
+  body?: any;
+}
+
+interface AccessOptions {
+  env?: 'dev' | 'prod';
+  version?: number;
+  workspace: string;
+  accessToken: string;
+  remoteOrigin?: string;
 }
 ```
 
