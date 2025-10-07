@@ -145,20 +145,19 @@ Your App ← Controls/Handles ← Map Events
 ### NPM Installation
 
 ```bash
-npm install @dedot/sdk iframe.io
+npm install @de./sdk
 ```
 
 ### CDN Installation
 
 ```html
-<script src="https://cdn.dedot.io/sdk/v2/dedot.min.js"></script>
-<script src="https://cdn.dedot.io/iframe.io/v1/iframe.io.min.js"></script>
+<script src="https://cdn.dedot.io/sdk/v2/de.sdk.min.js"></script>
 ```
 
 ### Basic Initialization
 
 ```typescript
-import De from '@dedot/sdk';
+import De from '@de./sdk';
 
 // Initialize MSI for map visualization
 const msi = new De.MSI({
@@ -177,7 +176,7 @@ console.log('De. SDK initialized successfully!');
 ### Full Stack Setup
 
 ```typescript
-import De from '@dedot/sdk';
+import De from '@de./sdk';
 
 // 1. Initialize Access for API operations
 const access = new De.Access({
@@ -1468,9 +1467,9 @@ class DeliveryService {
 Client-side operations for orders, events, and customer management (separate from MSI).
 
 ```typescript
-import De from '@dedot/sdk';
+import { DClient } from '@de./sdk';
 
-const { Client, Order, Event } = De.DClient;
+const { Client, Order, Event } = DClient;
 
 // Client management
 const client = new Client(accessConfig);
@@ -1491,7 +1490,7 @@ const event = new Event(accessConfig);
 ### Example 1: Complete E-commerce Delivery Integration
 
 ```typescript
-import De from '@dedot/sdk';
+import De from '@de./sdk';
 
 class EcommerceDeliveryIntegration {
   private msi: De.MSI;
@@ -2725,7 +2724,7 @@ const analyticsPlugin = (hooks, options: AnalyticsPluginOptions) => {
 ### Complete Plugin Template
 
 ```typescript
-import type { Plugin, PluginHook } from '@dedot/sdk';
+import type { Plugin, PluginHook } from '@de./sdk';
 
 /**
  * Plugin Configuration Options
@@ -3609,7 +3608,7 @@ ws.connect('wss://api.dedot.io/fleet/live');
 
 ```typescript
 import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
-import De from '@dedot/sdk';
+import De from '@de./sdk';
 
 describe('De. SDK - MSI', () => {
   let msi: De.MSI;
