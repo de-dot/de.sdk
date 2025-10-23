@@ -1,3 +1,4 @@
+import { API_SERVER_BASEURL } from '../baseUrl'
 import type { AuthCredentials, AuthOptions, AuthRequestOptions } from '../types/auth'
 
 const ACCESS_TOKEN_EXPIRY = 3.75 // in 3 minutes 45 seconds
@@ -27,13 +28,12 @@ export default class Auth {
     if( !creds.secret ) throw new Error('Undefined Connector Secret. Check https://doc.dedot.io/sdk/auth')
 
     this.creds = creds
-    this.options = options || {}
-    this.version = options?.version || 1
-    this.baseURL = options?.env !== 'dev'
-                      ? 'https://api.dedot.io'
-                      : 'http://api.dedot.io:24800'
-    this.autorefresh = options?.autorefresh || false
-    this.onNewToken = options?.onNewToken
+    this.options = options || { env: 'dev' }
+    
+    this.version = this.options.version || 1
+    this.baseURL = API_SERVER_BASEURL[ this.options.env || 'dev' ]
+    this.autorefresh = this.options.autorefresh || false
+    this.onNewToken = this.options.onNewToken
   }
 
   private async request<T>({ url, ...options }: AuthRequestOptions ): Promise<T> {

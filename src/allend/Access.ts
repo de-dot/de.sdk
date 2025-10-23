@@ -1,5 +1,6 @@
 import type { AccessOptions } from '../types/access'
 import type { HTTPRequestOptions } from '../types'
+import { API_SERVER_BASEURL } from '../baseUrl'
 
 export default class Access {
   private version: number
@@ -15,7 +16,7 @@ export default class Access {
     this.version = options.version || 1
     this.accessToken = options.accessToken
     this.remoteOrigin = options.remoteOrigin
-    this.baseURL = options.env === 'prod' ? 'https://api.dedot.com' : 'http://api.dedot.io:24800'
+    this.baseURL = API_SERVER_BASEURL[ options.env || 'dev' ]
   }
 
   async request<Response>({ url, ...options }: HTTPRequestOptions ): Promise<Response> {
