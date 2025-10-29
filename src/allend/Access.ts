@@ -29,7 +29,7 @@ export default class Access {
          * NOTE: Later replace by latest SDK version
          */
         origin: this.remoteOrigin,
-        'x-user-agent': `De.remote/${this.version}.0`
+        'de-user-agent': `De.remote/${this.version}.0`
       }
     }
 

@@ -1451,8 +1451,8 @@ const data = await access.request({
   url: '/analytics/reports',
   method: 'GET',
   headers: {
-    'X-Report-Format': 'json',
-    'X-Include-Metrics': 'true'
+    'De-Report-Format': 'json',
+    'De-Include-Metrics': 'true'
   }
 });
 ```
