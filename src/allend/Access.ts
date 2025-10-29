@@ -10,7 +10,7 @@ export default class Access {
 
   constructor( options: AccessOptions ){
     if( !options ) throw new Error('Undefined Access Configuration')
-    if( !options.workspace ) throw new Error('Undefined Workspace Reference. Check https://doc.dedot.io/sdk/auth')
+    if( !options.context ) throw new Error('Undefined Context Reference. Check https://doc.dedot.io/sdk/auth')
     if( !options.accessToken ) throw new Error('Undefined Access Token. Check https://doc.dedot.io/sdk/auth')
     
     this.version = options.version || 1
