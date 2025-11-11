@@ -1,22 +1,32 @@
 import type { AccessOptions } from '../types/access'
 import type { HTTPRequestOptions } from '../types'
-import { API_SERVER_BASEURL } from '../baseUrl'
+import { API_SERVER_BASEURL, ASI_SERVER_BASEURL } from '../baseUrl'
 
-export default class Access {
+type AccessType = 'API' | 'ASI'
+
+const USER_ACCOUNT_SERVICE = 'De.API'
+
+export default class AccessManager {
+  private atype: AccessType
   private version: number
+  private platform: AccessOptions['platform']
   private baseURL: string
   protected accessToken?: string
   protected remoteOrigin?: string
 
-  constructor( options: AccessOptions ){
+  constructor( options: AccessOptions, atype: AccessType ){
     if( !options ) throw new Error('Undefined Access Configuration')
     if( !options.context ) throw new Error('Undefined Context Reference. Check https://doc.dedot.io/sdk/auth')
     if( !options.accessToken ) throw new Error('Undefined Access Token. Check https://doc.dedot.io/sdk/auth')
     
+    this.atype = atype
     this.version = options.version || 1
+    this.platform = options.platform || 'proxy'
     this.accessToken = options.accessToken
     this.remoteOrigin = options.remoteOrigin
-    this.baseURL = API_SERVER_BASEURL[ options.env || 'dev' ]
+    this.baseURL = this.atype === 'ASI'
+              ? ASI_SERVER_BASEURL[ options.env || 'dev' ] 
+              : API_SERVER_BASEURL[ options.env || 'dev' ]
   }
 
   async request<Response>({ url, ...options }: HTTPRequestOptions ): Promise<Response> {
@@ -29,9 +39,12 @@ export default class Access {
          * NOTE: Later replace by latest SDK version
          */
         origin: this.remoteOrigin,
-        'de-user-agent': `De.remote/${this.version}.0`
+        'de-user-agent': `De.${this.platform}/${this.version}.0`
       }
     }
+
+    if( this.atype === 'ASI' )
+      rawOptions.headers['de-auth-service'] = USER_ACCOUNT_SERVICE
 
     if( this.accessToken )
       rawOptions.headers.authorization = `Bearer ${this.accessToken}`
