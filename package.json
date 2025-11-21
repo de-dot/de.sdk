@@ -1,16 +1,23 @@
 {
-  "name": "de.sdk",
-  "version": "0.0.2",
-  "description": "Delidev SDK pack",
+  "name": "@de./sdk",
+  "version": "1.0.0",
+  "description": "Complete SDK pack for MSI (Map Service Interface), IoTClient and DClient services",
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist/",
-    "src/"
+    "src/",
+    "README.md"
   ],
   "exports": {
     ".": {
       "import": "./dist/index.js",
-      "require": "./dist/index.js"
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/types/index.d.ts"
     }
   },
   "author": "SCOREX Corporation",
@@ -18,7 +25,8 @@
   "scripts": {
     "build:tsc": "rimraf ./dist && tsc",
     "build:webpack": "WEBPACK_ENV=build webpack",
-    "compile": "yarn build:tsc && yarn build:webpack",
+    "build:copy-types": "mkdir -p dist/types && cp -r src/types/* dist/types/",
+    "compile": "yarn build:tsc && yarn build:webpack && yarn build:copy-types",
     "prepack": "yarn run compile",
     "test": "Echo 'Error: No test specified' && exit 1",
     "test:auth": "yarn build:tsc && jest test/auth.test.js",
