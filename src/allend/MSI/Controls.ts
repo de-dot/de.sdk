@@ -5,6 +5,7 @@ import type {
   Caption,
   MapOptions,
   SearchPlace,
+  SearchPlaceSuggestion,
   EntitySpecs,
   ActivePosition,
   UserLocationOptions,
@@ -13,7 +14,8 @@ import type {
   MapWaypoint,
   Journey,
   RouteOptions,
-  RoutesFitBoundsOptions
+  RoutesFitBoundsOptions,
+  LngLat
 } from '../../types'
 import IOF, { Listener } from 'iframe.io'
 
@@ -263,7 +265,7 @@ export default class Controls {
    * @param input - Place in string
    * @return - Autocompletion list matched places
    */
-  searchQuery( input: string ): Promise<string[]> {
+  searchQuery( input: string ): Promise<SearchPlaceSuggestion[]> {
     return new Promise( ( resolve, reject ) => {
       // Set timeout
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
@@ -396,6 +398,42 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Set route
       this.chn.emit('set:route', journey, ( error: string | boolean ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve()
+      } )
+    } )
+  }
+  /**
+   * Draw route
+   * 
+   * @param routeId - Route identifier
+   */
+  drawRoute( routeId: string, data: Array<LngLat>, options: RouteOptions ): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Draw route
+      this.chn.emit('draw:route', { routeId, data, options }, ( error: string | boolean ) => {
+        if( error ) return reject( error )
+
+        clearTimeout( timeout )
+        resolve()
+      } )
+    } )
+  }
+  /**
+   * Remove route
+   * 
+   * @param routeId - Route identifier
+   */
+  removeRoute( routeId: string ): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+      // Remove route
+      this.chn.emit('remove:route', routeId, ( error: string | boolean ) => {
         if( error ) return reject( error )
 
         clearTimeout( timeout )
