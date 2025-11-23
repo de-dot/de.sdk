@@ -1,6 +1,6 @@
 {
   "name": "@de./sdk",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Complete SDK pack for MSI (Map Service Interface), IoTClient and DClient services",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
