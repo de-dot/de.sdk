@@ -6,7 +6,7 @@ import type {
   MapOptions,
   SearchPlace,
   SearchPlaceSuggestion,
-  EntitySpecs,
+  Entity,
   ActivePosition,
   UserLocationOptions,
   DragPickContentType,
@@ -303,7 +303,7 @@ export default class Controls {
    * 
    * @param list - Array of entity specifications
    */
-  showNearby( list: EntitySpecs[] ): Promise<void> {
+  showNearby( list: Entity[] ): Promise<void> {
     return new Promise( ( resolve, reject ) => {
       // Set timeout
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
@@ -337,7 +337,7 @@ export default class Controls {
    * 
    * @param entity - Entity specification
    */
-  addNearbyEntity( entity: EntitySpecs ): Promise<void> {
+  addNearbyEntity( entity: Entity ): Promise<void> {
     return new Promise( ( resolve, reject ) => {
       // Set timeout
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
