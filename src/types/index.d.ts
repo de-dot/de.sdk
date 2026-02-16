@@ -4,9 +4,10 @@ export type HTTPRequestOptions = {
   headers?: { [index: string]: string }
   body?: any
 }
-export type HTTPResponse = {
+export type HTTPResponse<T> = {
   error: boolean
   message?: string
+  data: T
 }
 
 export type LngLat = [number, number]

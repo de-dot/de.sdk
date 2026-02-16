@@ -2,12 +2,8 @@ import type { AccessOptions } from '../../types/access'
 import type { HTTPRequestOptions, RTLocation, OrderService, HTTPResponse, Entity  } from '../../types'
 import AccessManager from '../Access'
 
-type OrderServiceResponse = HTTPResponse & {
-  orders: OrderService[]
-}
-type NearbyResponse = HTTPResponse & {
-  nearby: Entity[]
-}
+type OrderServiceResponse = HTTPResponse<{ orders: OrderService[] }>
+type NearbyResponse = HTTPResponse<{ nearby: Entity[] }>
 
 export default class Client extends AccessManager {
   private clientId: string
@@ -31,10 +27,10 @@ export default class Client extends AccessManager {
       url: `/client/${this.clientId}/orders/actives`,
       method: 'GET'
     },
-    { error, message, orders } = await this.request<OrderServiceResponse>( options )
+    { error, message, data } = await this.request<OrderServiceResponse>( options )
     if( error ) throw new Error( message )
     
-    return orders
+    return data.orders
   }
 
   async fetchOrderHistory(){
@@ -46,10 +42,10 @@ export default class Client extends AccessManager {
       url: `/client/${this.clientId}/orders/history`,
       method: 'GET'
     },
-    { error, message, orders } = await this.request<OrderServiceResponse>( options )
+    { error, message, data } = await this.request<OrderServiceResponse>( options )
     if( error ) throw new Error( message )
     
-    return orders
+    return data.orders
   }
 
   async nearby( location: RTLocation ){
@@ -68,9 +64,9 @@ export default class Client extends AccessManager {
       method: 'POST',
       body: location
     },
-    { error, message, nearby } = await this.request<NearbyResponse>( options )
+    { error, message, data } = await this.request<NearbyResponse>( options )
     if( error ) throw new Error( message )
     
-    return nearby
+    return data.nearby
   }
 }
