@@ -1,20 +1,18 @@
-import type { RTLocation , Message, Peer, OrderStage } from '../../types'
+import type { RTLocation , Message, Peer } from '../../types'
 import type { SocketAuthCredentials } from '../../types/auth'
 import type { AccessOptions } from '../../types/access'
 import io, { Socket } from 'socket.io-client'
 import AccessManager from '../Access'
+import { RTS_SERVER_BASEURL } from 'src/baseUrl'
 
-export default class Event extends AccessManager {
+export default class Realtime extends AccessManager {
   private nsp?: Socket
   private iosHost: string
 
   constructor( access: AccessOptions ){
     super( access, 'API' )
-    
     // Socket server host
-    this.iosHost = access.env == 'prod' ?
-                        'https://api.dedot.io' // Production server
-                        : 'http://api.dedot.io:24800' // Development & staging server
+    this.iosHost = RTS_SERVER_BASEURL[ access.env ]
   }
 
   connect( clientId: string ): Promise<void> {
@@ -57,20 +55,20 @@ export default class Event extends AccessManager {
     return this
   }
 
-  onRoute( fn: ( data: any ) => void ){
-    this.nsp?.on('ROUTE-CHANGE', fn )
-    return this
-  }
-  onStage( fn: ( data: OrderStage ) => void ){
-    this.nsp?.on('STAGE-CHANGE', fn )
-    return this
-  }
-  onLocation( fn: ( location: RTLocation  ) => void ){
-    this.nsp?.on('LOCATION-CHANGE', fn )
-    return this
-  }
-  onMessage( fn: ( payload: Message ) => void ){
-    this.nsp?.on('MESSAGE', fn )
-    return this
-  }
+  // onRoute( fn: ( data: any ) => void ){
+  //   this.nsp?.on('ROUTE-CHANGE', fn )
+  //   return this
+  // }
+  // onStage( fn: ( data: OrderStage ) => void ){
+  //   this.nsp?.on('STAGE-CHANGE', fn )
+  //   return this
+  // }
+  // onLocation( fn: ( location: RTLocation  ) => void ){
+  //   this.nsp?.on('LOCATION-CHANGE', fn )
+  //   return this
+  // }
+  // onMessage( fn: ( payload: Message ) => void ){
+  //   this.nsp?.on('MESSAGE', fn )
+  //   return this
+  // }
 }

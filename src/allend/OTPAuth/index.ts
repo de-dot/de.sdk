@@ -8,25 +8,23 @@ type SigninBody = {
   device?: string, // JSON string
   country?: string // ISO 3166-1 alpha-2
 }
-type SigninResponse = HTTPResponse & {
-  token: string
-}
+type SigninResponse = HTTPResponse<{ token: string }>
 
-export default class DAuth extends AccessManager {
+export default class OTPAuth extends AccessManager {
   constructor( access: AccessOptions ){
     super( access, 'ASI' )
   }
 
   /**
-   * Signin
+   * Request OTP
    */
-  async signin( body: SigninBody ): Promise<SigninResponse> {
+  async getOTP( body: SigninBody ): Promise<SigninResponse> {
     if( !body.phone )
       throw new Error('<phone> argument required')
     
     const
     options: HTTPRequestOptions = {
-      url: '/auth/signin',
+      url: '/auth/otp',
       method: 'POST',
       body
     },
