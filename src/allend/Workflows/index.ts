@@ -1,10 +1,31 @@
-import type { AccessOptions } from '../../types/access'
-import AccessManager from '../Access'
+import type Core from '../Arch'
+import type MSI from '../MSI'
+import Delivery from './Delivery'
 
-export default class Workflow extends AccessManager {
-  constructor( access: AccessOptions ){
-    super( access, 'API' )
-  }
+// ─── Config ───────────────────────────────────────────────────────────────────
 
-  // get lsp(){ return new LSPRest( this ) }
+export type WorkflowsConfig = {
+	core: Core
+	msi?: MSI
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//
+// LAYER 2 — Workflows: use-case composition, many API calls in one.
+// Sits explicitly on top of Core — the consumer passes core to it,
+// making the dependency chain visible and testable.
+//
+//   const wf = new Workflows({ core })
+//   const { jrtoken } = await wf.delivery.pickup({ clientId, from, to, packages })
+//
+// ─────────────────────────────────────────────────────────────────────────────
+
+export default class Workflows {
+	readonly delivery: Delivery
+
+	constructor({ core }: WorkflowsConfig ){
+		if( !core ) throw new Error('<core> instance required. Pass a Core instance to Workflows.')
+
+		this.delivery = new Delivery( core )
+	}
 }

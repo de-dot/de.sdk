@@ -1,7 +1,7 @@
 import type {
   Coordinates,
   RTLocation,
-  Entity,
+  MSIEntity as Entity,
   MapOptions,
   Caption,
   Journey,

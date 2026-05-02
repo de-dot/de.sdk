@@ -1,7 +1,26 @@
 import { API_SERVER_BASEURL } from '../baseUrl'
-import type { AuthCredentials, AuthOptions, AuthRequestOptions } from '../types/auth'
+import type { AuthRequestOptions } from '../types/auth'
 
 const ACCESS_TOKEN_EXPIRY = 3.75 // in 3 minutes 45 seconds
+
+// ─── Config ───────────────────────────────────────────────────────────────────
+//
+// Server-side Auth — connector credentials (cid + secret) → access token.
+// Use on the backend; never expose cid/secret to the client.
+//
+//   const auth = new Auth({ context, cid, secret, env })
+//   const token = await auth.getToken()
+
+export type AuthConfig = {
+	context: string
+	cid: string
+	secret: string
+	remoteOrigin?: string
+	env?: 'dev' | 'staging' | 'prod'
+	version?: number
+	autorefresh?: boolean
+	onNewToken?: ( token: string ) => void
+}
 
 type AuthResponse = {
   error: boolean
@@ -13,8 +32,11 @@ type AuthResponse = {
 
 export default class Auth {
   private version: number
-  private options: AuthOptions
-  protected creds: AuthCredentials
+  private env: AuthConfig['env']
+  private cid: string
+  private secret: string
+  private context: string
+  private remoteOrigin?: string
   private refreshTimer?: NodeJS.Timeout
   private autorefresh?: boolean
   private onNewToken?: (token: string) => void
@@ -22,32 +44,28 @@ export default class Auth {
   private isRotating: boolean = false
   public accessToken?: string
 
-  constructor( creds: AuthCredentials, options?: AuthOptions ){
-    if( !creds ) throw new Error('Undefined Credentials. Check https://doc.dedot.io/sdk/auth')
-    if( !creds.context ) throw new Error('Undefined Context Reference. Check https://doc.dedot.io/sdk/auth')
-    if( !creds.remoteOrigin ) throw new Error('Undefined Remote Origin. Check https://doc.dedot.io/sdk/auth')
-    if( !creds.cid ) throw new Error('Undefined Connector ID. Check https://doc.dedot.io/sdk/auth')
-    if( !creds.secret ) throw new Error('Undefined Connector Secret. Check https://doc.dedot.io/sdk/auth')
+  constructor( config: AuthConfig ){
+    if( !config )         throw new Error('Undefined config. Check https://doc.dedot.io/sdk/auth')
+    if( !config.context ) throw new Error('Undefined context. Check https://doc.dedot.io/sdk/auth')
+    if( !config.cid )     throw new Error('Undefined cid. Check https://doc.dedot.io/sdk/auth')
+    if( !config.secret )  throw new Error('Undefined secret. Check https://doc.dedot.io/sdk/auth')
 
-    this.creds = creds
-    this.options = options || { env: 'dev' }
-    
-    this.version = this.options.version || 1
-    this.baseURL = API_SERVER_BASEURL[ this.options.env || 'dev' ]
-    this.autorefresh = this.options.autorefresh || false
-    this.onNewToken = this.options.onNewToken
+    this.context      = config.context
+    this.cid          = config.cid
+    this.secret       = config.secret
+    this.remoteOrigin = config.remoteOrigin
+    this.env          = config.env || 'dev'
+    this.version      = config.version || 1
+    this.baseURL      = API_SERVER_BASEURL[ this.env ]
+    this.autorefresh  = config.autorefresh || false
+    this.onNewToken   = config.onNewToken
   }
 
   private async request<T>({ url, ...options }: AuthRequestOptions ): Promise<T> {
     const rawOptions: any = {
       method: 'GET',
       headers: {
-        /**
-         * Default User agent for SDK request calls
-         * 
-         * NOTE: Later replace by latest SDK version
-         */
-        'origin': this.creds.remoteOrigin,
+        'origin': this.remoteOrigin,
         'de-user-agent': `De.remote/${this.version}.0`
       }
     }
@@ -70,7 +88,7 @@ export default class Auth {
   }
 
   private debug( ...args: any[] ){
-    this.options?.env === 'dev' && console.debug('[Auth]', ...args )
+    this.env === 'dev' && console.debug('[Auth]', ...args )
   }
   private error( ...args: any[] ){
     console.error('[Auth]', ...args )
@@ -101,7 +119,7 @@ export default class Auth {
     options: AuthRequestOptions = {
       url: '/access/token',
       method: 'POST',
-      body: this.creds
+      body: { context: this.context, cid: this.cid, secret: this.secret, remoteOrigin: this.remoteOrigin }
     },
     { error, message, data } = await this.request<AuthResponse>( options )
     if( error ) throw new Error( message )
@@ -129,7 +147,7 @@ export default class Auth {
       options: AuthRequestOptions = {
         url: '/access/token/rotate',
         method: 'PATCH',
-        body: { secret: this.creds.secret }
+        body: { secret: this.secret }
       },
       { error, message, data } = await this.request<AuthResponse>( options )
       if( error ) throw new Error( message )

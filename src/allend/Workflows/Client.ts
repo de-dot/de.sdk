@@ -1,9 +1,9 @@
 import type { AccessOptions } from '../../types/access'
-import type { HTTPRequestOptions, RTLocation, OrderService, HTTPResponse, Entity  } from '../../types'
+import type { HTTPRequestOptions, RTLocation, MSIEntity, HTTPResponse } from '../../types'
 import AccessManager from '../Access'
 
-type OrderServiceResponse = HTTPResponse<{ orders: OrderService[] }>
-type NearbyResponse = HTTPResponse<{ nearby: Entity[] }>
+type OrderServiceResponse = HTTPResponse<{ orders: any[] }>
+type NearbyResponse = HTTPResponse<{ nearby: MSIEntity[] }>
 
 export default class Client extends AccessManager {
   private clientId: string

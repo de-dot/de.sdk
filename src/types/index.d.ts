@@ -1,63 +1,125 @@
-// ─── @de./sdk — public type definitions ──────────────────────────────────────
+// ─── @de./sdk — public type surface ──────────────────────────────────────────
 //
-// SDK-specific types live here. Domain types (orders, waypoints, entities,
-// routing, events) are imported from @de./types — the canonical De. types
-// package. SDK consumers can import either:
+// Rule: import from @de./types whenever the type exists there.
+// Only define types here that are genuinely SDK-specific (MSI map UI, HTTP
+// envelope, constructor configs, realtime session helpers) and have no
+// equivalent in de.types.
 //
-//   import type { RTLocation, Waypoint } from '@de./sdk'         // re-exported
-//   import type { BaseOrder, OrderPackage } from '@de./types'    // direct
+// Consumers can always import domain types directly:
+//   import type { Waypoint, OrderPackage } from '@de./types'
+// or via the SDK barrel (re-exported below):
+//   import type { Waypoint, OrderPackage } from '@de./sdk'
 //
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type {
+	// ── geo ───────────────────────────────────────────────────────────────────
 	RTLocation,
+	Address,
+	Contacts,
+	BoundingBox,
+	GeoBoundary,
+
+	// ── routing ───────────────────────────────────────────────────────────────
 	Waypoint,
 	WaypointAction,
 	WaypointLocationType,
+	Routing,
+	RoutingSegment,
+
+	// ── entity ────────────────────────────────────────────────────────────────
+	EntityBase,
+	EntityType,
+	EntityStatus,
+	EntityGrade,
+
+	// ── order ─────────────────────────────────────────────────────────────────
 	OrderPriority,
 	OrderPackage,
+	OrderPackageType,
+	OrderPackageCategory,
+	OrderPackageItem,
+	OrderItem,
+	OrderItemStatus,
 	OrderPayment,
 	OrderOperation,
-	BaseOrderStatus,
-	BaseOrder,
+	OrderIntent,
 	OrderTracking,
 	OrderAssignee,
 	OrderException,
-	OrderItem,
+	BaseOrder,
+	BaseOrderStatus,
+
+	// ── events ────────────────────────────────────────────────────────────────
 	OrderEventType,
 	OrderTrackingEvent,
 	LocationUpdateEvent,
 	MessageEvent,
 	RouteChangeEvent,
-	PresenceEvent
+	PresenceEvent,
+
+	// ── AUX customer / order-building ─────────────────────────────────────────
+	CustomerOrderIntent,
+	CustomerOrderIntentService,
+	AddWaypoints,
+	AddPackages,
+	SubmitIntent
 } from '@de./types'
 
 // ─── Re-export domain types ───────────────────────────────────────────────────
 
 export type {
 	RTLocation,
+	Address,
+	Contacts,
+	BoundingBox,
+	GeoBoundary,
+
 	Waypoint,
 	WaypointAction,
 	WaypointLocationType,
+	Routing,
+	RoutingSegment,
+
+	EntityBase,
+	EntityType,
+	EntityStatus,
+	EntityGrade,
+
 	OrderPriority,
 	OrderPackage,
+	OrderPackageType,
+	OrderPackageCategory,
+	OrderPackageItem,
+	OrderItem,
+	OrderItemStatus,
 	OrderPayment,
 	OrderOperation,
-	BaseOrderStatus,
-	BaseOrder,
+	OrderIntent,
 	OrderTracking,
 	OrderAssignee,
 	OrderException,
-	OrderItem,
+	BaseOrder,
+	BaseOrderStatus,
+
 	OrderEventType,
 	OrderTrackingEvent,
 	LocationUpdateEvent,
 	MessageEvent,
 	RouteChangeEvent,
-	PresenceEvent
+	PresenceEvent,
+
+	CustomerOrderIntent,
+	CustomerOrderIntentService,
+	AddWaypoints,
+	AddPackages,
+	SubmitIntent
 }
 
 // ─── HTTP utilities ───────────────────────────────────────────────────────────
+//
+// APIResponseBase from de.types covers the base error/status fields.
+// HTTPResponse<T> adds the generic data wrapper the SDK uses internally.
 
 export type HTTPRequestOptions = {
 	url: string
@@ -65,23 +127,68 @@ export type HTTPRequestOptions = {
 	headers?: { [index: string]: string }
 	body?: any
 }
-export type HTTPResponse<T> = {
+export type HTTPResponse<T = Record<string, never>> = {
 	error: boolean
 	message?: string
 	data: T
 }
 
-// ─── Map / MSI coordinate types ───────────────────────────────────────────────
+// ─── SDK config types ─────────────────────────────────────────────────────────
 //
-// Coordinates here means a {lng, lat} map point (MSI map API convention).
-// This is distinct from the @de./types Coordinates tuple [lat, lng] used
-// for internal storage. RTLocation (from @de./types) is the realtime shape.
+// Constructor option shapes for each named export.
+// These are SDK-specific — de.types has no concept of SDK client configs.
 
-export type LatLng = [number, number]
-export type Coordinates = {
-	lng: number
-	lat: number
+export type Env      = 'dev' | 'staging' | 'prod'
+export type Platform = 'web' | 'mobile' | 'server' | 'proxy'
+
+export type CoreConfig = {
+	context: string
+	accessToken: string
+	env?: Env
+	platform?: Platform
+	remoteOrigin?: string
+	version?: number
 }
+
+export type AuthConfig = {
+	context: string
+	cid: string
+	secret: string
+	remoteOrigin?: string
+	env?: Env
+	version?: number
+	autorefresh?: boolean
+	onNewToken?: ( token: string ) => void
+}
+
+export type OTPAuthConfig = {
+	context: string
+	accessToken: string
+	env?: Env
+	platform?: Platform
+	remoteOrigin?: string
+}
+
+export type IoTConfig = {
+	channel: string
+	accessToken: string
+	env?: Env
+}
+
+export type WorkflowsConfig = {
+	core: { orders: any, request: Function }
+	msi?: any
+}
+
+// ─── MSI map coordinate types ─────────────────────────────────────────────────
+//
+// de.types Coordinates is a readonly [lat, lng] tuple (internal storage).
+// MSI uses { lng, lat } map-point objects — a different shape and convention.
+// LngLat = [number, number] is the MSI polyline/route-path coordinate array.
+
+export type LngLat      = [number, number]
+export type Coordinates = { lng: number, lat: number }
+
 export type PickedLocation = {
 	point: { x: number, y: number }
 	coordinates: Coordinates
@@ -93,17 +200,12 @@ export type ActivePosition = {
 	focus?: boolean
 }
 
-// ─── Animated route ───────────────────────────────────────────────────────────
+// ─── MSI animated route ───────────────────────────────────────────────────────
 
 export type AnimatedRouteNativePathType = 'dot' | 'solid'
-export type AnimatedRouteNativeMethods = 'dot:flow'
-	| 'dot:fade'
-	| 'dot:pulse'
-	| 'dot:directional'
-	| 'solid:flow'
-	| 'solid:fade'
-	| 'solid:pulse'
-	| 'solid:directional'
+export type AnimatedRouteNativeMethods =
+	| 'dot:flow' | 'dot:fade' | 'dot:pulse' | 'dot:directional'
+	| 'solid:flow' | 'solid:fade' | 'solid:pulse' | 'solid:directional'
 export interface AnimatedRouteRules {
 	styles?: any
 	speed?: number
@@ -123,13 +225,18 @@ export interface AnimatedRoute {
 	remove(): void
 }
 export type AnimatedRouteOptions = AnimatedRouteNativeMethods | {
-	handler?: new (engine: Engine, path: Coordinates[], rules?: AnimatedRouteRules) => AnimatedRoute
+	handler?: new ( engine: Engine, path: Coordinates[], rules?: AnimatedRouteRules ) => AnimatedRoute
 	method?: string
 	rules?: AnimatedRouteRules
 }
 
-// ─── Routing (map / directions) ───────────────────────────────────────────────
+// ─── MSI routing / directions ─────────────────────────────────────────────────
 
+export type MapWaypoint = {
+	index?: number
+	coords: Coordinates
+	caption?: Caption
+}
 export type Journey = {
 	routeId: string | number
 	origin?: MapWaypoint
@@ -161,7 +268,7 @@ export type RouteOptions = {
 	animation?: AnimatedRouteOptions
 }
 
-// ─── Place search ─────────────────────────────────────────────────────────────
+// ─── MSI place search ─────────────────────────────────────────────────────────
 
 export type SearchPlaceSuggestion = {
 	id: string
@@ -175,104 +282,42 @@ export type SearchPlace = {
 	address: string
 }
 
-// ─── Workflow waypoint (simplified — client-side create/update form) ───────────────
+// ─── MSI entity display types ─────────────────────────────────────────────────
 //
-// For the full de. domain Waypoint (server-side canonical type) use the
-// Waypoint re-export above from @de./types.
+// MSIEntity is the MSI map-layer entity shape used to display and move markers.
+// It is intentionally simpler than de.types EntityBase:
+//   - adds 'person' and 'bus' vehicle types not in de.types EntityType
+//   - status narrows to the two states MSI renders ('ACTIVE' | 'BUSY')
+//   - grade reuses de.types EntityGrade
 
-export type WorkflowsWaypointType = 'pickup' | 'dropoff'
-export type WorkflowsWaypoint = {
-	no: number
-	type: WorkflowsWaypointType
-	description: string
-	coordinates: Coordinates
-	address?: string
-	contact: {
-		type: string
-		reference: string
-		phone?: string
-		email?: string
-	}
-}
-// export type WaypointIndex = 'origin' | 'destination' | number
-// export type WaypointOptions = {
-// 	no?: number
-// 	type?: WorkflowsWaypointType
-// 	description?: string
-// 	coordinates?: Coordinates
-// 	address?: string
-// 	'contact.type'?: string
-// 	'contact.reference'?: string
-// 	'contact.phone'?: string
-// 	'contact.email'?: string
-// }
+export type MobileEntityType = 'person' | 'moto' | 'car' | 'bus' | 'bike' | 'truck' | 'plane' | 'ship'
+export type StaticEntityType = 'restaurant' | 'hotel' | 'store' | 'office' | 'warehouse'
+export type MSIEntityType    = MobileEntityType | StaticEntityType
 
-// ─── SDK package (simplified — client-side create form) ───────────────────────
-//
-// For the full OrderPackage type use the re-export above from @de./types.
-
-// export type Package = {
-// 	waypointNo: number
-// 	careLevel: number
-// 	category: string
-// 	weight: number
-// 	note?: string
-// }
-// export type PackageOptions = {
-// 	waypointNo?: number
-// 	careLevel?: number
-// 	category?: string
-// 	weight?: number
-// 	note?: string
-// }
-
-// ─── Order service / payment (SDK client-side forms) ─────────────────────────
-
-// export type PaymentMode = 'cash' | 'card' | 'momo' | 'wigo'
-// export type OrderService = {
-// 	fees: {
-// 		total: { amount: number, currency: string },
-// 		tax: number
-// 		discount: number
-// 	}
-// 	payment: { mode: PaymentMode, paid: boolean }
-// 	xpress: string
-// }
-// export type OrderServiceOptions = {
-// 	'fees.total.amount'?: number
-// 	'fees.total.currency'?: string
-// 	'fees.tax'?: string
-// 	'fees.discount'?: string
-// 	'payment.mode'?: PaymentMode
-// 	'payment.option'?: string
-// 	'payment.paid'?: boolean
-// 	xpress?: string
-// }
-// export type OrderOperator = {}
-// export type OrderStage = {
-// 	current: string
-// 	status: string
-// }
-
-// ─── Messaging ────────────────────────────────────────────────────────────────
-
-export type Message = {
-	type: 'text' | 'location' | 'media'
-	sender: string
-	content: string
-	timestamp: string
-}
-export type Caption = {
-	duration?: number
-	unit?: string
-	label?: string
-}
-export type Peer = {
-	utype: string
+export type MSIEntity = {
 	id: string
+	type: MSIEntityType
+	status: 'ACTIVE' | 'BUSY'
+	grade: EntityGrade
+	currentLocation: RTLocation
+	static?: boolean
 }
 
-// ─── MSI / Map interface ──────────────────────────────────────────────────────
+export interface ControlEntity {
+	add( entity: MSIEntity, callback?: () => void ): void
+	remove( id: string, callback?: () => void ): void
+	focus( id: string, callback?: () => void ): void
+	move( update: ActivePosition, callback?: () => void ): void
+}
+export type LRSControlsListener = ( controls: ControlEntity ) => void
+export type LRSErrorListener    = ( error?: Error | boolean ) => void
+export interface LRStreamer {
+	live( fn: LRSControlsListener ): Stream
+	close( fn?: LRSErrorListener ): void
+	pipe( stream: Stream ): void
+}
+
+// ─── MSI map interface config ─────────────────────────────────────────────────
 
 export type MapOptions = {
 	element: string
@@ -281,40 +326,8 @@ export type MapOptions = {
 	env?: 'dev' | 'prod'
 }
 export type MapLayerStyle = 'streets' | 'outdoors' | 'light' | 'dark' | 'satellite'
-export type MapWaypoint = {
-	index?: number
-	coords: Coordinates
-	caption?: Caption
-}
 
-// ─── MSI entity types ─────────────────────────────────────────────────────────
-
-export type MobileEntityType = 'person' | 'moto' | 'car' | 'bus' | 'bike' | 'truck' | 'plane' | 'ship'
-export type StaticEntityType = 'restaurant' | 'hotel' | 'store' | 'office' | 'warehouse'
-export type MSIEntityType = MobileEntityType | StaticEntityType
-export type MSIEntity = {
-	id: string
-	type: MSIEntityType
-	status: 'ACTIVE' | 'BUSY'
-	grade: '1H' | '2H' | '3H'
-	currentLocation: RTLocation
-	static?: boolean
-}
-export interface ControlEntity {
-	add( entity: MSIEntity, callback?: () => void ): void
-	remove( id: string, callback?: () => void ): void
-	focus( id: string, callback?: () => void ): void
-	move( update: ActivePosition, callback?: () => void ): void
-}
-export type LRSControlsListener = ( controls: ControlEntity ) => void
-export type LRSErrorListener = ( error?: Error | boolean ) => void
-export interface LRStreamer {
-	live( fn: LRSControlsListener ): Stream
-	close( fn?: LRSErrorListener ): void
-	pipe( stream: Stream ): void
-}
-
-// ─── User location ────────────────────────────────────────────────────────────
+// ─── MSI user location display ────────────────────────────────────────────────
 
 export interface UserLocationOptions {
 	borderRadius?: number
@@ -334,7 +347,7 @@ export interface UserLocationOptions {
 	onLocationError?: ( error: GeolocationPositionError ) => void
 }
 
-// ─── Drag-pick ────────────────────────────────────────────────────────────────
+// ─── MSI drag-pick ────────────────────────────────────────────────────────────
 
 export type DragPickOptions = {
 	snapToRoad?: boolean
@@ -353,4 +366,27 @@ export interface DragPickInterface {
 	enable( origin?: Coordinates ): void
 	disable(): void
 	content( type: DragPickContentType, content: DragPickContent ): void
+}
+
+// ─── Realtime session helpers ─────────────────────────────────────────────────
+//
+// Peer: session participant reference (subset of PresenceEvent from de.types).
+// Caption: MSI map overlay annotation.
+// Message: direct-chat payload (distinct from de.types MessageEvent which is
+//          order-tracking scoped; Message here is a generic chat shape).
+
+export type Peer = {
+	utype: string
+	id: string
+}
+export type Caption = {
+	duration?: number
+	unit?: string
+	label?: string
+}
+export type Message = {
+	type: 'text' | 'location' | 'media'
+	sender: string
+	content: string
+	timestamp: string
 }

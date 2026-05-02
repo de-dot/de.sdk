@@ -1,12 +1,11 @@
 import type {
-  RTLocation,
   Coordinates,
   MapLayerStyle,
   Caption,
   MapOptions,
   SearchPlace,
   SearchPlaceSuggestion,
-  Entity,
+  MSIEntity as Entity,
   ActivePosition,
   UserLocationOptions,
   DragPickContentType,
@@ -17,6 +16,10 @@ import type {
   RoutesFitBoundsOptions,
   LngLat
 } from '../../types'
+import type {
+  RTLocation
+} from '@de./types'
+
 import IOF, { Listener } from 'iframe.io'
 
 const 
