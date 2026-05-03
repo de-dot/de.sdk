@@ -2,7 +2,7 @@ import type {
 	PipelineAnalyticsOverviewValidation,
 	PipelineAnalyticsPipelineValidation
 } from '@de./types'
-import { qs, type Http, type Res } from './utils'
+import { qs, type Http, type Res } from '../../utils'
 
 // ─── Analytics ────────────────────────────────────────────────────────────────
 

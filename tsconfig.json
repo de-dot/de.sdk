@@ -21,7 +21,8 @@
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "@de./types": ["../de.types/src"]
+      "@de./types": ["../de.types/src"],
+      "@de./types/*": ["../de.types/src/*"]
     }
   },
   "include": ["src/**/*"],

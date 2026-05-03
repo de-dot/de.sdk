@@ -25,7 +25,8 @@ export type { LSPConfig } from './allend/LSP'
 export { default as CSP } from './allend/CSP'
 export type { CSPConfig } from './allend/CSP'
 
-export { default as IoTSP } from './allend/IoTSP'
+// IoT service provider + IoT Backend socket client (de.iotb service)
+export { default as IoTSP, Records as IoTBackendRecords } from './allend/IoTSP'
 export type { IoTSPConfig } from './allend/IoTSP'
 
 export { default as Workspace } from './allend/Workspace'
@@ -36,10 +37,6 @@ export { default as MSI, type MSIInterface } from './allend/MSI'
 
 // Realtime socket client (de.arch / Socket)
 export { default as Realtime } from './allend/Realtime'
-
-// IoT socket client (de.iotb service)
-export { default as IoT, Records as IoTRecords } from './allend/IoT'
-export type { IoTConfig } from './allend/IoT'
 
 // Layer 2 — Workflows
 export { default as Workflows } from './allend/Workflows'
@@ -62,7 +59,7 @@ import OTPAuth   from './allend/OTPAuth'
 import Pipelines  from './allend/Pipelines'
 import MSI       from './allend/MSI'
 import Realtime  from './allend/Realtime'
-import IoT       from './allend/IoT'
+import IoT       from './allend/IoTSP/backend'
 import LSP       from './allend/LSP'
 import CSP       from './allend/CSP'
 import IoTSP     from './allend/IoTSP'

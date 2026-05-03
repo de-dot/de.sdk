@@ -4,7 +4,7 @@ import type {
 	PipelineTemplateListValidation,
 	PipelineTemplateUpdateValidation
 } from '@de./types'
-import { qs, type Http, type Res } from './utils'
+import { qs, type Http, type Res } from '../../utils'
 
 // ─── Templates ────────────────────────────────────────────────────────────────
 

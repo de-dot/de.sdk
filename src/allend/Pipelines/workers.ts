@@ -3,7 +3,7 @@ import type {
 	PipelineWorkerStatsValidation,
 	PipelineWorkerStatsByNameValidation
 } from '@de./types'
-import { type Http, type Res } from './utils'
+import { type Http, type Res } from '../../utils'
 
 // ─── Workers ──────────────────────────────────────────────────────────────────
 

@@ -5,7 +5,7 @@ import type {
 	PipelineExecutionActionValidation,
 	PipelineExecutionCancelValidation
 } from '@de./types'
-import { qs, type Http, type Res } from './utils'
+import { qs, type Http, type Res } from '../../utils'
 
 // ─── Executions ───────────────────────────────────────────────────────────────
 

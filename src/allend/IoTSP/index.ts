@@ -1,6 +1,10 @@
-import type { AccessOptions } from '../../types/access'
-import type { HTTPResponse } from '../../types'
 import AccessManager from '../Access'
+import IoTBackend, { type IoTBackendConfig, Records } from './backend'
+import IoTDevices from './devices'
+import IoTTopics from './topics'
+import IoTRules from './rules'
+
+export { Records }
 
 export type IoTSPConfig = {
 	context: string
@@ -8,6 +12,7 @@ export type IoTSPConfig = {
 	env?: 'dev' | 'staging' | 'prod'
 	platform?: 'web' | 'mobile' | 'server' | 'proxy'
 	remoteOrigin?: string
+	backend?: IoTBackendConfig
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -18,82 +23,36 @@ export type IoTSPConfig = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default class IoTSP extends AccessManager {
+	private readonly BackendInstance?: IoTBackend
+	readonly devices: IoTDevices
+	readonly topics: IoTTopics
+	readonly rules: IoTRules
+	
+
 	constructor( config: IoTSPConfig ){
 		if( !config.context )     throw new Error('Undefined context. See https://doc.dedot.io/sdk/iotsp')
 		if( !config.accessToken ) throw new Error('Undefined accessToken. See https://doc.dedot.io/sdk/auth')
 
-		const access: AccessOptions = {
-			context:      config.context,
-			accessToken:  config.accessToken,
-			env:          config.env      || 'dev',
-			platform:     config.platform || 'proxy',
+		super({
+			context: config.context,
+			accessToken: config.accessToken,
+			env: config.env || 'dev',
+			platform: config.platform || 'proxy',
 			remoteOrigin: config.remoteOrigin
-		}
-		super( access, 'API' )
+		}, 'API' )
+
+		if( config.backend )
+			this.BackendInstance = new IoTBackend( config.backend )
+
+		this.devices = new IoTDevices( this )
+		this.topics = new IoTTopics( this )
+		this.rules = new IoTRules( this )
 	}
 
-	// ── Devices ───────────────────────────────────────────────────────────────
-
-	async listDevices( params?: Record<string, any> ): Promise<any[]> {
-		const qs = params ? '?' + new URLSearchParams( params ).toString() : ''
-		const { error, message, data } = await this.request<HTTPResponse<{ devices: any[] }>>({
-			url: `/iotsp/devices${qs}`,
-			method: 'GET'
-		})
-		if( error ) throw new Error( message )
-		return data.devices
-	}
-
-	async getDevice( deviceId: string ): Promise<any> {
-		const { error, message, data } = await this.request<HTTPResponse<{ device: any }>>({
-			url: `/iotsp/devices/${deviceId}`,
-			method: 'GET'
-		})
-		if( error ) throw new Error( message )
-		return data.device
-	}
-
-	// ── Topics ────────────────────────────────────────────────────────────────
-
-	async listTopics( params?: Record<string, any> ): Promise<any[]> {
-		const qs = params ? '?' + new URLSearchParams( params ).toString() : ''
-		const { error, message, data } = await this.request<HTTPResponse<{ topics: any[] }>>({
-			url: `/iotsp/topics${qs}`,
-			method: 'GET'
-		})
-		if( error ) throw new Error( message )
-		return data.topics
-	}
-
-	async createTopic( payload: Record<string, any> ): Promise<any> {
-		const { error, message, data } = await this.request<HTTPResponse<any>>({
-			url: '/iotsp/topics',
-			method: 'POST',
-			body: payload
-		})
-		if( error ) throw new Error( message )
-		return data
-	}
-
-	// ── Rules ─────────────────────────────────────────────────────────────────
-
-	async listRules( params?: Record<string, any> ): Promise<any[]> {
-		const qs = params ? '?' + new URLSearchParams( params ).toString() : ''
-		const { error, message, data } = await this.request<HTTPResponse<{ rules: any[] }>>({
-			url: `/iotsp/rules${qs}`,
-			method: 'GET'
-		})
-		if( error ) throw new Error( message )
-		return data.rules
-	}
-
-	async createRule( payload: Record<string, any> ): Promise<any> {
-		const { error, message, data } = await this.request<HTTPResponse<any>>({
-			url: '/iotsp/rules',
-			method: 'POST',
-			body: payload
-		})
-		if( error ) throw new Error( message )
-		return data
+	get backend(){
+		if( !this.BackendInstance )
+			throw new Error('No backend instance available. Expect <backend> config')
+		
+		return this.BackendInstance
 	}
 }

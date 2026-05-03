@@ -2,7 +2,7 @@ import type {
 	PipelineQueriesSearchValidation,
 	PipelineQueriesRecommendValidation
 } from '@de./types'
-import { type Http, type Res } from './utils'
+import { type Http, type Res } from '../../utils'
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
 

@@ -8,8 +8,8 @@ import type {
 	PipelineSimulateValidation,
 	PipelineSetStatusValidation
 } from '@de./types'
-import { qs, type Res } from './utils'
 import AccessManager from '../Access'
+import { qs, type Res } from '../../utils'
 import { PipelinesWorkers } from './workers'
 import { PipelinesMonitor } from './monitor'
 import { PipelinesQueries } from './queries'

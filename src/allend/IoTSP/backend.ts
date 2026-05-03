@@ -3,7 +3,7 @@ import { IOT_SERVER_BASEURL } from '../../baseUrl'
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-export type IoTConfig = {
+export type IoTBackendConfig = {
 	channel: string
 	accessToken: string
 	env?: 'dev' | 'staging' | 'prod'
@@ -19,6 +19,9 @@ export class Records {
 
 	get( id: string ): Promise<any> {
 		return new Promise(( resolve, reject ) => {
+			if( !this.socket.connected ) 
+				return reject( new Error('Socket disconnected') )
+
 			this.socket.emit('@record:get', id, ( error: string, response: any ) =>
 				error ? reject( new Error( error ) ) : resolve( response )
 			)
@@ -27,6 +30,9 @@ export class Records {
 
 	fetch( params: { limit?: number, page?: number } = {} ): Promise<any> {
 		return new Promise(( resolve, reject ) => {
+			if( !this.socket.connected ) 
+				return reject( new Error('Socket disconnected') )
+
 			this.socket.emit('@record:fetch', params, ( error: string, response: any ) =>
 				error ? reject( new Error( error ) ) : resolve( response )
 			)
@@ -35,6 +41,9 @@ export class Records {
 
 	find( query: string ): Promise<any> {
 		return new Promise(( resolve, reject ) => {
+			if( !this.socket.connected ) 
+				return reject( new Error('Socket disconnected') )
+
 			this.socket.emit('@record:find', query, ( error: string, response: any ) =>
 				error ? reject( new Error( error ) ) : resolve( response )
 			)
@@ -43,6 +52,9 @@ export class Records {
 
 	delete( id: string ): Promise<any> {
 		return new Promise(( resolve, reject ) => {
+			if( !this.socket.connected ) 
+				return reject( new Error('Socket disconnected') )
+
 			this.socket.emit('@record:del', id, ( error: string, response: any ) =>
 				error ? reject( new Error( error ) ) : resolve( response )
 			)
@@ -59,10 +71,11 @@ export class Records {
 //
 // ─────────────────────────────────────────────────────────────────────────────
 
-export default class IoT {
-	private config: IoTConfig
+export default class IoTBackend {
+	private config: IoTBackendConfig
+	private socket?: Socket
 
-	constructor( config: IoTConfig ){
+	constructor( config: IoTBackendConfig ){
 		if( !config.channel )     throw new Error('Undefined channel. See https://doc.dedot.io/sdk/iot')
 		if( !config.accessToken ) throw new Error('Undefined accessToken. See https://doc.dedot.io/sdk/auth')
 
@@ -80,5 +93,9 @@ export default class IoT {
 			socket,
 			records: new Records( socket )
 		}
+	}
+
+	disconnect(){
+		this.socket?.disconnect() 
 	}
 }
