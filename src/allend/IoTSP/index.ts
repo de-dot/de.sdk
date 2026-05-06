@@ -3,6 +3,7 @@ import IoTBackend, { type IoTBackendConfig, Records } from './backend'
 import IoTDevices from './devices'
 import IoTTopics from './topics'
 import IoTRules from './rules'
+import Shared from '../Shared'
 
 export { Records }
 
@@ -24,10 +25,10 @@ export type IoTSPConfig = {
 
 export default class IoTSP extends AccessManager {
 	private readonly BackendInstance?: IoTBackend
+	readonly shared: Shared
 	readonly devices: IoTDevices
 	readonly topics: IoTTopics
 	readonly rules: IoTRules
-	
 
 	constructor( config: IoTSPConfig ){
 		if( !config.context )     throw new Error('Undefined context. See https://doc.dedot.io/sdk/iotsp')
@@ -44,9 +45,10 @@ export default class IoTSP extends AccessManager {
 		if( config.backend )
 			this.BackendInstance = new IoTBackend( config.backend )
 
+		this.shared  = new Shared( this, 'iotsp' )
 		this.devices = new IoTDevices( this )
-		this.topics = new IoTTopics( this )
-		this.rules = new IoTRules( this )
+		this.topics  = new IoTTopics( this )
+		this.rules   = new IoTRules( this )
 	}
 
 	get backend(){

@@ -16,6 +16,10 @@ export type { AuthConfig } from './backend/Auth'
 // Client-side OTP auth (de.auth service)
 export { default as OTPAuth } from './allend/OTPAuth'
 
+// Shared tracking API (de.arch /tracking)
+export { default as Tracking } from './allend/Tracking'
+export type { TrackingConfig } from './allend/Tracking'
+
 export { default as Pipelines } from './allend/Pipelines'
 export type { PipelinesConfig } from './allend/Pipelines'
 
@@ -65,6 +69,7 @@ import CSP       from './allend/CSP'
 import IoTSP     from './allend/IoTSP'
 import Workspace from './allend/Workspace'
 import Workflows from './allend/Workflows'
+import Tracking  from './allend/Tracking'
 import Utils     from './utils'
 
 const De = {
@@ -79,6 +84,7 @@ const De = {
 	IoTSP,
 	Workspace,
 	Workflows,
+	Tracking,
 	Utils
 }
 

@@ -1,9 +1,10 @@
 import type { RTLocation , Message, Peer } from '../../types'
 import type { SocketAuthCredentials } from '../../types/auth'
 import type { AccessOptions } from '../../types/access'
+
 import io, { Socket } from 'socket.io-client'
 import AccessManager from '../Access'
-import { RTS_SERVER_BASEURL } from 'src/baseUrl'
+import { RTS_SERVER_BASEURL } from '../../baseUrl'
 
 export default class Realtime extends AccessManager {
   private nsp?: Socket

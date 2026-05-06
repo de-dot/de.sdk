@@ -1,11 +1,11 @@
-import type Core from '../Arch'
+import type LSP from '../LSP'
 import type MSI from '../MSI'
 import Delivery from './Delivery'
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
 export type WorkflowsConfig = {
-	core: Core
+	lsp: LSP
 	msi?: MSI
 }
 
@@ -23,9 +23,9 @@ export type WorkflowsConfig = {
 export default class Workflows {
 	readonly delivery: Delivery
 
-	constructor({ core }: WorkflowsConfig ){
-		if( !core ) throw new Error('<core> instance required. Pass a Core instance to Workflows.')
+	constructor({ lsp }: WorkflowsConfig ){
+		if( !lsp ) throw new Error('<core> instance required. Pass a Core instance to Workflows.')
 
-		this.delivery = new Delivery( core )
+		this.delivery = new Delivery( lsp )
 	}
 }

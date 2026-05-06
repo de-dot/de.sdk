@@ -1,14 +1,11 @@
 import type { AccessOptions } from '../../types/access'
+import type { SharedTrackingSessionValidation } from '@de./types/shared/tracking'
 import AccessManager from '../Access'
-import CSPOrders from './orders'
-import CSPWebhooks from './webhooks'
-import CSPAnalytics from './analytics'
-import CSPInventory from './inventory'
-import Shared from '../Shared'
+import { qs, type Res } from '../../utils'
 
-export type CSPConfig = {
-	context: string
+export type TrackingConfig = {
 	accessToken: string
+	context: string
 	env?: 'dev' | 'staging' | 'prod'
 	platform?: 'web' | 'mobile' | 'server' | 'proxy'
 	remoteOrigin?: string
@@ -16,21 +13,15 @@ export type CSPConfig = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 //
-// CSP: Commerce Service Provider API — de.arch /csp routes.
-// Covers orders, inventory, webhooks, and analytics.
+// Tracking: shared tracking API — de.arch /tracking routes.
+// Issues join-room tokens for Socket.IO real-time order tracking.
 //
 // ─────────────────────────────────────────────────────────────────────────────
 
-export default class CSP extends AccessManager {
-	shared: Shared
-	orders: CSPOrders
-	webhooks: CSPWebhooks
-	analytics: CSPAnalytics
-	inventory: CSPInventory
-
-	constructor( config: CSPConfig ){
-		if( !config.context )     throw new Error('Undefined context. See https://doc.dedot.io/sdk/csp')
+export default class Tracking extends AccessManager {
+	constructor( config: TrackingConfig ){
 		if( !config.accessToken ) throw new Error('Undefined accessToken. See https://doc.dedot.io/sdk/auth')
+		if( !config.context )     throw new Error('Undefined context. See https://doc.dedot.io/sdk/tracking')
 
 		const access: AccessOptions = {
 			context:      config.context,
@@ -40,11 +31,14 @@ export default class CSP extends AccessManager {
 			remoteOrigin: config.remoteOrigin
 		}
 		super( access, 'API' )
+	}
 
-		this.shared    = new Shared( this, 'csp' )
-		this.orders    = new CSPOrders( this )
-		this.webhooks  = new CSPWebhooks( this )
-		this.analytics = new CSPAnalytics( this )
-		this.inventory = new CSPInventory( this )
+	async getSession( reference: string, role: SharedTrackingSessionValidation['querystring']['role'] ): Promise<unknown> {
+		const { error, message, data } = await this.request<Res<unknown>>({
+			url: `/tracking/${reference}${qs({ role })}`,
+			method: 'GET'
+		})
+		if( error ) throw new Error( message )
+		return data
 	}
 }

@@ -1,6 +1,15 @@
 import type { AccessOptions } from '../../types/access'
-import type { HTTPRequestOptions, HTTPResponse } from '../../types'
 import AccessManager from '../Access'
+import LSPAgents from './agents'
+import LSPCarriers from './carriers'
+import LSPFleets from './fleets'
+import LSPHubs from './hubs'
+import LSPWarehouses from './warehouses'
+import LSPPods from './pods'
+import LSPOrders from './orders'
+import LSPPricing from './pricing'
+import LSPOperations from './operations'
+import Shared, { SharedBuckets } from '../Shared'
 
 export type LSPConfig = {
 	context: string
@@ -18,6 +27,18 @@ export type LSPConfig = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default class LSP extends AccessManager {
+	shared: Shared
+	buckets: SharedBuckets
+	agents: LSPAgents
+	carriers: LSPCarriers
+	fleets: LSPFleets
+	hubs: LSPHubs
+	warehouses: LSPWarehouses
+	pods: LSPPods
+	orders: LSPOrders
+	pricing: LSPPricing
+	operations: LSPOperations
+
 	constructor( config: LSPConfig ){
 		if( !config.context )     throw new Error('Undefined context. See https://doc.dedot.io/sdk/lsp')
 		if( !config.accessToken ) throw new Error('Undefined accessToken. See https://doc.dedot.io/sdk/auth')
@@ -30,83 +51,17 @@ export default class LSP extends AccessManager {
 			remoteOrigin: config.remoteOrigin
 		}
 		super( access, 'API' )
-	}
 
-	// ── Agents ────────────────────────────────────────────────────────────────
-
-	async listAgents( params?: Record<string, any> ): Promise<any[]> {
-		const qs = params ? '?' + new URLSearchParams( params ).toString() : ''
-		const { error, message, data } = await this.request<HTTPResponse<{ agents: any[] }>>({
-			url: `/lsp/agents${qs}`,
-			method: 'GET'
-		})
-		if( error ) throw new Error( message )
-		return data.agents
-	}
-
-	// ── Orders ────────────────────────────────────────────────────────────────
-
-	async listOrders( params?: Record<string, any> ): Promise<any[]> {
-		const qs = params ? '?' + new URLSearchParams( params ).toString() : ''
-		const { error, message, data } = await this.request<HTTPResponse<{ orders: any[] }>>({
-			url: `/lsp/orders${qs}`,
-			method: 'GET'
-		})
-		if( error ) throw new Error( message )
-		return data.orders
-	}
-
-	// ── Coverage ──────────────────────────────────────────────────────────────
-
-	async getCoverageAreas( params?: Record<string, any> ): Promise<any[]> {
-		const qs = params ? '?' + new URLSearchParams( params ).toString() : ''
-		const { error, message, data } = await this.request<HTTPResponse<{ areas: any[] }>>({
-			url: `/lsp/operations/coverage/areas${qs}`,
-			method: 'GET'
-		})
-		if( error ) throw new Error( message )
-		return data.areas
-	}
-
-	// ── Services ──────────────────────────────────────────────────────────────
-
-	async listCarriers( params?: Record<string, any> ): Promise<any[]> {
-		const qs = params ? '?' + new URLSearchParams( params ).toString() : ''
-		const { error, message, data } = await this.request<HTTPResponse<{ carriers: any[] }>>({
-			url: `/lsp/services/carriers${qs}`,
-			method: 'GET'
-		})
-		if( error ) throw new Error( message )
-		return data.carriers
-	}
-
-	async listFleets( params?: Record<string, any> ): Promise<any[]> {
-		const qs = params ? '?' + new URLSearchParams( params ).toString() : ''
-		const { error, message, data } = await this.request<HTTPResponse<{ fleets: any[] }>>({
-			url: `/lsp/services/fleets${qs}`,
-			method: 'GET'
-		})
-		if( error ) throw new Error( message )
-		return data.fleets
-	}
-
-	async listHubs( params?: Record<string, any> ): Promise<any[]> {
-		const qs = params ? '?' + new URLSearchParams( params ).toString() : ''
-		const { error, message, data } = await this.request<HTTPResponse<{ hubs: any[] }>>({
-			url: `/lsp/services/hubs${qs}`,
-			method: 'GET'
-		})
-		if( error ) throw new Error( message )
-		return data.hubs
-	}
-
-	async listWarehouses( params?: Record<string, any> ): Promise<any[]> {
-		const qs = params ? '?' + new URLSearchParams( params ).toString() : ''
-		const { error, message, data } = await this.request<HTTPResponse<{ warehouses: any[] }>>({
-			url: `/lsp/services/warehouses${qs}`,
-			method: 'GET'
-		})
-		if( error ) throw new Error( message )
-		return data.warehouses
+		this.shared     = new Shared( this, 'lsp' )
+		this.buckets    = new SharedBuckets( this, 'lsp' )
+		this.agents     = new LSPAgents( this )
+		this.carriers   = new LSPCarriers( this )
+		this.fleets     = new LSPFleets( this )
+		this.hubs       = new LSPHubs( this )
+		this.warehouses = new LSPWarehouses( this )
+		this.pods       = new LSPPods( this )
+		this.orders     = new LSPOrders( this )
+		this.pricing    = new LSPPricing( this )
+		this.operations = new LSPOperations( this )
 	}
 }
