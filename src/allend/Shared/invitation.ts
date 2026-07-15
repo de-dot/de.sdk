@@ -9,11 +9,12 @@ import type {
 	LSPSharedInvitationCancelValidation,
 	LSPSharedInvitationAcceptValidation
 } from '@de./types/shared/invitation'
+import type { UserContextType } from '@de./types'
 import { type Http, type Res } from '../../utils'
 
 // ─── Validation map ───────────────────────────────────────────────────────────
 
-type InvitationV<C extends 'DEV' | 'CSP' | 'LSP'> = {
+type InvitationV<C extends UserContextType> = {
 	DEV: {
 		send: DEVSharedInvitationSendValidation
 		cancel: DEVSharedInvitationCancelValidation
@@ -29,11 +30,16 @@ type InvitationV<C extends 'DEV' | 'CSP' | 'LSP'> = {
 		cancel: LSPSharedInvitationCancelValidation
 		accept: LSPSharedInvitationAcceptValidation
 	}
+	IoTSP: {
+		send: LSPSharedInvitationSendValidation
+		cancel: LSPSharedInvitationCancelValidation
+		accept: LSPSharedInvitationAcceptValidation
+	}
 }[C]
 
 // ─── Class ────────────────────────────────────────────────────────────────────
 
-export default class SharedInvitation<C extends 'DEV' | 'CSP' | 'LSP'> {
+export default class SharedInvitation<C extends UserContextType> {
 	constructor( private http: Http, private prefix: string ){}
 
 	async send( as: string, body: InvitationV<C>['send']['body'] ): Promise<InvitationV<C>['send']['response']> {

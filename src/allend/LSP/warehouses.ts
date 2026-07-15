@@ -5,17 +5,26 @@ import type {
 	LSPWarehouseUpdateValidation,
 	LSPWarehouseUpdateStatusValidation,
 	LSPWarehouseRemoveValidation,
-	LSPWarehouseGetCapabilityValidation,
-	LSPWarehouseSetCapabilityValidation,
-	LSPWarehouseGetCapacityValidation,
-	LSPWarehouseSetCapacityValidation
+	LSPWarehouseGetStorageCapabilityValidation,
+	LSPWarehouseSetStorageCapabilityValidation,
+	LSPWarehouseGetPhysicalCapacityValidation,
+	LSPWarehouseSetPhysicalCapacityValidation
 } from '@de./types/lsp/warehouse'
+import type { LSPPricingBindToValidation } from '@de./types/lsp/pricing'
 import { qs, type Http, type Res } from '../../utils'
+import LSPFacilityPSL from './psl'
+import LSPFacilityInventory from './inventory'
 
 // ── LSP Warehouses ────────────────────────────────────────────────────────────
 
 export default class LSPWarehouses {
-	constructor( private http: Http ){}
+	psl: LSPFacilityPSL
+	inventory: LSPFacilityInventory
+
+	constructor( private http: Http ){
+		this.psl = new LSPFacilityPSL( this.http, 'warehouses' )
+		this.inventory = new LSPFacilityInventory( this.http, 'warehouses' )
+	}
 
 	async create( body: LSPWarehouseCreateValidation['body'] ): Promise<LSPWarehouseCreateValidation['response']> {
 		const { error, message, data } = await this.http.request<Res<LSPWarehouseCreateValidation['response']>>({
@@ -73,8 +82,8 @@ export default class LSPWarehouses {
 		if( error ) throw new Error( message )
 	}
 
-	async bindPricing( id: string, action: 'add' | 'remove', body: { id?: string, code?: string } ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async bindPricing( id: string, action: LSPPricingBindToValidation['params']['action'], body: LSPPricingBindToValidation['body'] ): Promise<LSPPricingBindToValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPPricingBindToValidation['response']>>({
 			url: `/lsp/warehouses/${id}/pricing/${action}`,
 			method: 'PUT',
 			body
@@ -84,9 +93,10 @@ export default class LSPWarehouses {
 	}
 
 	// ── Capabilities ──────────────────────────────────────────────────────────
+	// Generic accessors — representative Validation (Storage) used for typing.
 
-	async getCapability( id: string, type: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async getCapability( id: string, type: string ): Promise<LSPWarehouseGetStorageCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPWarehouseGetStorageCapabilityValidation['response']>>({
 			url: `/lsp/warehouses/${id}/capabilities/${type}`,
 			method: 'GET'
 		})
@@ -94,8 +104,8 @@ export default class LSPWarehouses {
 		return data
 	}
 
-	async setCapability( id: string, type: string, body: LSPWarehouseSetCapabilityValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async setCapability( id: string, type: string, body: LSPWarehouseSetStorageCapabilityValidation['body'] ): Promise<LSPWarehouseSetStorageCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPWarehouseSetStorageCapabilityValidation['response']>>({
 			url: `/lsp/warehouses/${id}/capabilities/${type}`,
 			method: 'PUT',
 			body
@@ -105,9 +115,10 @@ export default class LSPWarehouses {
 	}
 
 	// ── Capacities ────────────────────────────────────────────────────────────
+	// Generic accessors — representative Validation (Physical) used for typing.
 
-	async getCapacity( id: string, type: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async getCapacity( id: string, type: string ): Promise<LSPWarehouseGetPhysicalCapacityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPWarehouseGetPhysicalCapacityValidation['response']>>({
 			url: `/lsp/warehouses/${id}/capacities/${type}`,
 			method: 'GET'
 		})
@@ -115,8 +126,8 @@ export default class LSPWarehouses {
 		return data
 	}
 
-	async setCapacity( id: string, type: string, body: LSPWarehouseSetCapacityValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async setCapacity( id: string, type: string, body: LSPWarehouseSetPhysicalCapacityValidation['body'] ): Promise<LSPWarehouseSetPhysicalCapacityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPWarehouseSetPhysicalCapacityValidation['response']>>({
 			url: `/lsp/warehouses/${id}/capacities/${type}`,
 			method: 'PUT',
 			body

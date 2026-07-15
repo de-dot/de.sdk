@@ -10,13 +10,18 @@ import type {
 	LSPSharedOperatorRetrieveValidation,
 	LSPSharedOperatorFetchValidation,
 	LSPSharedOperatorUpdateValidation,
-	LSPSharedOperatorRemoveValidation
+	LSPSharedOperatorRemoveValidation,
+	IoTSPSharedOperatorRetrieveValidation,
+	IoTSPSharedOperatorFetchValidation,
+	IoTSPSharedOperatorUpdateValidation,
+	IoTSPSharedOperatorRemoveValidation
 } from '@de./types/shared/operator'
 import { qs, type Http, type Res } from '../../utils'
+import type { OperatorContextType } from '@de./types'
 
 // ─── Validation map ───────────────────────────────────────────────────────────
 
-type OperatorV<C extends 'DEV' | 'CSP' | 'LSP'> = {
+type OperatorV<C extends OperatorContextType> = {
 	DEV: {
 		retrieve: DEVSharedOperatorRetrieveValidation
 		fetch: DEVSharedOperatorFetchValidation
@@ -35,16 +40,22 @@ type OperatorV<C extends 'DEV' | 'CSP' | 'LSP'> = {
 		update: LSPSharedOperatorUpdateValidation
 		remove: LSPSharedOperatorRemoveValidation
 	}
+	IoTSP: {
+		retrieve: IoTSPSharedOperatorRetrieveValidation
+		fetch: IoTSPSharedOperatorFetchValidation
+		update: IoTSPSharedOperatorUpdateValidation
+		remove: IoTSPSharedOperatorRemoveValidation
+	}
 }[C]
 
 // ─── Class ────────────────────────────────────────────────────────────────────
 
-export default class SharedOperators<C extends 'DEV' | 'CSP' | 'LSP'> {
-	constructor( private http: Http, private prefix: string ){}
+export default class SharedOperators<C extends OperatorContextType> {
+	constructor( private http: Http, private ctype: OperatorContextType ){}
 
 	async list( querystring?: OperatorV<C>['fetch']['querystring'] ): Promise<OperatorV<C>['fetch']['response']> {
 		const { error, message, data } = await this.http.request<Res<OperatorV<C>['fetch']['response']>>({
-			url: `/${this.prefix}/operators${qs( querystring )}`,
+			url: `/${this.ctype.toLowerCase()}/operators${qs( querystring )}`,
 			method: 'GET'
 		})
 		if( error ) throw new Error( message )
@@ -53,7 +64,7 @@ export default class SharedOperators<C extends 'DEV' | 'CSP' | 'LSP'> {
 
 	async retrieve( id: string ): Promise<OperatorV<C>['retrieve']['response']> {
 		const { error, message, data } = await this.http.request<Res<OperatorV<C>['retrieve']['response']>>({
-			url: `/${this.prefix}/operators/${id}`,
+			url: `/${this.ctype.toLowerCase()}/operators/${id}`,
 			method: 'GET'
 		})
 		if( error ) throw new Error( message )
@@ -62,7 +73,7 @@ export default class SharedOperators<C extends 'DEV' | 'CSP' | 'LSP'> {
 
 	async update( id: string, body: OperatorV<C>['update']['body'] ): Promise<OperatorV<C>['update']['response']> {
 		const { error, message, data } = await this.http.request<Res<OperatorV<C>['update']['response']>>({
-			url: `/${this.prefix}/operators/${id}`,
+			url: `/${this.ctype.toLowerCase()}/operators/${id}`,
 			method: 'PATCH',
 			body
 		})
@@ -72,7 +83,7 @@ export default class SharedOperators<C extends 'DEV' | 'CSP' | 'LSP'> {
 
 	async remove( id: string ): Promise<OperatorV<C>['remove']['response']> {
 		const { error, message, data } = await this.http.request<Res<OperatorV<C>['remove']['response']>>({
-			url: `/${this.prefix}/operators/${id}`,
+			url: `/${this.ctype.toLowerCase()}/operators/${id}`,
 			method: 'DELETE'
 		})
 		if( error ) throw new Error( message )

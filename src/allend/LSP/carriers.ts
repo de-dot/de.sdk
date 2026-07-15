@@ -8,6 +8,7 @@ import type {
 	LSPCarrierGetTransportCapabilityValidation,
 	LSPCarrierSetTransportCapabilityValidation,
 	LSPCarrierUpdateTransportCapabilityValidation,
+	LSPCarrierDeleteTransportCapabilityValidation,
 	LSPCarrierGetFleetCapabilityValidation,
 	LSPCarrierSetFleetCapabilityValidation,
 	LSPCarrierUpdateFleetCapabilityValidation,
@@ -44,6 +45,7 @@ import type {
 	LSPCarrierSetFinancialCapacityValidation,
 	LSPCarrierGetAllCapacitiesValidation
 } from '@de./types/lsp/carrier'
+import type { LSPPricingBindToValidation } from '@de./types/lsp/pricing'
 import { qs, type Http, type Res } from '../../utils'
 
 // ── LSP Carriers ──────────────────────────────────────────────────────────────
@@ -107,8 +109,8 @@ export default class LSPCarriers {
 		if( error ) throw new Error( message )
 	}
 
-	async bindPricing( id: string, action: 'add' | 'remove', body: { id?: string, code?: string } ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async bindPricing( id: string, action: LSPPricingBindToValidation['params']['action'], body: LSPPricingBindToValidation['body'] ): Promise<LSPPricingBindToValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPPricingBindToValidation['response']>>({
 			url: `/lsp/carriers/${id}/pricing/${action}`,
 			method: 'PUT',
 			body
@@ -117,10 +119,10 @@ export default class LSPCarriers {
 		return data
 	}
 
-	// ── Capabilities ──────────────────────────────────────────────────────────
+	// ── Capabilities ──────────────────────────────────────────────────────────────
 
-	async getAllCapabilities( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async getAllCapabilities( id: string ): Promise<LSPCarrierGetAllCapabilitiesValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierGetAllCapabilitiesValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities`,
 			method: 'GET'
 		})
@@ -128,8 +130,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async getTransportCapability( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async getTransportCapability( id: string ): Promise<LSPCarrierGetTransportCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierGetTransportCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/transport`,
 			method: 'GET'
 		})
@@ -137,8 +139,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async setTransportCapability( id: string, body: LSPCarrierSetTransportCapabilityValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async setTransportCapability( id: string, body: LSPCarrierSetTransportCapabilityValidation['body'] ): Promise<LSPCarrierSetTransportCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierSetTransportCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/transport`,
 			method: 'PUT',
 			body
@@ -147,17 +149,27 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async updateTransportCapability( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async updateTransportCapability( id: string, body: LSPCarrierUpdateTransportCapabilityValidation['body'] ): Promise<LSPCarrierUpdateTransportCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierUpdateTransportCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/transport`,
-			method: 'PATCH'
+			method: 'PATCH',
+			body
 		})
 		if( error ) throw new Error( message )
 		return data
 	}
 
-	async getFleetCapability( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async deleteTransportCapability( id: string ): Promise<LSPCarrierDeleteTransportCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierDeleteTransportCapabilityValidation['response']>>({
+			url: `/lsp/carriers/${id}/capabilities/transport`,
+			method: 'DELETE'
+		})
+		if( error ) throw new Error( message )
+		return data
+	}
+
+	async getFleetCapability( id: string ): Promise<LSPCarrierGetFleetCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierGetFleetCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/fleet`,
 			method: 'GET'
 		})
@@ -165,8 +177,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async setFleetCapability( id: string, body: unknown ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async setFleetCapability( id: string, body: LSPCarrierSetFleetCapabilityValidation['body'] ): Promise<LSPCarrierSetFleetCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierSetFleetCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/fleet`,
 			method: 'PUT',
 			body
@@ -175,17 +187,18 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async updateFleetCapability( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async updateFleetCapability( id: string, body: LSPCarrierUpdateFleetCapabilityValidation['body'] ): Promise<LSPCarrierUpdateFleetCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierUpdateFleetCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/fleet`,
-			method: 'PATCH'
+			method: 'PATCH',
+			body
 		})
 		if( error ) throw new Error( message )
 		return data
 	}
 
-	async getHandlingCapability( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async getHandlingCapability( id: string ): Promise<LSPCarrierGetHandlingCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierGetHandlingCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/handling`,
 			method: 'GET'
 		})
@@ -193,8 +206,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async setHandlingCapability( id: string, body: unknown ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async setHandlingCapability( id: string, body: LSPCarrierSetHandlingCapabilityValidation['body'] ): Promise<LSPCarrierSetHandlingCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierSetHandlingCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/handling`,
 			method: 'PUT',
 			body
@@ -203,17 +216,18 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async updateHandlingCapability( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async updateHandlingCapability( id: string, body: LSPCarrierUpdateHandlingCapabilityValidation['body'] ): Promise<LSPCarrierUpdateHandlingCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierUpdateHandlingCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/handling`,
-			method: 'PATCH'
+			method: 'PATCH',
+			body
 		})
 		if( error ) throw new Error( message )
 		return data
 	}
 
-	async getCoverageCapability( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async getCoverageCapability( id: string ): Promise<LSPCarrierGetCoverageCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierGetCoverageCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/coverage`,
 			method: 'GET'
 		})
@@ -221,8 +235,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async setCoverageCapability( id: string, body: unknown ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async setCoverageCapability( id: string, body: LSPCarrierSetCoverageCapabilityValidation['body'] ): Promise<LSPCarrierSetCoverageCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierSetCoverageCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/coverage`,
 			method: 'PUT',
 			body
@@ -231,17 +245,18 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async updateCoverageCapability( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async updateCoverageCapability( id: string, body: LSPCarrierUpdateCoverageCapabilityValidation['body'] ): Promise<LSPCarrierUpdateCoverageCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierUpdateCoverageCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/coverage`,
-			method: 'PATCH'
+			method: 'PATCH',
+			body
 		})
 		if( error ) throw new Error( message )
 		return data
 	}
 
-	async getTechnologyCapability( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async getTechnologyCapability( id: string ): Promise<LSPCarrierGetTechnologyCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierGetTechnologyCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/technology`,
 			method: 'GET'
 		})
@@ -249,8 +264,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async setTechnologyCapability( id: string, body: unknown ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async setTechnologyCapability( id: string, body: LSPCarrierSetTechnologyCapabilityValidation['body'] ): Promise<LSPCarrierSetTechnologyCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierSetTechnologyCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/technology`,
 			method: 'PUT',
 			body
@@ -259,17 +274,18 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async updateTechnologyCapability( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async updateTechnologyCapability( id: string, body: LSPCarrierUpdateTechnologyCapabilityValidation['body'] ): Promise<LSPCarrierUpdateTechnologyCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierUpdateTechnologyCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/technology`,
-			method: 'PATCH'
+			method: 'PATCH',
+			body
 		})
 		if( error ) throw new Error( message )
 		return data
 	}
 
-	async getServiceCapability( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async getServiceCapability( id: string ): Promise<LSPCarrierGetServiceCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierGetServiceCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/service`,
 			method: 'GET'
 		})
@@ -277,8 +293,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async setServiceCapability( id: string, body: unknown ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async setServiceCapability( id: string, body: LSPCarrierSetServiceCapabilityValidation['body'] ): Promise<LSPCarrierSetServiceCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierSetServiceCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/service`,
 			method: 'PUT',
 			body
@@ -287,17 +303,18 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async updateServiceCapability( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async updateServiceCapability( id: string, body: LSPCarrierUpdateServiceCapabilityValidation['body'] ): Promise<LSPCarrierUpdateServiceCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierUpdateServiceCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/service`,
-			method: 'PATCH'
+			method: 'PATCH',
+			body
 		})
 		if( error ) throw new Error( message )
 		return data
 	}
 
-	async getComplianceCapability( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async getComplianceCapability( id: string ): Promise<LSPCarrierGetComplianceCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierGetComplianceCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/compliance`,
 			method: 'GET'
 		})
@@ -305,8 +322,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async setComplianceCapability( id: string, body: unknown ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async setComplianceCapability( id: string, body: LSPCarrierSetComplianceCapabilityValidation['body'] ): Promise<LSPCarrierSetComplianceCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierSetComplianceCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/compliance`,
 			method: 'PUT',
 			body
@@ -315,17 +332,18 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async updateComplianceCapability( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async updateComplianceCapability( id: string, body: LSPCarrierUpdateComplianceCapabilityValidation['body'] ): Promise<LSPCarrierUpdateComplianceCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierUpdateComplianceCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/compliance`,
-			method: 'PATCH'
+			method: 'PATCH',
+			body
 		})
 		if( error ) throw new Error( message )
 		return data
 	}
 
-	async bulkUpdateCapabilities( id: string, body: LSPCarrierBulkCapabilitiesUpdateValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async bulkUpdateCapabilities( id: string, body: LSPCarrierBulkCapabilitiesUpdateValidation['body'] ): Promise<LSPCarrierBulkCapabilitiesUpdateValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierBulkCapabilitiesUpdateValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/bulk`,
 			method: 'PATCH',
 			body
@@ -334,8 +352,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async getCapabilityInsights( id: string, querystring?: LSPCarrierGetCapabilityInsightsValidation['querystring'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async getCapabilityInsights( id: string, querystring?: LSPCarrierGetCapabilityInsightsValidation['querystring'] ): Promise<LSPCarrierGetCapabilityInsightsValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierGetCapabilityInsightsValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/insights${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -343,8 +361,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async validateCapability( id: string, type: string, body: LSPCarrierValidateCapabilityValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async validateCapability( id: string, type: string, body: LSPCarrierValidateCapabilityValidation['body'] ): Promise<LSPCarrierValidateCapabilityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierValidateCapabilityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capabilities/validate/${type}`,
 			method: 'POST',
 			body
@@ -355,8 +373,8 @@ export default class LSPCarriers {
 
 	// ── Capacities ────────────────────────────────────────────────────────────
 
-	async getAllCapacities( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async getAllCapacities( id: string ): Promise<LSPCarrierGetAllCapacitiesValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierGetAllCapacitiesValidation['response']>>({
 			url: `/lsp/carriers/${id}/capacities`,
 			method: 'GET'
 		})
@@ -364,8 +382,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async getFleetCapacity( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async getFleetCapacity( id: string ): Promise<LSPCarrierGetFleetCapacityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierGetFleetCapacityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capacities/fleet`,
 			method: 'GET'
 		})
@@ -373,8 +391,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async setFleetCapacity( id: string, body: LSPCarrierSetFleetCapacityValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async setFleetCapacity( id: string, body: LSPCarrierSetFleetCapacityValidation['body'] ): Promise<LSPCarrierSetFleetCapacityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierSetFleetCapacityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capacities/fleet`,
 			method: 'PUT',
 			body
@@ -383,8 +401,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async getServiceCapacity( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async getServiceCapacity( id: string ): Promise<LSPCarrierGetServiceCapacityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierGetServiceCapacityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capacities/service`,
 			method: 'GET'
 		})
@@ -392,8 +410,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async setServiceCapacity( id: string, body: LSPCarrierSetServiceCapacityValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async setServiceCapacity( id: string, body: LSPCarrierSetServiceCapacityValidation['body'] ): Promise<LSPCarrierSetServiceCapacityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierSetServiceCapacityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capacities/service`,
 			method: 'PUT',
 			body
@@ -402,8 +420,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async getOperationalCapacity( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async getOperationalCapacity( id: string ): Promise<LSPCarrierGetOperationalCapacityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierGetOperationalCapacityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capacities/operational`,
 			method: 'GET'
 		})
@@ -411,8 +429,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async setOperationalCapacity( id: string, body: LSPCarrierSetOperationalCapacityValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async setOperationalCapacity( id: string, body: LSPCarrierSetOperationalCapacityValidation['body'] ): Promise<LSPCarrierSetOperationalCapacityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierSetOperationalCapacityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capacities/operational`,
 			method: 'PUT',
 			body
@@ -421,8 +439,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async getNetworkCapacity( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async getNetworkCapacity( id: string ): Promise<LSPCarrierGetNetworkCapacityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierGetNetworkCapacityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capacities/network`,
 			method: 'GET'
 		})
@@ -430,8 +448,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async setNetworkCapacity( id: string, body: LSPCarrierSetNetworkCapacityValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async setNetworkCapacity( id: string, body: LSPCarrierSetNetworkCapacityValidation['body'] ): Promise<LSPCarrierSetNetworkCapacityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierSetNetworkCapacityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capacities/network`,
 			method: 'PUT',
 			body
@@ -440,8 +458,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async getTechnologyCapacity( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async getTechnologyCapacity( id: string ): Promise<LSPCarrierGetTechnologyCapacityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierGetTechnologyCapacityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capacities/technology`,
 			method: 'GET'
 		})
@@ -449,8 +467,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async setTechnologyCapacity( id: string, body: LSPCarrierSetTechnologyCapacityValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async setTechnologyCapacity( id: string, body: LSPCarrierSetTechnologyCapacityValidation['body'] ): Promise<LSPCarrierSetTechnologyCapacityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierSetTechnologyCapacityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capacities/technology`,
 			method: 'PUT',
 			body
@@ -459,8 +477,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async getFinancialCapacity( id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async getFinancialCapacity( id: string ): Promise<LSPCarrierGetFinancialCapacityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierGetFinancialCapacityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capacities/financial`,
 			method: 'GET'
 		})
@@ -468,8 +486,8 @@ export default class LSPCarriers {
 		return data
 	}
 
-	async setFinancialCapacity( id: string, body: LSPCarrierSetFinancialCapacityValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async setFinancialCapacity( id: string, body: LSPCarrierSetFinancialCapacityValidation['body'] ): Promise<LSPCarrierSetFinancialCapacityValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPCarrierSetFinancialCapacityValidation['response']>>({
 			url: `/lsp/carriers/${id}/capacities/financial`,
 			method: 'PUT',
 			body

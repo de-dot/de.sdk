@@ -1,5 +1,7 @@
 import type { AccessOptions } from '../../types/access'
-import AccessManager from '../Access'
+import SharedContextClient from '../Shared/context'
+import SharedBuckets from '../Shared/buckets'
+import SharedOperators from '../Shared/operators'
 import LSPAgents from './agents'
 import LSPCarriers from './carriers'
 import LSPFleets from './fleets'
@@ -9,7 +11,6 @@ import LSPPods from './pods'
 import LSPOrders from './orders'
 import LSPPricing from './pricing'
 import LSPOperations from './operations'
-import Shared, { SharedBuckets } from '../Shared'
 
 export type LSPConfig = {
 	context: string
@@ -23,21 +24,22 @@ export type LSPConfig = {
 //
 // LSP: Logistics Service Provider API — de.arch /lsp routes.
 // Covers agents, orders, coverage, inventory, pricing, services, and more.
+// Shared faqs/users/account/invitation come from SharedContextClient.
 //
 // ─────────────────────────────────────────────────────────────────────────────
 
-export default class LSP extends AccessManager {
-	shared: Shared
-	buckets: SharedBuckets
-	agents: LSPAgents
-	carriers: LSPCarriers
-	fleets: LSPFleets
-	hubs: LSPHubs
-	warehouses: LSPWarehouses
-	pods: LSPPods
-	orders: LSPOrders
-	pricing: LSPPricing
-	operations: LSPOperations
+export default class LSP extends SharedContextClient<'LSP'> {
+	readonly buckets:    SharedBuckets
+	readonly operators:  SharedOperators<'LSP'>
+	readonly agents:     LSPAgents
+	readonly carriers:   LSPCarriers
+	readonly fleets:     LSPFleets
+	readonly hubs:       LSPHubs
+	readonly warehouses: LSPWarehouses
+	readonly pods:       LSPPods
+	readonly orders:     LSPOrders
+	readonly pricing:    LSPPricing
+	readonly operations: LSPOperations
 
 	constructor( config: LSPConfig ){
 		if( !config.context )     throw new Error('Undefined context. See https://doc.dedot.io/sdk/lsp')
@@ -50,10 +52,10 @@ export default class LSP extends AccessManager {
 			platform:     config.platform || 'proxy',
 			remoteOrigin: config.remoteOrigin
 		}
-		super( access, 'API' )
+		super( access, 'LSP' )
 
-		this.shared     = new Shared( this, 'lsp' )
-		this.buckets    = new SharedBuckets( this, 'lsp' )
+		this.buckets    = new SharedBuckets( this, 'LSP' )
+		this.operators  = new SharedOperators( this, 'LSP' )
 		this.agents     = new LSPAgents( this )
 		this.carriers   = new LSPCarriers( this )
 		this.fleets     = new LSPFleets( this )

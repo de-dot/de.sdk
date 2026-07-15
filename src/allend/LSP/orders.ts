@@ -14,7 +14,8 @@ import type {
 	LSPInboundOrderUpdateValidation,
 	LSPInboundOrderRetrieveValidation,
 	LSPInboundOrderListValidation,
-	LSPInboundOrderUpdateStatusValidation
+	LSPInboundOrderUpdateStatusValidation,
+	LSPInboundOrderAssignValidation
 } from '@de./types/lsp/order/inbound'
 import type {
 	LSPTaskCreateValidation,
@@ -25,7 +26,8 @@ import type {
 	LSPTaskCompleteValidation,
 	LSPTaskBatchCreateValidation,
 	LSPTaskCancelValidation,
-	LSPTaskPerformanceValidation
+	LSPTaskPerformanceValidation,
+	LSPTaskAssignValidation
 } from '@de./types/lsp/order/internal'
 import type {
 	LSPShipmentCreateValidation,
@@ -51,8 +53,8 @@ export default class LSPOrders {
 
 	// ── Order Management ──────────────────────────────────────────────────────
 
-	async list( querystring?: LSPOrderListValidation['querystring'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async list( querystring?: LSPOrderListValidation['querystring'] ): Promise<LSPOrderListValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPOrderListValidation['response']>>({
 			url: `/lsp/orders${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -60,8 +62,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async get( reference: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async get( reference: string ): Promise<LSPOrderGetValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPOrderGetValidation['response']>>({
 			url: `/lsp/orders/${reference}`,
 			method: 'GET'
 		})
@@ -69,8 +71,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async getStatus( reference: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async getStatus( reference: string ): Promise<LSPOrderGetStatusValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPOrderGetStatusValidation['response']>>({
 			url: `/lsp/orders/${reference}/status`,
 			method: 'GET'
 		})
@@ -78,8 +80,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async complete( reference: string, body: LSPOrderCompleteValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async complete( reference: string, body: LSPOrderCompleteValidation['body'] ): Promise<LSPOrderCompleteValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPOrderCompleteValidation['response']>>({
 			url: `/lsp/orders/${reference}/complete`,
 			method: 'PATCH',
 			body
@@ -88,8 +90,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async cancel( reference: string, body: LSPOrderCancelValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async cancel( reference: string, body: LSPOrderCancelValidation['body'] ): Promise<LSPOrderCancelValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPOrderCancelValidation['response']>>({
 			url: `/lsp/orders/${reference}/cancel`,
 			method: 'PATCH',
 			body
@@ -98,8 +100,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async fail( reference: string, body: LSPOrderFailValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async fail( reference: string, body: LSPOrderFailValidation['body'] ): Promise<LSPOrderFailValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPOrderFailValidation['response']>>({
 			url: `/lsp/orders/${reference}/fail`,
 			method: 'PATCH',
 			body
@@ -108,8 +110,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async updateStage( reference: string, body: LSPOrderUpdateStageValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async updateStage( reference: string, body: LSPOrderUpdateStageValidation['body'] ): Promise<LSPOrderUpdateStageValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPOrderUpdateStageValidation['response']>>({
 			url: `/lsp/orders/${reference}/stage`,
 			method: 'PATCH',
 			body
@@ -118,8 +120,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async subscribe( id: string, reference: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async subscribe( id: string, reference: string ): Promise<LSPOrderSubscribeValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPOrderSubscribeValidation['response']>>({
 			url: `/lsp/orders/${reference}/track/subscribe`,
 			method: 'POST',
 			body: { id }
@@ -130,8 +132,8 @@ export default class LSPOrders {
 
 	// ── Inbound Orders ────────────────────────────────────────────────────────
 
-	async createInbound( facilityId: string, body: LSPInboundOrderCreateValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async createInbound( facilityId: string, body: LSPInboundOrderCreateValidation['body'] ): Promise<LSPInboundOrderCreateValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPInboundOrderCreateValidation['response']>>({
 			url: `/lsp/${facilityId}/inbound/create`,
 			method: 'POST',
 			body
@@ -140,8 +142,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async completeInbound( facilityId: string, reference: string, body: LSPInboundOrderCompleteValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async completeInbound( facilityId: string, reference: string, body: LSPInboundOrderCompleteValidation['body'] ): Promise<LSPInboundOrderCompleteValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPInboundOrderCompleteValidation['response']>>({
 			url: `/lsp/${facilityId}/inbound/${reference}/complete`,
 			method: 'POST',
 			body
@@ -150,8 +152,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async listInbound( facilityId: string, querystring?: LSPInboundOrderListValidation['querystring'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async listInbound( facilityId: string, querystring?: LSPInboundOrderListValidation['querystring'] ): Promise<LSPInboundOrderListValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPInboundOrderListValidation['response']>>({
 			url: `/lsp/${facilityId}/inbound${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -159,8 +161,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async retrieveInbound( facilityId: string, reference: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async retrieveInbound( facilityId: string, reference: string ): Promise<LSPInboundOrderRetrieveValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPInboundOrderRetrieveValidation['response']>>({
 			url: `/lsp/${facilityId}/inbound/${reference}`,
 			method: 'GET'
 		})
@@ -168,8 +170,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async updateInbound( facilityId: string, reference: string, body: LSPInboundOrderUpdateValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async updateInbound( facilityId: string, reference: string, body: LSPInboundOrderUpdateValidation['body'] ): Promise<LSPInboundOrderUpdateValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPInboundOrderUpdateValidation['response']>>({
 			url: `/lsp/${facilityId}/inbound/${reference}`,
 			method: 'PATCH',
 			body
@@ -178,8 +180,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async updateInboundStatus( facilityId: string, reference: string, body: LSPInboundOrderUpdateStatusValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async updateInboundStatus( facilityId: string, reference: string, body: LSPInboundOrderUpdateStatusValidation['body'] ): Promise<LSPInboundOrderUpdateStatusValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPInboundOrderUpdateStatusValidation['response']>>({
 			url: `/lsp/${facilityId}/inbound/${reference}/status`,
 			method: 'PATCH',
 			body
@@ -188,8 +190,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async assignOrUnassignInbound( facilityId: string, reference: string, action: string, to: string, body: { id: string } ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async assignOrUnassignInbound( facilityId: string, reference: string, action: LSPInboundOrderAssignValidation['params']['action'], to: LSPInboundOrderAssignValidation['params']['to'], body: LSPInboundOrderAssignValidation['body'] ): Promise<LSPInboundOrderAssignValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPInboundOrderAssignValidation['response']>>({
 			url: `/lsp/${facilityId}/inbound/${reference}/${action}/${to}`,
 			method: 'PATCH',
 			body
@@ -200,8 +202,8 @@ export default class LSPOrders {
 
 	// ── Tasks ─────────────────────────────────────────────────────────────────
 
-	async createTask( facilityId: string, body: LSPTaskCreateValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async createTask( facilityId: string, body: LSPTaskCreateValidation['body'] ): Promise<LSPTaskCreateValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPTaskCreateValidation['response']>>({
 			url: `/lsp/${facilityId}/tasks/create`,
 			method: 'POST',
 			body
@@ -210,8 +212,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async createTaskBatch( facilityId: string, body: LSPTaskBatchCreateValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async createTaskBatch( facilityId: string, body: LSPTaskBatchCreateValidation['body'] ): Promise<LSPTaskBatchCreateValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPTaskBatchCreateValidation['response']>>({
 			url: `/lsp/${facilityId}/tasks/batch`,
 			method: 'POST',
 			body
@@ -220,8 +222,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async completeTask( facilityId: string, reference: string, body: LSPTaskCompleteValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async completeTask( facilityId: string, reference: string, body: LSPTaskCompleteValidation['body'] ): Promise<LSPTaskCompleteValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPTaskCompleteValidation['response']>>({
 			url: `/lsp/${facilityId}/tasks/${reference}/complete`,
 			method: 'POST',
 			body
@@ -230,8 +232,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async listTasks( facilityId: string, querystring?: LSPTaskListValidation['querystring'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async listTasks( facilityId: string, querystring?: LSPTaskListValidation['querystring'] ): Promise<LSPTaskListValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPTaskListValidation['response']>>({
 			url: `/lsp/${facilityId}/tasks${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -239,8 +241,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async retrieveTask( facilityId: string, reference: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async retrieveTask( facilityId: string, reference: string ): Promise<LSPTaskRetrieveValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPTaskRetrieveValidation['response']>>({
 			url: `/lsp/${facilityId}/tasks/${reference}`,
 			method: 'GET'
 		})
@@ -248,8 +250,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async getTaskPerformance( facilityId: string, querystring: LSPTaskPerformanceValidation['querystring'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async getTaskPerformance( facilityId: string, querystring: LSPTaskPerformanceValidation['querystring'] ): Promise<LSPTaskPerformanceValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPTaskPerformanceValidation['response']>>({
 			url: `/lsp/${facilityId}/tasks/metrics/performance${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -257,8 +259,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async updateTask( facilityId: string, reference: string, body: LSPTaskUpdateValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async updateTask( facilityId: string, reference: string, body: LSPTaskUpdateValidation['body'] ): Promise<LSPTaskUpdateValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPTaskUpdateValidation['response']>>({
 			url: `/lsp/${facilityId}/tasks/${reference}`,
 			method: 'PATCH',
 			body
@@ -267,8 +269,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async updateTaskStatus( facilityId: string, reference: string, body: LSPTaskUpdateStatusValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async updateTaskStatus( facilityId: string, reference: string, body: LSPTaskUpdateStatusValidation['body'] ): Promise<LSPTaskUpdateStatusValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPTaskUpdateStatusValidation['response']>>({
 			url: `/lsp/${facilityId}/tasks/${reference}/status`,
 			method: 'PATCH',
 			body
@@ -277,8 +279,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async assignOrUnassignTask( facilityId: string, reference: string, action: string, to: string, body: { id: string } ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async assignOrUnassignTask( facilityId: string, reference: string, action: LSPTaskAssignValidation['params']['action'], to: LSPTaskAssignValidation['params']['to'], body: LSPTaskAssignValidation['body'] ): Promise<LSPTaskAssignValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPTaskAssignValidation['response']>>({
 			url: `/lsp/${facilityId}/tasks/${reference}/${action}/${to}`,
 			method: 'PATCH',
 			body
@@ -287,8 +289,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async cancelTask( facilityId: string, reference: string, body: LSPTaskCancelValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async cancelTask( facilityId: string, reference: string, body: LSPTaskCancelValidation['body'] ): Promise<LSPTaskCancelValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPTaskCancelValidation['response']>>({
 			url: `/lsp/${facilityId}/tasks/${reference}/cancel`,
 			method: 'DELETE',
 			body
@@ -299,8 +301,8 @@ export default class LSPOrders {
 
 	// ── Shipments ─────────────────────────────────────────────────────────────
 
-	async createShipment( reference: string, body: LSPShipmentCreateValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async createShipment( reference: string, body: LSPShipmentCreateValidation['body'] ): Promise<LSPShipmentCreateValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPShipmentCreateValidation['response']>>({
 			url: `/lsp/orders/${reference}/shipments`,
 			method: 'POST',
 			body
@@ -309,8 +311,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async listShipments( querystring?: LSPShipmentFetchValidation['querystring'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async listShipments( querystring?: LSPShipmentFetchValidation['querystring'] ): Promise<LSPShipmentFetchValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPShipmentFetchValidation['response']>>({
 			url: `/lsp/shipments${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -318,8 +320,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async retrieveShipment( reference: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async retrieveShipment( reference: string ): Promise<LSPShipmentRetrieveValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPShipmentRetrieveValidation['response']>>({
 			url: `/lsp/shipments/${reference}`,
 			method: 'GET'
 		})
@@ -327,8 +329,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async updateShipment( reference: string, body: LSPShipmentUpdateValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async updateShipment( reference: string, body: LSPShipmentUpdateValidation['body'] ): Promise<LSPShipmentUpdateValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPShipmentUpdateValidation['response']>>({
 			url: `/lsp/shipments/${reference}`,
 			method: 'PATCH',
 			body
@@ -337,8 +339,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async updateShipmentStatus( reference: string, body: LSPShipmentUpdateStatusValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async updateShipmentStatus( reference: string, body: LSPShipmentUpdateStatusValidation['body'] ): Promise<LSPShipmentUpdateStatusValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPShipmentUpdateStatusValidation['response']>>({
 			url: `/lsp/shipments/${reference}/status`,
 			method: 'PATCH',
 			body
@@ -347,8 +349,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async addShipmentPackage( reference: string, body: LSPShipmentAddPackageValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async addShipmentPackage( reference: string, body: LSPShipmentAddPackageValidation['body'] ): Promise<LSPShipmentAddPackageValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPShipmentAddPackageValidation['response']>>({
 			url: `/lsp/shipments/${reference}/packages`,
 			method: 'POST',
 			body
@@ -359,8 +361,8 @@ export default class LSPOrders {
 
 	// ── Shipping Orders ───────────────────────────────────────────────────────
 
-	async listShipping( querystring?: LSPShippingOrderListValidation['querystring'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async listShipping( querystring?: LSPShippingOrderListValidation['querystring'] ): Promise<LSPShippingOrderListValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPShippingOrderListValidation['response']>>({
 			url: `/lsp/shipping${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -368,8 +370,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async retrieveShipping( reference: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async retrieveShipping( reference: string ): Promise<LSPShippingOrderRetrieveValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPShippingOrderRetrieveValidation['response']>>({
 			url: `/lsp/shipping/${reference}`,
 			method: 'GET'
 		})
@@ -377,8 +379,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async completeShipping( reference: string, body: LSPShippingOrderCompleteValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async completeShipping( reference: string, body: LSPShippingOrderCompleteValidation['body'] ): Promise<LSPShippingOrderCompleteValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPShippingOrderCompleteValidation['response']>>({
 			url: `/lsp/shipping/${reference}/complete`,
 			method: 'PATCH',
 			body
@@ -387,8 +389,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async approveShipping( reference: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async approveShipping( reference: string ): Promise<LSPShippingOrderRefOnlyValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPShippingOrderRefOnlyValidation['response']>>({
 			url: `/lsp/shipping/${reference}/approve`,
 			method: 'PATCH'
 		})
@@ -396,8 +398,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async suspendShipping( reference: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async suspendShipping( reference: string ): Promise<LSPShippingOrderRefOnlyValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPShippingOrderRefOnlyValidation['response']>>({
 			url: `/lsp/shipping/${reference}/suspend`,
 			method: 'PATCH'
 		})
@@ -405,8 +407,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async cancelShipping( reference: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async cancelShipping( reference: string ): Promise<LSPShippingOrderRefOnlyValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPShippingOrderRefOnlyValidation['response']>>({
 			url: `/lsp/shipping/${reference}/cancel`,
 			method: 'PATCH'
 		})
@@ -414,8 +416,8 @@ export default class LSPOrders {
 		return data
 	}
 
-	async assignOrUnassignShipping( reference: string, action: 'assign' | 'unassign', to: 'agent' | 'operator', body: { id: string } ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async assignOrUnassignShipping( reference: string, action: 'assign' | 'unassign', to: 'agent' | 'operator', body: { id: string } ): Promise<LSPShippingOrderAssignOrUnassignValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPShippingOrderAssignOrUnassignValidation['response']>>({
 			url: `/lsp/shipping/${reference}/${action}/${to}`,
 			method: 'PATCH',
 			body

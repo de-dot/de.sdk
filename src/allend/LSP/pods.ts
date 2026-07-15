@@ -13,7 +13,11 @@ import type {
 	LSPPodCompartmentCollectValidation,
 	LSPPodCompartmentReleaseValidation,
 	LSPPodCompartmentMarkFaultyValidation,
-	LSPPodDroneConfirmDepositValidation
+	LSPPodCompartmentLoadValidation,
+	LSPPodCompartmentUnlockValidation,
+	LSPPodDroneConfirmDepositValidation,
+	LSPPodDroneOpenHatchValidation,
+	LSPPodDroneCloseHatchValidation
 } from '@de./types/lsp/pod'
 import { qs, type Http, type Res } from '../../utils'
 
@@ -100,8 +104,8 @@ export default class LSPPods {
 
 	// ── Compartments ──────────────────────────────────────────────────────────
 
-	async listCompartments( podId: string, querystring?: LSPPodCompartmentListValidation['querystring'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async listCompartments( podId: string, querystring?: LSPPodCompartmentListValidation['querystring'] ): Promise<LSPPodCompartmentListValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPPodCompartmentListValidation['response']>>({
 			url: `/lsp/pods/${podId}/compartments${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -109,8 +113,8 @@ export default class LSPPods {
 		return data
 	}
 
-	async retrieveCompartment( podId: string, id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async retrieveCompartment( podId: string, id: string ): Promise<LSPPodCompartmentRetrieveValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPPodCompartmentRetrieveValidation['response']>>({
 			url: `/lsp/pods/${podId}/compartments/${id}`,
 			method: 'GET'
 		})
@@ -118,8 +122,8 @@ export default class LSPPods {
 		return data
 	}
 
-	async reserveCompartment( podId: string, id: string, body: LSPPodCompartmentReserveValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async reserveCompartment( podId: string, id: string, body: LSPPodCompartmentReserveValidation['body'] ): Promise<LSPPodCompartmentReserveValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPPodCompartmentReserveValidation['response']>>({
 			url: `/lsp/pods/${podId}/compartments/${id}/reserve`,
 			method: 'POST',
 			body
@@ -128,8 +132,8 @@ export default class LSPPods {
 		return data
 	}
 
-	async loadCompartment( podId: string, id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async loadCompartment( podId: string, id: string ): Promise<LSPPodCompartmentLoadValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPPodCompartmentLoadValidation['response']>>({
 			url: `/lsp/pods/${podId}/compartments/${id}/load`,
 			method: 'POST'
 		})
@@ -137,8 +141,8 @@ export default class LSPPods {
 		return data
 	}
 
-	async unlockCompartment( podId: string, id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async unlockCompartment( podId: string, id: string ): Promise<LSPPodCompartmentUnlockValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPPodCompartmentUnlockValidation['response']>>({
 			url: `/lsp/pods/${podId}/compartments/${id}/unlock`,
 			method: 'POST'
 		})
@@ -146,8 +150,8 @@ export default class LSPPods {
 		return data
 	}
 
-	async collectCompartment( podId: string, id: string, body: LSPPodCompartmentCollectValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async collectCompartment( podId: string, id: string, body: LSPPodCompartmentCollectValidation['body'] ): Promise<LSPPodCompartmentCollectValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPPodCompartmentCollectValidation['response']>>({
 			url: `/lsp/pods/${podId}/compartments/${id}/collect`,
 			method: 'POST',
 			body
@@ -156,8 +160,8 @@ export default class LSPPods {
 		return data
 	}
 
-	async releaseCompartment( podId: string, id: string, body: LSPPodCompartmentReleaseValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async releaseCompartment( podId: string, id: string, body: LSPPodCompartmentReleaseValidation['body'] ): Promise<LSPPodCompartmentReleaseValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPPodCompartmentReleaseValidation['response']>>({
 			url: `/lsp/pods/${podId}/compartments/${id}/release`,
 			method: 'POST',
 			body
@@ -166,8 +170,8 @@ export default class LSPPods {
 		return data
 	}
 
-	async markCompartmentFaulty( podId: string, id: string, body: LSPPodCompartmentMarkFaultyValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async markCompartmentFaulty( podId: string, id: string, body: LSPPodCompartmentMarkFaultyValidation['body'] ): Promise<LSPPodCompartmentMarkFaultyValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPPodCompartmentMarkFaultyValidation['response']>>({
 			url: `/lsp/pods/${podId}/compartments/${id}/faulty`,
 			method: 'POST',
 			body
@@ -178,8 +182,8 @@ export default class LSPPods {
 
 	// ── Drone ─────────────────────────────────────────────────────────────────
 
-	async openDroneHatch( podId: string, id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async openDroneHatch( podId: string, id: string ): Promise<LSPPodDroneOpenHatchValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPPodDroneOpenHatchValidation['response']>>({
 			url: `/lsp/pods/${podId}/drone/${id}/hatch/open`,
 			method: 'POST'
 		})
@@ -187,8 +191,8 @@ export default class LSPPods {
 		return data
 	}
 
-	async closeDroneHatch( podId: string, id: string ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async closeDroneHatch( podId: string, id: string ): Promise<LSPPodDroneCloseHatchValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPPodDroneCloseHatchValidation['response']>>({
 			url: `/lsp/pods/${podId}/drone/${id}/hatch/close`,
 			method: 'POST'
 		})
@@ -196,8 +200,8 @@ export default class LSPPods {
 		return data
 	}
 
-	async confirmDroneDeposit( podId: string, id: string, body: LSPPodDroneConfirmDepositValidation['body'] ): Promise<unknown> {
-		const { error, message, data } = await this.http.request<Res<unknown>>({
+	async confirmDroneDeposit( podId: string, id: string, body: LSPPodDroneConfirmDepositValidation['body'] ): Promise<LSPPodDroneConfirmDepositValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPPodDroneConfirmDepositValidation['response']>>({
 			url: `/lsp/pods/${podId}/drone/${id}/deposit/confirm`,
 			method: 'POST',
 			body

@@ -29,6 +29,9 @@ export type { LSPConfig } from './allend/LSP'
 export { default as CSP } from './allend/CSP'
 export type { CSPConfig } from './allend/CSP'
 
+export { default as DEV } from './allend/DEV'
+export type { DEVConfig } from './allend/DEV'
+
 // IoT service provider + IoT Backend socket client (de.iotb service)
 export { default as IoTSP, Records as IoTBackendRecords } from './allend/IoTSP'
 export type { IoTSPConfig } from './allend/IoTSP'
@@ -66,6 +69,7 @@ import Realtime  from './allend/Realtime'
 import IoT       from './allend/IoTSP/backend'
 import LSP       from './allend/LSP'
 import CSP       from './allend/CSP'
+import DEV       from './allend/DEV'
 import IoTSP     from './allend/IoTSP'
 import Workspace from './allend/Workspace'
 import Workflows from './allend/Workflows'
@@ -81,6 +85,7 @@ const De = {
 	IoT,
 	LSP,
 	CSP,
+	DEV,
 	IoTSP,
 	Workspace,
 	Workflows,

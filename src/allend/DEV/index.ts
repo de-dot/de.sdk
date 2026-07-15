@@ -1,12 +1,9 @@
 import type { AccessOptions } from '../../types/access'
 import SharedContextClient from '../Shared/context'
 import SharedOperators from '../Shared/operators'
-import CSPOrders from './orders'
-import CSPWebhooks from './webhooks'
-import CSPAnalytics from './analytics'
-import CSPInventory from './inventory'
+import DEVDevelopers from './developers'
 
-export type CSPConfig = {
+export type DEVConfig = {
 	context: string
 	accessToken: string
 	env?: 'dev' | 'staging' | 'prod'
@@ -16,21 +13,18 @@ export type CSPConfig = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 //
-// CSP: Commerce Service Provider API — de.arch /csp routes.
-// Covers orders, inventory, webhooks, analytics, plus shared faqs/users/account/
-// invitation (SharedContextClient) and operators.
+// DEV: Developer Service Provider API — de.arch /v1/dev routes.
+// Covers developers, plus shared faqs/users/account/invitation (SharedContextClient)
+// and operators.
 //
 // ─────────────────────────────────────────────────────────────────────────────
 
-export default class CSP extends SharedContextClient<'CSP'> {
-	readonly operators: SharedOperators<'CSP'>
-	readonly orders:    CSPOrders
-	readonly webhooks:  CSPWebhooks
-	readonly analytics: CSPAnalytics
-	readonly inventory: CSPInventory
+export default class DEV extends SharedContextClient<'DEV'> {
+	readonly operators:  SharedOperators<'DEV'>
+	readonly developers: DEVDevelopers
 
-	constructor( config: CSPConfig ){
-		if( !config.context )     throw new Error('Undefined context. See https://doc.dedot.io/sdk/csp')
+	constructor( config: DEVConfig ){
+		if( !config.context )     throw new Error('Undefined context. See https://doc.dedot.io/sdk/dev')
 		if( !config.accessToken ) throw new Error('Undefined accessToken. See https://doc.dedot.io/sdk/auth')
 
 		const access: AccessOptions = {
@@ -40,12 +34,9 @@ export default class CSP extends SharedContextClient<'CSP'> {
 			platform:     config.platform || 'proxy',
 			remoteOrigin: config.remoteOrigin
 		}
-		super( access, 'CSP' )
+		super( access, 'DEV' )
 
-		this.operators = new SharedOperators( this, 'CSP' )
-		this.orders    = new CSPOrders( this )
-		this.webhooks  = new CSPWebhooks( this )
-		this.analytics = new CSPAnalytics( this )
-		this.inventory = new CSPInventory( this )
+		this.operators  = new SharedOperators( this, 'DEV' )
+		this.developers = new DEVDevelopers( this )
 	}
 }

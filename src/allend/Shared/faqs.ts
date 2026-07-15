@@ -10,14 +10,15 @@ import type {
 	SharedFAQArchiveOrRestoreValidation,
 	SharedFAQLockOrUnlockValidation
 } from '@de./types/shared/faq'
+import type { UserContextType } from '@de./types'
 import { qs, type Http, type Res } from '../../utils'
 
 export default class SharedFAQs {
-	constructor( private http: Http, private prefix: string ){}
+	constructor( private http: Http, private ctype: UserContextType ){}
 
 	async add( body: SharedFAQAddValidation['body'] ): Promise<SharedFAQAddValidation['response']> {
 		const { error, message, data } = await this.http.request<Res<SharedFAQAddValidation['response']>>({
-			url: `/${this.prefix}/faqs`,
+			url: `/${this.ctype.toLowerCase()}/faqs`,
 			method: 'POST',
 			body
 		})
@@ -27,7 +28,7 @@ export default class SharedFAQs {
 
 	async list( querystring?: SharedFAQFetchValidation['querystring'] ): Promise<SharedFAQFetchValidation['response']> {
 		const { error, message, data } = await this.http.request<Res<SharedFAQFetchValidation['response']>>({
-			url: `/${this.prefix}/faqs${qs( querystring )}`,
+			url: `/${this.ctype.toLowerCase()}/faqs${qs( querystring )}`,
 			method: 'GET'
 		})
 		if( error ) throw new Error( message )
@@ -36,7 +37,7 @@ export default class SharedFAQs {
 
 	async retrieve( reference: string ): Promise<SharedFAQRetrieveValidation['response']> {
 		const { error, message, data } = await this.http.request<Res<SharedFAQRetrieveValidation['response']>>({
-			url: `/${this.prefix}/faqs/${reference}`,
+			url: `/${this.ctype.toLowerCase()}/faqs/${reference}`,
 			method: 'GET'
 		})
 		if( error ) throw new Error( message )
@@ -45,7 +46,7 @@ export default class SharedFAQs {
 
 	async search( querystring: SharedFAQSearchValidation['querystring'] ): Promise<SharedFAQSearchValidation['response']> {
 		const { error, message, data } = await this.http.request<Res<SharedFAQSearchValidation['response']>>({
-			url: `/${this.prefix}/faqs/search${qs( querystring )}`,
+			url: `/${this.ctype.toLowerCase()}/faqs/search${qs( querystring )}`,
 			method: 'GET'
 		})
 		if( error ) throw new Error( message )
@@ -54,7 +55,7 @@ export default class SharedFAQs {
 
 	async update( reference: string, body: SharedFAQUpdateValidation['body'] ): Promise<SharedFAQUpdateValidation['response']> {
 		const { error, message, data } = await this.http.request<Res<SharedFAQUpdateValidation['response']>>({
-			url: `/${this.prefix}/faqs/${reference}`,
+			url: `/${this.ctype.toLowerCase()}/faqs/${reference}`,
 			method: 'PATCH',
 			body
 		})
@@ -64,7 +65,7 @@ export default class SharedFAQs {
 
 	async remove( reference: string ): Promise<SharedFAQRemoveValidation['response']> {
 		const { error, message, data } = await this.http.request<Res<SharedFAQRemoveValidation['response']>>({
-			url: `/${this.prefix}/faqs/${reference}`,
+			url: `/${this.ctype.toLowerCase()}/faqs/${reference}`,
 			method: 'DELETE'
 		})
 		if( error ) throw new Error( message )
@@ -73,7 +74,7 @@ export default class SharedFAQs {
 
 	async addServiceContext( reference: string, body: SharedFAQAddServiceContextValidation['body'] ): Promise<SharedFAQAddServiceContextValidation['response']> {
 		const { error, message, data } = await this.http.request<Res<SharedFAQAddServiceContextValidation['response']>>({
-			url: `/${this.prefix}/faqs/${reference}/context`,
+			url: `/${this.ctype.toLowerCase()}/faqs/${reference}/context`,
 			method: 'POST',
 			body
 		})
@@ -83,7 +84,7 @@ export default class SharedFAQs {
 
 	async removeServiceContext( reference: string, body: SharedFAQRemoveServiceContextValidation['body'] ): Promise<SharedFAQRemoveServiceContextValidation['response']> {
 		const { error, message, data } = await this.http.request<Res<SharedFAQRemoveServiceContextValidation['response']>>({
-			url: `/${this.prefix}/faqs/${reference}/context`,
+			url: `/${this.ctype.toLowerCase()}/faqs/${reference}/context`,
 			method: 'DELETE',
 			body
 		})
@@ -93,7 +94,7 @@ export default class SharedFAQs {
 
 	async archive( reference: string ): Promise<SharedFAQArchiveOrRestoreValidation['response']> {
 		const { error, message, data } = await this.http.request<Res<SharedFAQArchiveOrRestoreValidation['response']>>({
-			url: `/${this.prefix}/faqs/${reference}/archive`,
+			url: `/${this.ctype.toLowerCase()}/faqs/${reference}/archive`,
 			method: 'PATCH'
 		})
 		if( error ) throw new Error( message )
@@ -102,7 +103,7 @@ export default class SharedFAQs {
 
 	async restore( reference: string ): Promise<SharedFAQArchiveOrRestoreValidation['response']> {
 		const { error, message, data } = await this.http.request<Res<SharedFAQArchiveOrRestoreValidation['response']>>({
-			url: `/${this.prefix}/faqs/${reference}/restore`,
+			url: `/${this.ctype.toLowerCase()}/faqs/${reference}/restore`,
 			method: 'PATCH'
 		})
 		if( error ) throw new Error( message )
@@ -111,7 +112,7 @@ export default class SharedFAQs {
 
 	async lock( reference: string ): Promise<SharedFAQLockOrUnlockValidation['response']> {
 		const { error, message, data } = await this.http.request<Res<SharedFAQLockOrUnlockValidation['response']>>({
-			url: `/${this.prefix}/faqs/${reference}/lock`,
+			url: `/${this.ctype.toLowerCase()}/faqs/${reference}/lock`,
 			method: 'PATCH'
 		})
 		if( error ) throw new Error( message )
@@ -120,7 +121,7 @@ export default class SharedFAQs {
 
 	async unlock( reference: string ): Promise<SharedFAQLockOrUnlockValidation['response']> {
 		const { error, message, data } = await this.http.request<Res<SharedFAQLockOrUnlockValidation['response']>>({
-			url: `/${this.prefix}/faqs/${reference}/unlock`,
+			url: `/${this.ctype.toLowerCase()}/faqs/${reference}/unlock`,
 			method: 'PATCH'
 		})
 		if( error ) throw new Error( message )
