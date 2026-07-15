@@ -52,6 +52,19 @@ export type { WorkflowsConfig } from './allend/Workflows'
 // Utilities
 export { default as Utils } from './utils'
 
+// ── Client layer (allend) ─────────────────────────────────────────────────────
+// DClient ({ Client, Event }), the IoT socket client, and the customer/agent/
+// query surfaces. Re-exported here so the package entry point is the complete
+// public API (consumers import these from '@de./sdk').
+export { DClient, IoTClient, Customer, Agent, Queries, Utilities } from './allend'
+export type {
+	IoTClientOptions,
+	CustomerConfig,
+	AgentConfig,
+	QueriesConfig,
+	UtilitiesConfig
+} from './allend'
+
 // Public types (domain + SDK config)
 export type * from './types'
 
@@ -75,6 +88,7 @@ import Workspace from './allend/Workspace'
 import Workflows from './allend/Workflows'
 import Tracking  from './allend/Tracking'
 import Utils     from './utils'
+import { DClient, IoTClient, Customer, Agent, Queries, Utilities } from './allend'
 
 const De = {
 	Auth,
@@ -90,7 +104,13 @@ const De = {
 	Workspace,
 	Workflows,
 	Tracking,
-	Utils
+	Utils,
+	DClient,
+	IoTClient,
+	Customer,
+	Agent,
+	Queries,
+	Utilities
 }
 
 export default De
