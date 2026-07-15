@@ -35,7 +35,7 @@
     "test:event": "yarn build:tsc && jest test/event.test.js"
   },
   "dependencies": {
-    "@de./types": "file:../de.types",
+    "@de./types": "^1.0.0",
     "events": "^3.3.0",
     "iframe.io": "^1.1.0",
     "node-fetch": "2.6.1",
