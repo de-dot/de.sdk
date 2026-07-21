@@ -55,13 +55,29 @@ export default class Controls {
   }
 
   /**
-   * Refresh access token to remove server
-   * 
+   * Refresh access token to remote server
+   *
+   * Updating the local copy alone is not enough: the gateway captured the token
+   * it was bound with, so it has to be told about the rotation as well.
+   *
    * @param token - Latest access token
    */
-  refreshToken( token: string ){
-    if( !token ) return
-    this.options.accessToken = token
+  refreshToken( token: string ): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      if( !token ) return reject('Undefined Access Token')
+
+      this.options.accessToken = token
+
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+
+      this.chn.emit('refresh:token', token, ( error: string | boolean ) => {
+        clearTimeout( timeout )
+
+        if( error ) return reject( error )
+        resolve()
+      })
+    })
   }
 
   /**
@@ -75,9 +91,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Set style
       this.chn.emit('set:map:style', style, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     })
@@ -92,9 +108,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Get current location
       this.chn.emit('get:current:location', ( error: string | boolean, location: RTLocation ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve( location )
       } )
     } )
@@ -110,9 +126,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Pin user's current location on the map
       this.chn.emit('pin:current:location', ( error: string | boolean, location: Coordinates | null ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve( location )
       } )
     } )
@@ -129,9 +145,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Set live location options
       this.chn.emit('set:live:options', options, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -145,9 +161,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Start live location tracking
       this.chn.emit('track:live:location', ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -161,9 +177,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Stop live location tracking
       this.chn.emit('untrack:live:location', ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -180,9 +196,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Enable drag pick
       this.chn.emit('enable:dragpick:location', location, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -196,9 +212,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Disable drag pick
       this.chn.emit('disable:dragpick:location', ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -215,9 +231,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Set drag pick content
       this.chn.emit('set:dragpick:content', { type, content }, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -235,9 +251,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Get location coordinates from place name
       this.chn.emit('resolve:place', name, ( error: string | boolean, data: any ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve( data )
       } )
     } )
@@ -254,9 +270,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Get location place from coordinates
       this.chn.emit('resolve:coordinates', coords, ( error: string | boolean, data: any ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve( data )
       } )
     } )
@@ -274,9 +290,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Launch search query
       this.chn.emit('search:query', input, ( error: string | boolean, data: any ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve( data )
       } )
     } )
@@ -293,9 +309,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Get place's details
       this.chn.emit('search:select', index, ( error: string | boolean, data: SearchPlace | null ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve( data )
       } )
     } )
@@ -312,9 +328,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Show nearby entities
       this.chn.emit('show:nearby', list, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -328,9 +344,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Remove nearby entities
       this.chn.emit('remove:nearby', ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -346,9 +362,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Add nearby entity
       this.chn.emit('add:nearby:entity', entity, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -364,9 +380,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Move nearby entity
       this.chn.emit('move:nearby:entity', activePosition, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -382,9 +398,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Remove nearby entity
       this.chn.emit('remove:nearby:entity', id, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -401,9 +417,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Set route
       this.chn.emit('set:route', journey, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -419,9 +435,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Draw route
       this.chn.emit('draw:route', { routeId, data, options }, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -437,9 +453,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Remove route
       this.chn.emit('remove:route', routeId, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -456,9 +472,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Set route origin
       this.chn.emit('set:route:origin', { routeId, point }, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -474,9 +490,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Remove route origin
       this.chn.emit('remove:route:origin', { routeId }, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -493,9 +509,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Set route destination
       this.chn.emit('set:route:destination', { routeId, point }, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -511,9 +527,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Remove route destination
       this.chn.emit('remove:route:destination', { routeId }, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -530,9 +546,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Add route waypoint
       this.chn.emit('add:route:waypoint', { routeId, point }, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -549,9 +565,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Update route waypoint
       this.chn.emit('update:route:waypoint', { routeId, point }, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -568,9 +584,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Remove route waypoint
       this.chn.emit('remove:route:waypoint', { routeId, index }, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -588,9 +604,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       
       this.chn.emit('fit:route:bounds', { routeId, margin }, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -606,9 +622,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       
       this.chn.emit('fit:routes:bounds', options, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -627,9 +643,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Set waypoint caption
       this.chn.emit('set:waypoint:caption', { routeId, id, caption }, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -647,9 +663,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Update waypoint caption
       this.chn.emit('update:waypoint:caption', { routeId, id, caption }, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -666,9 +682,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Remove waypoint caption
       this.chn.emit('remove:waypoint:caption', { routeId, id }, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -685,9 +701,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Mount navigation
       this.chn.emit('mount:navigation', routeId, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -701,9 +717,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Unmount navigation
       this.chn.emit('unmount:navigation', ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -717,9 +733,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Load navigation
       this.chn.emit('load:navigation', ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -735,9 +751,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Set initial navigation position
       this.chn.emit('initial:navigation:position', position, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -753,9 +769,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Navigate
       this.chn.emit('navigate:navigation:direction', position, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -775,9 +791,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Casting navigation direction
       this.chn.emit('casting:navigation:direction', { routeId, direction, position, options }, ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
@@ -791,9 +807,9 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       // Dismiss navigation
       this.chn.emit('dismiss:navigation', ( error: string | boolean ) => {
-        if( error ) return reject( error )
-
         clearTimeout( timeout )
+
+        if( error ) return reject( error )
         resolve()
       } )
     } )
