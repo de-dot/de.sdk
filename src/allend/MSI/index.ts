@@ -9,7 +9,27 @@ import Plugins, { type Plugin } from './Plugins'
 const
 SANDBOX_RULES = ['allow-scripts', 'allow-same-origin'],
 REQUIRED_FEATURES = ['geolocation'],
-REGISTERED_PLUGINS: Record<string, Plugin<any>> = {}
+REGISTERED_PLUGINS: Record<string, Plugin<any>> = {},
+
+// How long to wait for the gateway to embed, connect and bind
+LOAD_TIMEOUT = 30000,
+
+/**
+ * Events the gateway is allowed to send us. Anything else is dropped by the
+ * transport before it reaches a listener.
+ */
+ALLOWED_INCOMING_EVENTS = [
+  'error',
+  'ready',
+  'pick:location',
+  'current:location',
+  'current:location:error',
+  'live:location:start',
+  'live:location:update',
+  'live:location:end',
+  'route',
+  'navigation:direction'
+]
 
 export interface MSIInterface {
   controls: Controls,
@@ -53,7 +73,12 @@ export default class MSI extends EventEmitter {
     // Remove all previous listeners when iframe reloaded
     this.chn && this.chn.removeListeners()
 
-    this.chn = new IOF({ type: 'WINDOW' })
+    this.chn = new IOF({
+      type: 'WINDOW',
+      allowedIncomingEvents: ALLOWED_INCOMING_EVENTS,
+      maxMessagesPerSecond: 100,
+      connectionTimeout: 10000
+    })
     this.chn.initiate( iframe.contentWindow as Window, this.baseURL )
 
     this.chn
@@ -67,7 +92,6 @@ export default class MSI extends EventEmitter {
     })
     .on('error', ( error: Error | string ) => this.emit('error', typeof error == 'object' ? error : new Error( error ) ) )
     .on('ready', () => {
-      console.log('Ready by ready-event')
       this.emit('ready')
       this.emit('loaded', this.chn )
     })
@@ -99,20 +123,31 @@ export default class MSI extends EventEmitter {
   }
 
   /**
-   * Handle gateway embedding network error
+   * Surface a failure that happened while embedding the gateway
    */
-  private networkError(){
+  private embedError( error: Error ){
     this.isConnected = false
-    this.emit('error', new Error('Internet network problem') )
+    this.emit('error', error )
   }
 
   /**
    * Initiate embedding of gateway into current UI by 
    * check network and remote gateway availability.
    */
-  load(): Promise<MSIInterface> {
+  load( timeout: number = LOAD_TIMEOUT ): Promise<MSIInterface> {
     return new Promise( ( resolve, reject ) => {
+      /**
+       * Without this the promise stays pending forever whenever the iframe
+       * never loads or the host never completes `bind`.
+       */
+      const timer = setTimeout( () => {
+        this.isConnected = false
+        reject( new Error('MSI gateway load timeout') )
+      }, timeout )
+
       const initializeAPI = ( chn: IOF ) => {
+        clearTimeout( timer )
+
         const
         /**
          * Manual controls of the map remotely
@@ -133,12 +168,21 @@ export default class MSI extends EventEmitter {
 
       this
       .once('loaded', initializeAPI )
-      .once('error', reject )
+      .once('error', ( error: Error ) => {
+        clearTimeout( timer )
+        reject( error )
+      } )
 
       window
       .fetch( this.baseURL, { mode: 'no-cors' })
-      .then( this.render.bind( this ) )
-      .catch( this.networkError.bind( this ) )
+      // Only a genuine reachability failure is a network problem
+      .catch( () => { throw new Error('Internet network problem') } )
+      /**
+       * Kept in a separate step so a `render` failure (Eg. a missing container
+       * element) reports itself rather than being relabelled a network error.
+       */
+      .then( () => this.render() )
+      .catch( this.embedError.bind( this ) )
     } )
   }
 
