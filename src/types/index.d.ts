@@ -320,10 +320,28 @@ export interface LRStreamer {
 // ─── MSI map interface config ─────────────────────────────────────────────────
 
 export type MapOptions = {
-	element: string
-	accessToken: string
+	/**
+	 * Id of the container element to mount the gateway into.
+	 * Web only -- the React Native entry renders a component instead.
+	 */
+	element?: string
+	/**
+	 * Static access token.
+	 *
+	 * Prefer `getAccessToken` for long-lived sessions: it is read at every bind
+	 * and rebind, so a rotated token is picked up without tearing the map down.
+	 * Supply one or the other -- both entry points reject when neither yields a
+	 * token.
+	 */
+	accessToken?: string
+	getAccessToken?: () => string
 	version?: number
 	env?: 'dev' | 'prod'
+	/**
+	 * Host to substitute for `localhost` when `env` is `dev`. Native apps cannot
+	 * reach the host machine on localhost.
+	 */
+	devHostname?: string
 }
 export type MapLayerStyle = 'streets' | 'outdoors' | 'light' | 'dark' | 'satellite'
 

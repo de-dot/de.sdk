@@ -61,6 +61,7 @@ export type {
 	IoTClientOptions,
 	CustomerConfig,
 	AgentConfig,
+	AgentRealtimeContext,
 	QueriesConfig,
 	UtilitiesConfig
 } from './allend'
