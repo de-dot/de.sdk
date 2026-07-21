@@ -20,7 +20,7 @@ import type {
   RTLocation
 } from '@de./types'
 
-import IOF, { Listener } from 'iframe.io'
+import type { Channel, Listener } from '../../types/channel'
 
 const 
 FUNCTION_EVENT_TIMEOUT = 12000,
@@ -28,9 +28,9 @@ FUNCTION_EVENT_TIMEOUT_MESSAGE = 'Event timeout'
 
 export default class Controls {
   private options: MapOptions
-  private chn: IOF
+  private chn: Channel
 
-  constructor( chn: IOF, options: MapOptions ){
+  constructor( chn: Channel, options: MapOptions ){
     this.chn = chn
     this.options = options
   }
