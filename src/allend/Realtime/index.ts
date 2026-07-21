@@ -4,7 +4,7 @@ import type { AccessOptions } from '../../types/access'
 
 import io, { Socket } from 'socket.io-client'
 import AccessManager from '../Access'
-import { RTS_SERVER_BASEURL } from '../../baseUrl'
+import { baseURL } from '../../baseUrl'
 
 export default class Realtime extends AccessManager {
   private nsp?: Socket
@@ -13,7 +13,7 @@ export default class Realtime extends AccessManager {
   constructor( access: AccessOptions ){
     super( access, 'API' )
     // Socket server host
-    this.iosHost = RTS_SERVER_BASEURL[ access.env ]
+    this.iosHost = baseURL('RTS', access.env, access.devHostname )
   }
 
   connect( clientId: string ): Promise<void> {
