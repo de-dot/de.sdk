@@ -1,9 +1,9 @@
 {
   "name": "@de./sdk",
-  "version": "1.0.5",
-  "description": "Complete SDK pack for MSI (Map Service Interface), IoTClient and DClient services",
+  "version": "2.0.0",
+  "description": "Complete SDK pack for MSI (Map Service Interface), IoTClient and DClient services — web, server and React Native",
   "main": "./dist/index.js",
-  "types": "./dist/de.sdk/src/index.d.ts",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist/",
     "src/",
@@ -11,23 +11,29 @@
   ],
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.js",
-      "types": "./dist/de.sdk/src/index.d.ts"
+      "require": "./dist/index.js"
+    },
+    "./react-native": {
+      "types": "./dist/react-native.d.ts",
+      "import": "./dist/react-native.js",
+      "require": "./dist/react-native.js"
     },
     "./types": {
       "types": "./dist/types/index.d.ts",
       "default": "./dist/types/index.d.ts"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "author": "SCOREX Corporation",
   "private": false,
   "scripts": {
     "build:tsc": "rimraf ./dist && tsc",
-    "build:webpack": "WEBPACK_ENV=build webpack",
     "build:copy-types": "mkdir -p dist/types && cp -r src/types/* dist/types/",
-    "compile": "yarn build:tsc && yarn build:webpack && yarn build:copy-types",
-    "prepack": "yarn run compile",
+    "compile": "yarn build:tsc && yarn build:copy-types",
+    "verify:entries": "node scripts/verify-entries.mjs",
+    "prepack": "yarn run compile && yarn verify:entries",
     "test": "yarn build:tsc && jest",
     "test:auth": "yarn build:tsc && jest test/auth.test.js",
     "test:client": "yarn build:tsc && jest test/client.test.js",
@@ -39,20 +45,32 @@
     "events": "^3.3.0",
     "iframe.io": "^1.1.0",
     "node-fetch": "2.6.1",
-    "socket.io-client": "^4.6.1"
+    "socket.io-client": "^4.6.1",
+    "webview.io": "^1.1.0"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-native": ">=0.60.0",
+    "react-native-webview": ">=11.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": { "optional": true },
+    "react-native": { "optional": true },
+    "react-native-webview": { "optional": true }
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
     "@types/jest": "^29.5.0",
     "@types/node-fetch": "^2.6.3",
+    "@types/react": "^18.0.0",
     "expect.js": "^0.3.1",
     "jest": "^29.7.0",
+    "react": "^18.2.0",
+    "react-native": "^0.72.8",
+    "react-native-webview": "13.16.0",
     "rimraf": "^4.4.0",
     "ts-jest": "^29.0.5",
-    "ts-loader": "^9.4.2",
-    "typescript": "^5.0.2",
-    "webpack": "^5.77.0",
-    "webpack-cli": "^5.0.1"
+    "typescript": "^5.0.2"
   },
   "directories": {
     "dist": "dist/",

@@ -2,16 +2,14 @@
   "ts-node": {
     "files": true
   },
-  "files": [
-    "src/index.ts",
-    "src/types/index.d.ts"
-  ],
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2019",
+    "lib": ["ES2019", "DOM"],
     "module": "commonjs",
     "moduleResolution": "node",
+    "jsx": "react-jsx",
     "outDir": "dist",
-    "rootDir": null, // "src"
+    "rootDir": "src",
     "allowJs": true,
     "strict": true,
     "esModuleInterop": true,
@@ -21,10 +19,15 @@
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "@de./types": ["../de.types/src"],
-      "@de./types/*": ["../de.types/src/*"]
+      // Point at de.types' BUILT output, not its source. Mapping to source
+      // pulled .ts files from outside src/ into the program, which forced
+      // rootDir to null and buried declarations under dist/de.sdk/src/.
+      // Declarations are referenced, never emitted, so rootDir stays "src".
+      // Requires de.types to be built first (`yarn build:types` at the root).
+      "@de./types": ["../de.types/dist"],
+      "@de./types/*": ["../de.types/dist/*"]
     }
   },
   "include": ["src/**/*"],
-  "exclude": ["dist"]
+  "exclude": ["dist", "test"]
 }
