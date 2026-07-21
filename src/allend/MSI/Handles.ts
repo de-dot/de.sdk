@@ -2,6 +2,7 @@ import type {
   Coordinates,
   RTLocation,
   MSIEntity as Entity,
+  MSIEntityType,
   MapOptions,
   Caption,
   Journey,
@@ -70,7 +71,9 @@ export default class Handles extends EventEmitter {
 
       this.chn
       .off('current:location')
-      .off('current:location:live')
+      .off('live:location:start')
+      .off('live:location:update')
+      .off('live:location:end')
       .off('current:location:error')
     } )
 
@@ -83,21 +86,27 @@ export default class Handles extends EventEmitter {
    * 
    * @param position - Peer's current GPS location
    * @param caption - (Optional) Caption information of the peer
+   * @param type - (Default: `car`) Marker representing the peer on the map
    * @return - Readable stream
    */
-  peerLocation( position: RTLocation , caption?: Caption ){
+  peerLocation( position: RTLocation, caption?: Caption, type?: MSIEntityType ){
     if( !this.chn ) return
-    this.chn?.emit('pin:peer:location', { id: 'peer', position, caption } )
-    
+    this.chn?.emit('pin:peer:location', { id: 'peer', position, caption, type } )
+
     const stream = new Stream
-    
-    // Listen to incoming new position data
+
+    /**
+     * Listen to incoming new position data.
+     *
+     * Caption is re-sent on every update so a peer can stream a changing
+     * label (Eg. a live ETA) alongside its position.
+     */
     stream
     .on('data', ({ position, caption }: any ) => {
       if( !position )
         return stream.error( new Error('Invalid Data') )
 
-      this.chn?.emit('pin:peer:location', { id: 'peer', position, caption } )
+      this.chn?.emit('pin:peer:location', { id: 'peer', position, caption, type } )
     })
     .onerror( error => console.error('[Stream Error] ', error ) )
     .onclose( () => this.chn?.emit('unpin:peer:location', 'peer') )
@@ -154,7 +163,7 @@ export default class Handles extends EventEmitter {
             self.emit('nearby--stream', 'add', entity )
           } )
 
-          setTimeout( () => reject('Add entity timeout'), 8000 )
+          TIMEOUT = setTimeout( () => reject('Add entity timeout'), 8000 )
         })
       },
 
@@ -178,7 +187,7 @@ export default class Handles extends EventEmitter {
             self.emit('nearby--stream', 'remove', id )
           } )
 
-          setTimeout( () => reject('Remove entity timeout'), 8000 )
+          TIMEOUT = setTimeout( () => reject('Remove entity timeout'), 8000 )
         } )
       },
 
@@ -205,7 +214,7 @@ export default class Handles extends EventEmitter {
             self.emit('nearby--stream', 'panto', id )
           } )
 
-          setTimeout( () => reject('PanTo entity timeout'), 8000 )
+          TIMEOUT = setTimeout( () => reject('PanTo entity timeout'), 8000 )
         } )
       },
       
@@ -237,7 +246,7 @@ export default class Handles extends EventEmitter {
             self.emit('nearby--stream', 'move', active )
           } )
 
-          setTimeout( () => reject('Move entity timeout'), 8000 )
+          TIMEOUT = setTimeout( () => reject('Move entity timeout'), 8000 )
         } )
       }
     }
