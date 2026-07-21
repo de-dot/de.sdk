@@ -5,6 +5,7 @@ import IOF from 'iframe.io'
 import Handles from './Handles'
 import Controls from './Controls'
 import Plugins, { type Plugin } from './Plugins'
+import resolveAccessToken from './token'
 
 const
 SANDBOX_RULES = ['allow-scripts', 'allow-same-origin'],
@@ -42,6 +43,7 @@ export default class MSI extends EventEmitter {
   private baseURL: string
   private isConnected: boolean
   private options: MapOptions
+  private element: string
   private chn?: IOF
   
   /**
@@ -53,11 +55,23 @@ export default class MSI extends EventEmitter {
     super()
 
     this.options = options
-    if( !this.options.accessToken )
-      throw new Error('Invalid Access Token')
+
+    /**
+     * `element` is optional on MapOptions because the React Native entry
+     * renders a component instead, but the web entry cannot mount without it.
+     */
+    if( !this.options.element )
+      throw new Error('Undefined HTML Element Container')
+
+    this.element = this.options.element
+
+    // Throws when neither `accessToken` nor `getAccessToken` yields a token
+    resolveAccessToken( this.options )
 
     this.isDev = this.options.env == 'dev' || false
-    this.baseURL = this.isDev ? 'http://localhost:4800' : 'https://msi.dedot.io'
+    this.baseURL = this.isDev
+              ? `http://${this.options.devHostname || 'localhost'}:4800`
+              : 'https://msi.dedot.io'
 
     this.isConnected = false
   }
@@ -83,7 +97,18 @@ export default class MSI extends EventEmitter {
 
     this.chn
     .once('connect', () => {
-      this.chn?.emit('bind', { ...this.options, origin: window.origin }, ( error: string | boolean ) => {
+      /**
+       * Resolve the token at bind time rather than reusing the one captured at
+       * construction, so a host supplying `getAccessToken` reconnects with a
+       * fresh token after a reload.
+       */
+      const { getAccessToken, ...config } = this.options
+
+      this.chn?.emit('bind', {
+        ...config,
+        accessToken: resolveAccessToken( this.options ),
+        origin: window.origin
+      }, ( error: string | boolean ) => {
         if( error )
           return this.emit('error', new Error( error as string ) )
       
@@ -103,8 +128,8 @@ export default class MSI extends EventEmitter {
    * an iframe.
    */
   private render(){
-    const container = document.getElementById( this.options.element )
-    if( !container ) throw new Error(`HTML Element Container <#${this.options.element}> Not Found`)
+    const container = document.getElementById( this.element )
+    if( !container ) throw new Error(`HTML Element Container <#${this.element}> Not Found`)
     
     container.innerHTML = `<iframe id="de-sdk:map"
                                     src="${this.baseURL}"

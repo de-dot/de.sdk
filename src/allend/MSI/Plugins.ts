@@ -1,6 +1,6 @@
 import type { MapOptions } from '../../types'
 
-import IOF from 'iframe.io'
+import type { Channel } from '../../types/channel'
 import Handles from './Handles'
 import Controls from './Controls'
 import Utils from '../../utils'
@@ -14,13 +14,13 @@ export type PluginHook = {
 export type Plugin<PluginAPI, PluginOptions = {}> = ( hooks: PluginHook, options?: PluginOptions ) => PluginAPI
 
 export default class Plugins {
-  private chn: IOF
+  private chn: Channel
   private handles: Handles
   private controls: Controls
   private options: MapOptions
   private ACTIVE_PLUGINS: Record<string, Plugin<any>>  = {}
 
-  constructor( chn: IOF, handles: Handles, controls: Controls, options: MapOptions ){
+  constructor( chn: Channel, handles: Handles, controls: Controls, options: MapOptions ){
     this.chn = chn
     this.options = options
     this.handles = handles

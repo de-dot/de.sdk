@@ -6,6 +6,7 @@ import Event from './Realtime'
 import Client from './Workflows/Client'
 import Customer, { type CustomerConfig } from './Customer'
 import Agent, { type AgentConfig } from './Agent'
+import { type AgentRealtimeContext } from './Agent/realtime'
 import Queries, { type QueriesConfig } from './Queries'
 import Utilities, { type UtilitiesConfig } from './Utilities'
 
@@ -22,6 +23,7 @@ export {
 	type CustomerConfig,
 	Agent,
 	type AgentConfig,
+	type AgentRealtimeContext,
 	Queries,
 	type QueriesConfig,
 	Utilities,

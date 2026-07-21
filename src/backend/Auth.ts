@@ -1,4 +1,4 @@
-import { API_SERVER_BASEURL } from '../baseUrl'
+import { baseURL } from '../baseUrl'
 import type { AuthRequestOptions } from '../types/auth'
 
 const ACCESS_TOKEN_EXPIRY = 3.75 // in 3 minutes 45 seconds
@@ -20,6 +20,8 @@ export type AuthConfig = {
 	version?: number
 	autorefresh?: boolean
 	onNewToken?: ( token: string ) => void
+	/** Host to substitute for `localhost` in `dev` (Eg. a native emulator) */
+	devHostname?: string
 }
 
 type AuthResponse = {
@@ -56,7 +58,7 @@ export default class Auth {
     this.remoteOrigin = config.remoteOrigin
     this.env          = config.env || 'dev'
     this.version      = config.version || 1
-    this.baseURL      = API_SERVER_BASEURL[ this.env ]
+    this.baseURL      = baseURL('API', this.env, config.devHostname )
     this.autorefresh  = config.autorefresh || false
     this.onNewToken   = config.onNewToken
   }

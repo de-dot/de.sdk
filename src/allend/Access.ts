@@ -1,10 +1,29 @@
 import type { AccessOptions } from '../types/access'
 import type { HTTPRequestOptions } from '../types'
-import { API_SERVER_BASEURL, ASI_SERVER_BASEURL } from '../baseUrl'
+import { baseURL } from '../baseUrl'
 
 type AccessType = 'API' | 'ASI'
 
 const USER_ACCOUNT_SERVICE = 'De.API'
+
+/**
+ * Resolve a fetch implementation for the host runtime.
+ *
+ * Node 18+, every browser and React Native all expose a global `fetch`, so that
+ * is the first and usual answer. `node-fetch` remains only as a fallback for
+ * Node versions predating the global.
+ *
+ * The previous check tested `globalThis.window && globalThis.fetch`, which was
+ * wrong for React Native: there is no `window` there but `fetch` is global, so
+ * it fell through to importing node-fetch and broke. Testing for `fetch`
+ * directly is what lets one Access layer serve node, browser and native.
+ */
+async function resolveFetch(): Promise<typeof globalThis.fetch> {
+  if( typeof globalThis?.fetch === 'function' )
+    return globalThis.fetch
+
+  return ( await import('node-fetch') ).default as any
+}
 
 export default class AccessManager {
   private atype: AccessType
@@ -24,9 +43,7 @@ export default class AccessManager {
     this.platform = options.platform || 'proxy'
     this.accessToken = options.accessToken
     this.remoteOrigin = options.remoteOrigin
-    this.baseURL = this.atype === 'ASI'
-              ? ASI_SERVER_BASEURL[ options.env || 'dev' ] 
-              : API_SERVER_BASEURL[ options.env || 'dev' ]
+    this.baseURL = baseURL( this.atype === 'ASI' ? 'ASI' : 'API', options.env || 'dev', options.devHostname )
   }
 
   async request<Response>({ url, ...options }: HTTPRequestOptions ): Promise<Response> {
@@ -65,13 +82,9 @@ export default class AccessManager {
 
     url = `${this.baseURL}/v${this.version}/${url.replace(/^\//, '')}`
 
-    // Support fetch for in both node & browser environment
-    let fetch = globalThis?.window && globalThis?.fetch
-    if( !fetch )
-      fetch = ( await import('node-fetch') ).default as any
+    const fetch = await resolveFetch()
 
-    // console.log( options )
-    return await ( await fetch( url, options ) ).json() as Response
+    return await ( await fetch( url, options as any ) ).json() as Response
   }
 
   setToken( token: string ): void { this.accessToken = token }

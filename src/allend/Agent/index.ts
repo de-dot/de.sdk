@@ -14,6 +14,7 @@ import AgentConsolidation from './consolidation'
 import AgentReallocation from './reallocation'
 import AgentDispatch from './dispatch'
 import AgentOrigin from './origin'
+import AgentRealtime from './realtime'
 
 export type AgentConfig = {
 	context: string
@@ -21,13 +22,16 @@ export type AgentConfig = {
 	env?: 'dev' | 'staging' | 'prod'
 	platform?: 'web' | 'mobile' | 'server' | 'proxy'
 	remoteOrigin?: string
+	/** Host to substitute for `localhost` in `dev` (Eg. a native emulator) */
+	devHostname?: string
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 //
 // Agent: Agent Operation Interfaces — de.arch AUX/agent routes.
 // Covers profile, availability, orders (ride/delivery/shipping),
-// navigation, consolidation, reallocation, dispatch, and origin.
+// navigation, consolidation, reallocation, dispatch, and origin — plus the
+// realtime socket channel (order rooms + proactive-consolidation responses).
 //
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -40,6 +44,7 @@ export default class Agent extends AccessManager {
 	readonly reallocation:  AgentReallocation
 	readonly dispatch:      AgentDispatch
 	readonly origin:        AgentOrigin
+	readonly realtime:      AgentRealtime
 
 	constructor( config: AgentConfig ){
 		if( !config.context )     throw new Error('Undefined context. See https://doc.dedot.io/sdk/aux')
@@ -50,7 +55,8 @@ export default class Agent extends AccessManager {
 			accessToken:  config.accessToken,
 			env:          config.env      || 'dev',
 			platform:     config.platform || 'proxy',
-			remoteOrigin: config.remoteOrigin
+			remoteOrigin: config.remoteOrigin,
+			devHostname:  config.devHostname
 		}
 		super( access, 'API' )
 
@@ -62,6 +68,7 @@ export default class Agent extends AccessManager {
 		this.reallocation  = new AgentReallocation( this )
 		this.dispatch      = new AgentDispatch( this )
 		this.origin        = new AgentOrigin( this )
+		this.realtime      = new AgentRealtime( access )
 	}
 
 	// ── Agent profile ─────────────────────────────────────────────────────────

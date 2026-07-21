@@ -1,5 +1,5 @@
 import { io, type Socket } from 'socket.io-client'
-import { IOT_SERVER_BASEURL } from '../../baseUrl'
+import { baseURL as resolveBaseURL } from '../../baseUrl'
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
@@ -7,6 +7,8 @@ export type IoTBackendConfig = {
 	channel: string
 	accessToken: string
 	env?: 'dev' | 'staging' | 'prod'
+	/** Host to substitute for `localhost` in `dev` (Eg. a native emulator) */
+	devHostname?: string
 }
 
 // ─── Record API ───────────────────────────────────────────────────────────────
@@ -84,8 +86,8 @@ export default class IoTBackend {
 
 	connect(): { socket: Socket, records: Records } {
 		const
-		baseURL = IOT_SERVER_BASEURL[ this.config.env || 'dev' ],
-		socket  = io(`${baseURL}/${this.config.channel}`, {
+		host   = resolveBaseURL('IOT', this.config.env || 'dev', this.config.devHostname ),
+		socket = io(`${host}/${this.config.channel}`, {
 			auth: { accessToken: this.config.accessToken }
 		})
 

@@ -14,17 +14,17 @@ import type {
   LRStreamer
 } from '../../types'
 
-import IOF from 'iframe.io'
+import type { Channel } from '../../types/channel'
 import { EventEmitter } from 'events'
 import Controls from './Controls'
 import Stream from '../../utils/stream'
 
 export default class Handles extends EventEmitter {
-  private chn: IOF
+  private chn: Channel
   private controls: Controls
   private options: MapOptions
 
-  constructor( chn: IOF, controls: Controls, options: MapOptions ){
+  constructor( chn: Channel, controls: Controls, options: MapOptions ){
     super()
 
     this.chn = chn
