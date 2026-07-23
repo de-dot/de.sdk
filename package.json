@@ -70,7 +70,7 @@
     "react-native-webview": "13.16.0",
     "rimraf": "^4.4.0",
     "ts-jest": "^29.0.5",
-    "typescript": "^5.0.2"
+    "typescript": "^5.9.0"
   },
   "directories": {
     "dist": "dist/",
