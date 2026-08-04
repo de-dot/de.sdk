@@ -18,6 +18,15 @@ export type AuthConfig = {
 	remoteOrigin?: string
 	env?: 'dev' | 'staging' | 'prod'
 	version?: number
+	/**
+	 * Operator uid to embed in the minted token's scope.
+	 *
+	 * Routes behind `isAllowed` look the caller up in the `operators`
+	 * collection by uid, so a token minted without one is rejected with
+	 * "Require <uid> generated accessToken" no matter how valid the connector
+	 * credentials are. Omit it for pure machine-to-machine access.
+	 */
+	uid?: string
 	autorefresh?: boolean
 	onNewToken?: ( token: string ) => void
 	/** Host to substitute for `localhost` in `dev` (Eg. a native emulator) */
@@ -38,6 +47,7 @@ export default class Auth {
   private cid: string
   private secret: string
   private context: string
+  private uid?: string
   private remoteOrigin?: string
   private refreshTimer?: NodeJS.Timeout
   private autorefresh?: boolean
@@ -53,6 +63,7 @@ export default class Auth {
     if( !config.secret )  throw new Error('Undefined secret. Check https://doc.dedot.io/sdk/auth')
 
     this.context      = config.context
+    this.uid          = config.uid
     this.cid          = config.cid
     this.secret       = config.secret
     this.remoteOrigin = config.remoteOrigin
@@ -121,7 +132,7 @@ export default class Auth {
     options: AuthRequestOptions = {
       url: '/access/token',
       method: 'POST',
-      body: { context: this.context, cid: this.cid, secret: this.secret, remoteOrigin: this.remoteOrigin }
+      body: { context: this.context, cid: this.cid, secret: this.secret, remoteOrigin: this.remoteOrigin, ...( this.uid ? { uid: this.uid } : {} ) }
     },
     { error, message, data } = await this.request<AuthResponse>( options )
     if( error ) throw new Error( message )
