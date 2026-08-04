@@ -1,4 +1,27 @@
 // ─── @de./sdk — public type surface ──────────────────────────────────────────
+
+// Stream is a runtime class in this package; the public surface references it
+// structurally, so it has to be imported here rather than assumed global.
+import type Stream from '../utils/stream'
+import type MSI from '../allend/MSI'
+
+/**
+ * The map engine an MSI extension receives.
+ *
+ * REVIEW: this alias replaces a dangling `Engine` reference that never
+ * resolved to a declaration anywhere in the package — the public surface
+ * simply did not compile for consumers. MSI is the only engine the SDK
+ * exposes, so it is the intended target as far as can be determined.
+ */
+export type Engine = MSI
+
+/**
+ * Styling options for custom map points.
+ *
+ * REVIEW: also previously dangling. Kept permissive so no existing caller
+ * breaks; narrow it once the intended shape is known.
+ */
+export type CustomPointOptions = Record<string, unknown>
 //
 // Rule: import from @de./types whenever the type exists there.
 // Only define types here that are genuinely SDK-specific (MSI map UI, HTTP
