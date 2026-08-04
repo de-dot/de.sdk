@@ -1,4 +1,4 @@
-import type { AccessOptions } from '../../types/access'
+import type { AccessOptions, UserSession } from '../../types/access'
 import type {
 	AgentInfoValidation,
 	AgentAvailabilityValidation,
@@ -24,6 +24,15 @@ export type AgentConfig = {
 	remoteOrigin?: string
 	/** Host to substitute for `localhost` in `dev` (Eg. a native emulator) */
 	devHostname?: string
+	/**
+	 * The signed-in rider.
+	 *
+	 * Required in practice: AUX agent routes authenticate the caller with
+	 * `isConnected` + `isAgent`, which read `de-auth-token` / `de-auth-device`
+	 * and ignore the bearer token entirely. Without this, every call here
+	 * fails authorization no matter how valid the access token is.
+	 */
+	session?: UserSession
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -56,7 +65,8 @@ export default class Agent extends AccessManager {
 			env:          config.env      || 'dev',
 			platform:     config.platform || 'proxy',
 			remoteOrigin: config.remoteOrigin,
-			devHostname:  config.devHostname
+			devHostname:  config.devHostname,
+			session:      config.session
 		}
 		super( access, 'API' )
 

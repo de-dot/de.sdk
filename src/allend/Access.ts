@@ -1,4 +1,4 @@
-import type { AccessOptions } from '../types/access'
+import type { AccessOptions, UserSession } from '../types/access'
 import type { HTTPRequestOptions } from '../types'
 import { baseURL } from '../baseUrl'
 
@@ -32,6 +32,7 @@ export default class AccessManager {
   private baseURL: string
   protected accessToken?: string
   protected remoteOrigin?: string
+  protected session?: UserSession
 
   constructor( options: AccessOptions, atype: AccessType ){
     if( !options ) throw new Error('Undefined Access Configuration')
@@ -43,6 +44,7 @@ export default class AccessManager {
     this.platform = options.platform || 'proxy'
     this.accessToken = options.accessToken
     this.remoteOrigin = options.remoteOrigin
+    this.session = options.session
     this.baseURL = baseURL( this.atype === 'ASI' ? 'ASI' : 'API', options.env || 'dev', options.devHostname )
   }
 
@@ -66,6 +68,17 @@ export default class AccessManager {
     if( this.accessToken )
       rawOptions.headers.authorization = `Bearer ${this.accessToken}`
 
+    /**
+     * User-session credentials, sent alongside the bearer token rather than
+     * instead of it. `isConnected` (AUX agent routes) reads only this pair;
+     * `isAuthorized` reads only the bearer. Routes guarded by either one are
+     * then reachable from a single client.
+     */
+    if( this.session ){
+      rawOptions.headers['de-auth-token'] = this.session.token
+      rawOptions.headers['de-auth-device'] = this.session.device
+    }
+
     if( options.body ){
       rawOptions.headers['content-type'] = 'application/json'
       if( typeof options.body === 'object' )
@@ -88,4 +101,10 @@ export default class AccessManager {
   }
 
   setToken( token: string ): void { this.accessToken = token }
+
+  /** Attach or replace the signed-in user after construction. */
+  setSession( session: UserSession ): void { this.session = session }
+
+  /** Drop the user session — e.g. on sign-out. */
+  clearSession(): void { this.session = undefined }
 }

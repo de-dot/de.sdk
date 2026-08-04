@@ -1,4 +1,4 @@
-import type { AccessOptions } from '../../types/access'
+import type { AccessOptions, UserSession } from '../../types/access'
 import AccessManager from '../Access'
 import CustomerIntents from './intents'
 import CustomerOrders from './orders'
@@ -10,6 +10,11 @@ export type CustomerConfig = {
 	env?: 'dev' | 'staging' | 'prod'
 	platform?: 'web' | 'mobile' | 'server' | 'proxy'
 	remoteOrigin?: string
+	/**
+	 * The signed-in customer, when the client acts on their behalf rather
+	 * than as the integration itself.
+	 */
+	session?: UserSession
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -33,7 +38,8 @@ export default class Customer extends AccessManager {
 			accessToken:  config.accessToken,
 			env:          config.env      || 'dev',
 			platform:     config.platform || 'proxy',
-			remoteOrigin: config.remoteOrigin
+			remoteOrigin: config.remoteOrigin,
+			session:      config.session
 		}
 		super( access, 'API' )
 

@@ -88,6 +88,7 @@ export type { Plugin } from './allend/MSI/Plugins'
 
 // Transport contract the MSI control surface is written against
 export type { Channel, Listener, AckFunction } from './types/channel'
+export type { AccessOptions, UserSession } from './types/access'
 
 // Public types (domain + SDK config)
 export type * from './types'
