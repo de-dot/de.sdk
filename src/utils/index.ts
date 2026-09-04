@@ -15,9 +15,12 @@ export type Res<T = any> = { error: boolean, status?: string, message?: string, 
  * `result.reference`, and a caller could not read a single field without
  * casting past its own types.
  *
- * Routes that answer with no payload resolve to `undefined`.
+ * Routes that answer with no payload resolve to `undefined`, and a payload the
+ * route may omit keeps the `| undefined` its own schema gave it — which is the
+ * distinction a conditional on `T extends { data: infer D }` loses, since an
+ * optional property fails that test outright.
  */
-export type Data<T> = T extends { data: infer D } ? D : undefined
+export type Data<T> = 'data' extends keyof T ? T['data'] : undefined
 
 export const qs = ( params?: Record<string, any> ): string => {
   if( !params ) return ''

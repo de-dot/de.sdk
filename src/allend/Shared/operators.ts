@@ -16,7 +16,7 @@ import type {
 	IoTSPSharedOperatorUpdateValidation,
 	IoTSPSharedOperatorRemoveValidation
 } from '@de./types/shared/operator'
-import { qs, type Http, type Res } from '../../utils'
+import { qs, type Http, type Res, type Data } from '../../utils'
 import type { OperatorContextType } from '@de./types'
 
 // ─── Validation map ───────────────────────────────────────────────────────────
@@ -53,8 +53,8 @@ type OperatorV<C extends OperatorContextType> = {
 export default class SharedOperators<C extends OperatorContextType> {
 	constructor( private http: Http, private ctype: OperatorContextType ){}
 
-	async list( querystring?: OperatorV<C>['fetch']['querystring'] ): Promise<OperatorV<C>['fetch']['response']> {
-		const { error, message, data } = await this.http.request<Res<OperatorV<C>['fetch']['response']>>({
+	async list( querystring?: OperatorV<C>['fetch']['querystring'] ): Promise<Data<OperatorV<C>['fetch']['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<OperatorV<C>['fetch']['response']>>>({
 			url: `/${this.ctype.toLowerCase()}/operators${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -62,8 +62,8 @@ export default class SharedOperators<C extends OperatorContextType> {
 		return data
 	}
 
-	async retrieve( id: string ): Promise<OperatorV<C>['retrieve']['response']> {
-		const { error, message, data } = await this.http.request<Res<OperatorV<C>['retrieve']['response']>>({
+	async retrieve( id: string ): Promise<Data<OperatorV<C>['retrieve']['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<OperatorV<C>['retrieve']['response']>>>({
 			url: `/${this.ctype.toLowerCase()}/operators/${id}`,
 			method: 'GET'
 		})
@@ -71,8 +71,8 @@ export default class SharedOperators<C extends OperatorContextType> {
 		return data
 	}
 
-	async update( id: string, body: OperatorV<C>['update']['body'] ): Promise<OperatorV<C>['update']['response']> {
-		const { error, message, data } = await this.http.request<Res<OperatorV<C>['update']['response']>>({
+	async update( id: string, body: OperatorV<C>['update']['body'] ): Promise<Data<OperatorV<C>['update']['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<OperatorV<C>['update']['response']>>>({
 			url: `/${this.ctype.toLowerCase()}/operators/${id}`,
 			method: 'PATCH',
 			body
@@ -81,8 +81,8 @@ export default class SharedOperators<C extends OperatorContextType> {
 		return data
 	}
 
-	async remove( id: string ): Promise<OperatorV<C>['remove']['response']> {
-		const { error, message, data } = await this.http.request<Res<OperatorV<C>['remove']['response']>>({
+	async remove( id: string ): Promise<Data<OperatorV<C>['remove']['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<OperatorV<C>['remove']['response']>>>({
 			url: `/${this.ctype.toLowerCase()}/operators/${id}`,
 			method: 'DELETE'
 		})

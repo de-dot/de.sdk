@@ -10,7 +10,7 @@ import type {
 	LSPSharedInvitationAcceptValidation
 } from '@de./types/shared/invitation'
 import type { UserContextType } from '@de./types'
-import { type Http, type Res } from '../../utils'
+import { type Http, type Res, type Data } from '../../utils'
 
 // ─── Validation map ───────────────────────────────────────────────────────────
 
@@ -42,8 +42,8 @@ type InvitationV<C extends UserContextType> = {
 export default class SharedInvitation<C extends UserContextType> {
 	constructor( private http: Http, private prefix: string ){}
 
-	async send( as: string, body: InvitationV<C>['send']['body'] ): Promise<InvitationV<C>['send']['response']> {
-		const { error, message, data } = await this.http.request<Res<InvitationV<C>['send']['response']>>({
+	async send( as: string, body: InvitationV<C>['send']['body'] ): Promise<Data<InvitationV<C>['send']['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<InvitationV<C>['send']['response']>>>({
 			url: `/${this.prefix}/invitation/${as}`,
 			method: 'POST',
 			body
@@ -52,8 +52,8 @@ export default class SharedInvitation<C extends UserContextType> {
 		return data
 	}
 
-	async cancel( body: InvitationV<C>['cancel']['body'] ): Promise<InvitationV<C>['cancel']['response']> {
-		const { error, message, data } = await this.http.request<Res<InvitationV<C>['cancel']['response']>>({
+	async cancel( body: InvitationV<C>['cancel']['body'] ): Promise<Data<InvitationV<C>['cancel']['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<InvitationV<C>['cancel']['response']>>>({
 			url: `/${this.prefix}/invitation/cancel`,
 			method: 'POST',
 			body
@@ -62,8 +62,8 @@ export default class SharedInvitation<C extends UserContextType> {
 		return data
 	}
 
-	async accept( body: InvitationV<C>['accept']['body'] ): Promise<InvitationV<C>['accept']['response']> {
-		const { error, message, data } = await this.http.request<Res<InvitationV<C>['accept']['response']>>({
+	async accept( body: InvitationV<C>['accept']['body'] ): Promise<Data<InvitationV<C>['accept']['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<InvitationV<C>['accept']['response']>>>({
 			url: `/${this.prefix}/invitation/accept`,
 			method: 'POST',
 			body
