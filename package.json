@@ -31,14 +31,14 @@
   "scripts": {
     "build:tsc": "rimraf ./dist && tsc",
     "build:copy-types": "mkdir -p dist/types && cp -r src/types/* dist/types/",
-    "compile": "yarn build:tsc && yarn build:copy-types",
+    "compile": "npm run build:tsc && npm run build:copy-types",
     "verify:entries": "node scripts/verify-entries.mjs",
-    "prepack": "yarn run compile && yarn verify:entries",
-    "test": "yarn build:tsc && jest",
-    "test:auth": "yarn build:tsc && jest test/auth.test.js",
-    "test:client": "yarn build:tsc && jest test/client.test.js",
-    "test:order": "yarn build:tsc && jest test/order.test.js",
-    "test:event": "yarn build:tsc && jest test/event.test.js"
+    "prepack": "npm run compile && npm run verify:entries",
+    "test": "npm run build:tsc && jest",
+    "test:auth": "npm run build:tsc && jest test/auth.test.js",
+    "test:client": "npm run build:tsc && jest test/client.test.js",
+    "test:order": "npm run build:tsc && jest test/order.test.js",
+    "test:event": "npm run build:tsc && jest test/event.test.js"
   },
   "dependencies": {
     "@de./types": "^2.0.0",
