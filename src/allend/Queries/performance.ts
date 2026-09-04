@@ -3,15 +3,15 @@ import type {
 	QueryBatchSyncPerformanceValidation,
 	QueryGetPerformanceValidation
 } from '@de./types'
-import { type Http, type Res } from '../../utils'
+import { type Http, type Res, type Data } from '../../utils'
 
 // ─── Performance ──────────────────────────────────────────────────────────────
 
 export class QueriesPerformance {
 	constructor( private http: Http ){}
 
-	async sync( body: QuerySyncPerformanceValidation['body'] ): Promise<QuerySyncPerformanceValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<QuerySyncPerformanceValidation['response']>>({
+	async sync( body: QuerySyncPerformanceValidation['body'] ): Promise<Data<QuerySyncPerformanceValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<QuerySyncPerformanceValidation['response']>>>({
 			url: '/queries/performance/sync',
 			method: 'POST',
 			body
@@ -20,8 +20,8 @@ export class QueriesPerformance {
 		return data
 	}
 
-	async batchSync( body: QueryBatchSyncPerformanceValidation['body'] ): Promise<QueryBatchSyncPerformanceValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<QueryBatchSyncPerformanceValidation['response']>>({
+	async batchSync( body: QueryBatchSyncPerformanceValidation['body'] ): Promise<Data<QueryBatchSyncPerformanceValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<QueryBatchSyncPerformanceValidation['response']>>>({
 			url: '/queries/performance/sync/batch',
 			method: 'POST',
 			body
@@ -30,8 +30,8 @@ export class QueriesPerformance {
 		return data
 	}
 
-	async get( lsp: string, serviceId: string ): Promise<QueryGetPerformanceValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<QueryGetPerformanceValidation['response']>>({
+	async get( lsp: string, serviceId: string ): Promise<Data<QueryGetPerformanceValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<QueryGetPerformanceValidation['response']>>>({
 			url: `/queries/performance/${lsp}/${serviceId}`,
 			method: 'GET'
 		})

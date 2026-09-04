@@ -4,15 +4,15 @@ import type {
 	PipelineTemplateListValidation,
 	PipelineTemplateUpdateValidation
 } from '@de./types'
-import { qs, type Http, type Res } from '../../utils'
+import { qs, type Http, type Res, type Data } from '../../utils'
 
 // ─── Templates ────────────────────────────────────────────────────────────────
 
 export class PipelinesTemplates {
   constructor( private http: Http ){}
 
-  async create( body: PipelineTemplateCreateValidation['body'] ): Promise<PipelineTemplateCreateValidation['response']> {
-    const { error, message, data } = await this.http.request<Res<PipelineTemplateCreateValidation['response']>>({
+  async create( body: PipelineTemplateCreateValidation['body'] ): Promise<Data<PipelineTemplateCreateValidation['response']>> {
+    const { error, message, data } = await this.http.request<Res<Data<PipelineTemplateCreateValidation['response']>>>({
       url: '/pipelines/templates',
       method: 'POST',
       body
@@ -21,8 +21,8 @@ export class PipelinesTemplates {
     return data
   }
 
-  async list( querystring?: PipelineTemplateListValidation['querystring'] ): Promise<PipelineTemplateListValidation['response']> {
-    const { error, message, data } = await this.http.request<Res<PipelineTemplateListValidation['response']>>({
+  async list( querystring?: PipelineTemplateListValidation['querystring'] ): Promise<Data<PipelineTemplateListValidation['response']>> {
+    const { error, message, data } = await this.http.request<Res<Data<PipelineTemplateListValidation['response']>>>({
       url: `/pipelines/templates${qs( querystring )}`,
       method: 'GET'
     })
@@ -30,8 +30,8 @@ export class PipelinesTemplates {
     return data
   }
 
-  async get( id: string ): Promise<PipelineTemplateGetValidation['response']> {
-    const { error, message, data } = await this.http.request<Res<PipelineTemplateGetValidation['response']>>({
+  async get( id: string ): Promise<Data<PipelineTemplateGetValidation['response']>> {
+    const { error, message, data } = await this.http.request<Res<Data<PipelineTemplateGetValidation['response']>>>({
       url: `/pipelines/templates/${id}`,
       method: 'GET'
     })
@@ -39,8 +39,8 @@ export class PipelinesTemplates {
     return data
   }
 
-  async update( id: string, body: PipelineTemplateUpdateValidation['body'] ): Promise<PipelineTemplateUpdateValidation['response']> {
-    const { error, message, data } = await this.http.request<Res<PipelineTemplateUpdateValidation['response']>>({
+  async update( id: string, body: PipelineTemplateUpdateValidation['body'] ): Promise<Data<PipelineTemplateUpdateValidation['response']>> {
+    const { error, message, data } = await this.http.request<Res<Data<PipelineTemplateUpdateValidation['response']>>>({
       url: `/pipelines/templates/${id}`,
       method: 'PATCH',
       body

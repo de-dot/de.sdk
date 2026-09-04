@@ -10,15 +10,15 @@ import type {
 	CSPInventoryListReservationsValidation,
 	CSPInventoryGetReservationValidation
 } from '@de./types/csp/inventory'
-import { qs, type Http, type Res } from '../../utils'
+import { qs, type Http, type Res, type Data } from '../../utils'
 
 // ── CSP Inventory ────────────────────────────────────────────────────────
 
 export default class CSPInventory {
 	constructor( private http: Http ){}
 
-	async syncCatalog( body: CSPInventorySyncCatalogValidation['body'] ): Promise<CSPInventorySyncCatalogValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPInventorySyncCatalogValidation['response']>>({
+	async syncCatalog( body: CSPInventorySyncCatalogValidation['body'] ): Promise<Data<CSPInventorySyncCatalogValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPInventorySyncCatalogValidation['response']>>>({
 			url: '/csp/inventory/sync',
 			method: 'POST',
 			body
@@ -27,8 +27,8 @@ export default class CSPInventory {
 		return data
 	}
 
-	async checkAvailability( body: CSPInventoryCheckAvailabilityValidation['body'] ): Promise<CSPInventoryCheckAvailabilityValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPInventoryCheckAvailabilityValidation['response']>>({
+	async checkAvailability( body: CSPInventoryCheckAvailabilityValidation['body'] ): Promise<Data<CSPInventoryCheckAvailabilityValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPInventoryCheckAvailabilityValidation['response']>>>({
 			url: '/csp/inventory/availability',
 			method: 'POST',
 			body
@@ -37,8 +37,8 @@ export default class CSPInventory {
 		return data
 	}
 
-	async bulkPush( body: CSPInventoryBulkPushValidation['body'] ): Promise<CSPInventoryBulkPushValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPInventoryBulkPushValidation['response']>>({
+	async bulkPush( body: CSPInventoryBulkPushValidation['body'] ): Promise<Data<CSPInventoryBulkPushValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPInventoryBulkPushValidation['response']>>>({
 			url: '/csp/inventory/bulk/push',
 			method: 'POST',
 			body
@@ -47,8 +47,8 @@ export default class CSPInventory {
 		return data
 	}
 
-	async bulkPull( body: CSPInventoryBulkPullValidation['body'] ): Promise<CSPInventoryBulkPullValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPInventoryBulkPullValidation['response']>>({
+	async bulkPull( body: CSPInventoryBulkPullValidation['body'] ): Promise<Data<CSPInventoryBulkPullValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPInventoryBulkPullValidation['response']>>>({
 			url: '/csp/inventory/bulk/pull',
 			method: 'POST',
 			body
@@ -57,8 +57,8 @@ export default class CSPInventory {
 		return data
 	}
 
-	async getSyncStatus( syncId: string ): Promise<CSPInventoryGetSyncStatusValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPInventoryGetSyncStatusValidation['response']>>({
+	async getSyncStatus( syncId: string ): Promise<Data<CSPInventoryGetSyncStatusValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPInventoryGetSyncStatusValidation['response']>>>({
 			url: `/csp/inventory/sync/${syncId}`,
 			method: 'GET'
 		})
@@ -66,8 +66,8 @@ export default class CSPInventory {
 		return data
 	}
 
-	async reserve( body: CSPInventoryReserveValidation['body'] ): Promise<CSPInventoryReserveValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPInventoryReserveValidation['response']>>({
+	async reserve( body: CSPInventoryReserveValidation['body'] ): Promise<Data<CSPInventoryReserveValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPInventoryReserveValidation['response']>>>({
 			url: '/csp/inventory/reservations',
 			method: 'POST',
 			body
@@ -76,8 +76,8 @@ export default class CSPInventory {
 		return data
 	}
 
-	async commit( body: CSPInventoryCommitValidation['body'] ): Promise<CSPInventoryCommitValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPInventoryCommitValidation['response']>>({
+	async commit( body: CSPInventoryCommitValidation['body'] ): Promise<Data<CSPInventoryCommitValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPInventoryCommitValidation['response']>>>({
 			url: '/csp/inventory/reservations/commit',
 			method: 'POST',
 			body
@@ -86,8 +86,8 @@ export default class CSPInventory {
 		return data
 	}
 
-	async release( body: CSPInventoryReleaseValidation['body'] ): Promise<CSPInventoryReleaseValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPInventoryReleaseValidation['response']>>({
+	async release( body: CSPInventoryReleaseValidation['body'] ): Promise<Data<CSPInventoryReleaseValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPInventoryReleaseValidation['response']>>>({
 			url: '/csp/inventory/reservations/release',
 			method: 'POST',
 			body
@@ -96,8 +96,8 @@ export default class CSPInventory {
 		return data
 	}
 
-	async listReservations( querystring?: CSPInventoryListReservationsValidation['querystring'] ): Promise<CSPInventoryListReservationsValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPInventoryListReservationsValidation['response']>>({
+	async listReservations( querystring?: CSPInventoryListReservationsValidation['querystring'] ): Promise<Data<CSPInventoryListReservationsValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPInventoryListReservationsValidation['response']>>>({
 			url: `/csp/inventory/reservations${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -105,8 +105,8 @@ export default class CSPInventory {
 		return data
 	}
 
-	async getReservation( id: string ): Promise<CSPInventoryGetReservationValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPInventoryGetReservationValidation['response']>>({
+	async getReservation( id: string ): Promise<Data<CSPInventoryGetReservationValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPInventoryGetReservationValidation['response']>>>({
 			url: `/csp/inventory/reservations/${id}`,
 			method: 'GET'
 		})

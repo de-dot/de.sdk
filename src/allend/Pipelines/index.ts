@@ -9,7 +9,7 @@ import type {
 	PipelineSetStatusValidation
 } from '@de./types'
 import AccessManager from '../Access'
-import { qs, type Res } from '../../utils'
+import { qs, type Res, type Data } from '../../utils'
 import { PipelinesWorkers } from './workers'
 import { PipelinesMonitor } from './monitor'
 import { PipelinesQueries } from './queries'
@@ -79,8 +79,8 @@ export default class Pipelines extends AccessManager {
 
 	// ── Pipeline definitions ──────────────────────────────────────────────────
 
-	async list( querystring?: PipelineListValidation['querystring'] ): Promise<PipelineListValidation['response']> {
-		const { error, message, data } = await this.request<Res<PipelineListValidation['response']>>({
+	async list( querystring?: PipelineListValidation['querystring'] ): Promise<Data<PipelineListValidation['response']>> {
+		const { error, message, data } = await this.request<Res<Data<PipelineListValidation['response']>>>({
 			url: `/pipelines${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -88,8 +88,8 @@ export default class Pipelines extends AccessManager {
 		return data
 	}
 
-	async get( id: string ): Promise<PipelineRetrieveValidation['response']> {
-		const { error, message, data } = await this.request<Res<PipelineRetrieveValidation['response']>>({
+	async get( id: string ): Promise<Data<PipelineRetrieveValidation['response']>> {
+		const { error, message, data } = await this.request<Res<Data<PipelineRetrieveValidation['response']>>>({
 			url: `/pipelines/${id}`,
 			method: 'GET'
 		})
@@ -97,8 +97,8 @@ export default class Pipelines extends AccessManager {
 		return data
 	}
 
-	async deploy( id: string, body?: PipelineDeployValidation['body'] ): Promise<PipelineDeployValidation['response']> {
-		const { error, message, data } = await this.request<Res<PipelineDeployValidation['response']>>({
+	async deploy( id: string, body?: PipelineDeployValidation['body'] ): Promise<Data<PipelineDeployValidation['response']>> {
+		const { error, message, data } = await this.request<Res<Data<PipelineDeployValidation['response']>>>({
 			url: `/pipelines/${id}/deploy`,
 			method: 'POST',
 			body
@@ -107,8 +107,8 @@ export default class Pipelines extends AccessManager {
 		return data
 	}
 
-	async validate( id: string ): Promise<PipelineValidateValidation['response']> {
-		const { error, message, data } = await this.request<Res<PipelineValidateValidation['response']>>({
+	async validate( id: string ): Promise<Data<PipelineValidateValidation['response']>> {
+		const { error, message, data } = await this.request<Res<Data<PipelineValidateValidation['response']>>>({
 			url: `/pipelines/${id}/validate`,
 			method: 'POST'
 		})
@@ -116,8 +116,8 @@ export default class Pipelines extends AccessManager {
 		return data
 	}
 
-	async simulate( id: string, body?: PipelineSimulateValidation['body'] ): Promise<PipelineSimulateValidation['response']> {
-		const { error, message, data } = await this.request<Res<PipelineSimulateValidation['response']>>({
+	async simulate( id: string, body?: PipelineSimulateValidation['body'] ): Promise<Data<PipelineSimulateValidation['response']>> {
+		const { error, message, data } = await this.request<Res<Data<PipelineSimulateValidation['response']>>>({
 			url: `/pipelines/${id}/simulate`,
 			method: 'POST',
 			body
@@ -126,8 +126,8 @@ export default class Pipelines extends AccessManager {
 		return data
 	}
 
-	async setStatus( id: string, status: string ): Promise<PipelineSetStatusValidation['response']> {
-		const { error, message, data } = await this.request<Res<PipelineSetStatusValidation['response']>>({
+	async setStatus( id: string, status: string ): Promise<Data<PipelineSetStatusValidation['response']>> {
+		const { error, message, data } = await this.request<Res<Data<PipelineSetStatusValidation['response']>>>({
 			url: `/pipelines/${id}/status/${status}`,
 			method: 'PATCH'
 		})

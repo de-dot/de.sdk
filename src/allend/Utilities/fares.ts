@@ -4,15 +4,15 @@ import type {
 	UtilRideFareValidation,
 	UtilCrossBorderFareValidation
 } from '@de./types'
-import { type Http, type Res } from '../../utils'
+import { type Http, type Res, type Data } from '../../utils'
 
 // ─── Fares ────────────────────────────────────────────────────────────────────
 
 export class UtilitiesFares {
 	constructor( private http: Http ){}
 
-	async deliveryFees( body: UtilDeliveryFeesValidation['body'] ): Promise<UtilDeliveryFeesValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<UtilDeliveryFeesValidation['response']>>({
+	async deliveryFees( body: UtilDeliveryFeesValidation['body'] ): Promise<Data<UtilDeliveryFeesValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<UtilDeliveryFeesValidation['response']>>>({
 			url: '/utilities/fares/delivery',
 			method: 'POST',
 			body
@@ -21,8 +21,8 @@ export class UtilitiesFares {
 		return data
 	}
 
-	async transportFare( body: UtilTransportFareValidation['body'] ): Promise<UtilTransportFareValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<UtilTransportFareValidation['response']>>({
+	async transportFare( body: UtilTransportFareValidation['body'] ): Promise<Data<UtilTransportFareValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<UtilTransportFareValidation['response']>>>({
 			url: '/utilities/fares/transport',
 			method: 'POST',
 			body
@@ -31,8 +31,8 @@ export class UtilitiesFares {
 		return data
 	}
 
-	async rideFare( body: UtilRideFareValidation['body'] ): Promise<UtilRideFareValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<UtilRideFareValidation['response']>>({
+	async rideFare( body: UtilRideFareValidation['body'] ): Promise<Data<UtilRideFareValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<UtilRideFareValidation['response']>>>({
 			url: '/utilities/fares/ride',
 			method: 'POST',
 			body
@@ -41,8 +41,8 @@ export class UtilitiesFares {
 		return data
 	}
 
-	async crossBorderFare( body: UtilCrossBorderFareValidation['body'] ): Promise<UtilCrossBorderFareValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<UtilCrossBorderFareValidation['response']>>({
+	async crossBorderFare( body: UtilCrossBorderFareValidation['body'] ): Promise<Data<UtilCrossBorderFareValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<UtilCrossBorderFareValidation['response']>>>({
 			url: '/utilities/fares/crossborder',
 			method: 'POST',
 			body

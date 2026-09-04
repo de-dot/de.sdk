@@ -24,7 +24,7 @@ import type {
 	LSPGraphLandmarksValidation
 } from '@de./types/lsp/graph'
 import LSPCoverage from './coverage'
-import { qs, type Http, type Res } from '../../utils'
+import { qs, type Http, type Res, type Data } from '../../utils'
 
 // ── LSP Operations ────────────────────────────────────────────────────────────
 
@@ -45,8 +45,8 @@ export default class LSPOperations {
 	 * change"; `describe` says the same thing knob by knob with the provenance
 	 * and scope of each, so a surprising value can be traced without guessing.
 	 */
-	async getRallyConfig(): Promise<LSPRallyConfigRetrieveValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPRallyConfigRetrieveValidation['response']>>({
+	async getRallyConfig(): Promise<Data<LSPRallyConfigRetrieveValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPRallyConfigRetrieveValidation['response']>>>({
 			url: '/lsp/rally/config',
 			method: 'GET'
 		})
@@ -61,8 +61,8 @@ export default class LSPOperations {
 	 * process scope are rejected rather than silently ignored, since a setting
 	 * that appears to take and does nothing is worse than a refusal.
 	 */
-	async updateRallyConfig( body: LSPRallyConfigUpdateValidation['body'] ): Promise<LSPRallyConfigUpdateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPRallyConfigUpdateValidation['response']>>({
+	async updateRallyConfig( body: LSPRallyConfigUpdateValidation['body'] ): Promise<Data<LSPRallyConfigUpdateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPRallyConfigUpdateValidation['response']>>>({
 			url: '/lsp/rally/config',
 			method: 'PATCH',
 			body
@@ -72,8 +72,8 @@ export default class LSPOperations {
 	}
 
 	/** Put one knob back to the platform default, leaving the rest tuned. */
-	async resetRallyConfigKey( key: string ): Promise<LSPRallyConfigResetKeyValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPRallyConfigResetKeyValidation['response']>>({
+	async resetRallyConfigKey( key: string ): Promise<Data<LSPRallyConfigResetKeyValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPRallyConfigResetKeyValidation['response']>>>({
 			url: `/lsp/rally/config/${key}`,
 			method: 'DELETE'
 		})
@@ -82,8 +82,8 @@ export default class LSPOperations {
 	}
 
 	/** Drop every override this workspace holds. */
-	async resetRallyConfig(): Promise<LSPRallyConfigResetValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPRallyConfigResetValidation['response']>>({
+	async resetRallyConfig(): Promise<Data<LSPRallyConfigResetValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPRallyConfigResetValidation['response']>>>({
 			url: '/lsp/rally/config',
 			method: 'DELETE'
 		})
@@ -93,8 +93,8 @@ export default class LSPOperations {
 
 	// ── Zones ─────────────────────────────────────────────────────────────────
 
-	async createZone( body: LSPZoneCreateValidation['body'] ): Promise<LSPZoneCreateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPZoneCreateValidation['response']>>({
+	async createZone( body: LSPZoneCreateValidation['body'] ): Promise<Data<LSPZoneCreateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPZoneCreateValidation['response']>>>({
 			url: '/lsp/zones',
 			method: 'POST',
 			body
@@ -103,8 +103,8 @@ export default class LSPOperations {
 		return data
 	}
 
-	async listZones( querystring?: LSPZoneListValidation['querystring'] ): Promise<LSPZoneListValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPZoneListValidation['response']>>({
+	async listZones( querystring?: LSPZoneListValidation['querystring'] ): Promise<Data<LSPZoneListValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPZoneListValidation['response']>>>({
 			url: `/lsp/zones${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -112,8 +112,8 @@ export default class LSPOperations {
 		return data
 	}
 
-	async getZoneDensity( id: string ): Promise<LSPZoneDensityValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPZoneDensityValidation['response']>>({
+	async getZoneDensity( id: string ): Promise<Data<LSPZoneDensityValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPZoneDensityValidation['response']>>>({
 			url: `/lsp/zones/${id}/density`,
 			method: 'GET'
 		})
@@ -121,8 +121,8 @@ export default class LSPOperations {
 		return data
 	}
 
-	async updateZoneStatus( id: string, body: LSPZoneUpdateStatusValidation['body'] ): Promise<LSPZoneUpdateStatusValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPZoneUpdateStatusValidation['response']>>({
+	async updateZoneStatus( id: string, body: LSPZoneUpdateStatusValidation['body'] ): Promise<Data<LSPZoneUpdateStatusValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPZoneUpdateStatusValidation['response']>>>({
 			url: `/lsp/zones/${id}/status`,
 			method: 'PATCH',
 			body
@@ -141,8 +141,8 @@ export default class LSPOperations {
 
 	// ── Graph ─────────────────────────────────────────────────────────────────
 
-	async getGraphPoi( externalId: string ): Promise<LSPGraphGetPoiValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPGraphGetPoiValidation['response']>>({
+	async getGraphPoi( externalId: string ): Promise<Data<LSPGraphGetPoiValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPGraphGetPoiValidation['response']>>>({
 			url: `/lsp/graph/poi/${externalId}`,
 			method: 'GET'
 		})
@@ -150,8 +150,8 @@ export default class LSPOperations {
 		return data
 	}
 
-	async registerGraphPoi( body: LSPGraphRegisterPoiValidation['body'] ): Promise<LSPGraphRegisterPoiValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPGraphRegisterPoiValidation['response']>>({
+	async registerGraphPoi( body: LSPGraphRegisterPoiValidation['body'] ): Promise<Data<LSPGraphRegisterPoiValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPGraphRegisterPoiValidation['response']>>>({
 			url: '/lsp/graph/poi',
 			method: 'POST',
 			body
@@ -160,8 +160,8 @@ export default class LSPOperations {
 		return data
 	}
 
-	async getNearestGraph( querystring: LSPGraphNearestValidation['querystring'] ): Promise<LSPGraphNearestValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPGraphNearestValidation['response']>>({
+	async getNearestGraph( querystring: LSPGraphNearestValidation['querystring'] ): Promise<Data<LSPGraphNearestValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPGraphNearestValidation['response']>>>({
 			url: `/lsp/graph/nearest${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -169,8 +169,8 @@ export default class LSPOperations {
 		return data
 	}
 
-	async getGraphLandmarks(): Promise<LSPGraphLandmarksValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPGraphLandmarksValidation['response']>>({
+	async getGraphLandmarks(): Promise<Data<LSPGraphLandmarksValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPGraphLandmarksValidation['response']>>>({
 			url: '/lsp/graph/landmarks',
 			method: 'GET'
 		})
@@ -180,8 +180,8 @@ export default class LSPOperations {
 
 	// ── Score ─────────────────────────────────────────────────────────────────
 
-	async getOriginScore( senderId: string ): Promise<LSPScoreOriginValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPScoreOriginValidation['response']>>({
+	async getOriginScore( senderId: string ): Promise<Data<LSPScoreOriginValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPScoreOriginValidation['response']>>>({
 			url: `/lsp/score/origin/${senderId}`,
 			method: 'GET'
 		})
@@ -189,8 +189,8 @@ export default class LSPOperations {
 		return data
 	}
 
-	async getAgentScore( agentId: string ): Promise<LSPScoreAgentValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPScoreAgentValidation['response']>>({
+	async getAgentScore( agentId: string ): Promise<Data<LSPScoreAgentValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPScoreAgentValidation['response']>>>({
 			url: `/lsp/score/agent/${agentId}`,
 			method: 'GET'
 		})
@@ -200,8 +200,8 @@ export default class LSPOperations {
 
 	// ── Reports ───────────────────────────────────────────────────────────────
 
-	async getInventoryReport( querystring?: LSPReportsInventoryValidation['querystring'] ): Promise<LSPReportsInventoryValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPReportsInventoryValidation['response']>>({
+	async getInventoryReport( querystring?: LSPReportsInventoryValidation['querystring'] ): Promise<Data<LSPReportsInventoryValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPReportsInventoryValidation['response']>>>({
 			url: `/lsp/reports/inventory${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -209,8 +209,8 @@ export default class LSPOperations {
 		return data
 	}
 
-	async getOperationsReport( querystring?: LSPReportsOperationsValidation['querystring'] ): Promise<LSPReportsOperationsValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPReportsOperationsValidation['response']>>({
+	async getOperationsReport( querystring?: LSPReportsOperationsValidation['querystring'] ): Promise<Data<LSPReportsOperationsValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPReportsOperationsValidation['response']>>>({
 			url: `/lsp/reports/operations${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -218,8 +218,8 @@ export default class LSPOperations {
 		return data
 	}
 
-	async getFacilityReport( querystring?: LSPReportsFacilityValidation['querystring'] ): Promise<LSPReportsFacilityValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPReportsFacilityValidation['response']>>({
+	async getFacilityReport( querystring?: LSPReportsFacilityValidation['querystring'] ): Promise<Data<LSPReportsFacilityValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPReportsFacilityValidation['response']>>>({
 			url: `/lsp/reports/facility${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -227,8 +227,8 @@ export default class LSPOperations {
 		return data
 	}
 
-	async getTasksReport( querystring?: LSPReportsTasksValidation['querystring'] ): Promise<LSPReportsTasksValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPReportsTasksValidation['response']>>({
+	async getTasksReport( querystring?: LSPReportsTasksValidation['querystring'] ): Promise<Data<LSPReportsTasksValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPReportsTasksValidation['response']>>>({
 			url: `/lsp/reports/tasks${qs( querystring )}`,
 			method: 'GET'
 		})

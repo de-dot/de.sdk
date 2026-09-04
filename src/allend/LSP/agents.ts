@@ -14,15 +14,15 @@ import type {
 	LSPConsolidationCreatePointValidation,
 	LSPConsolidationFetchPointsValidation
 } from '@de./types/lsp/consolidation'
-import { qs, type Http, type Res } from '../../utils'
+import { qs, type Http, type Res, type Data } from '../../utils'
 
 // ── LSP Agents ────────────────────────────────────────────────────────────────
 
 export default class LSPAgents {
 	constructor( private http: Http ){}
 
-	async list( querystring?: LSPAgentListValidation['querystring'] ): Promise<LSPAgentListValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPAgentListValidation['response']>>({
+	async list( querystring?: LSPAgentListValidation['querystring'] ): Promise<Data<LSPAgentListValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPAgentListValidation['response']>>>({
 			url: `/lsp/agents${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -30,8 +30,8 @@ export default class LSPAgents {
 		return data
 	}
 
-	async retrieve( id: string, querystring?: LSPAgentRetrieveValidation['querystring'] ): Promise<LSPAgentRetrieveValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPAgentRetrieveValidation['response']>>({
+	async retrieve( id: string, querystring?: LSPAgentRetrieveValidation['querystring'] ): Promise<Data<LSPAgentRetrieveValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPAgentRetrieveValidation['response']>>>({
 			url: `/lsp/agents/${id}${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -39,8 +39,8 @@ export default class LSPAgents {
 		return data
 	}
 
-	async update( id: string, body: LSPAgentUpdateValidation['body'] ): Promise<LSPAgentUpdateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPAgentUpdateValidation['response']>>({
+	async update( id: string, body: LSPAgentUpdateValidation['body'] ): Promise<Data<LSPAgentUpdateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPAgentUpdateValidation['response']>>>({
 			url: `/lsp/agents/${id}`,
 			method: 'PATCH',
 			body
@@ -49,8 +49,8 @@ export default class LSPAgents {
 		return data
 	}
 
-	async assignVehicle( id: string, body: LSPAgentAssignVehicleValidation['body'] ): Promise<LSPAgentAssignVehicleValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPAgentAssignVehicleValidation['response']>>({
+	async assignVehicle( id: string, body: LSPAgentAssignVehicleValidation['body'] ): Promise<Data<LSPAgentAssignVehicleValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPAgentAssignVehicleValidation['response']>>>({
 			url: `/lsp/agents/${id}/vehicle/assign`,
 			method: 'PUT',
 			body
@@ -59,8 +59,8 @@ export default class LSPAgents {
 		return data
 	}
 
-	async unassignVehicle( id: string ): Promise<LSPAgentUnassignVehicleValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPAgentUnassignVehicleValidation['response']>>({
+	async unassignVehicle( id: string ): Promise<Data<LSPAgentUnassignVehicleValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPAgentUnassignVehicleValidation['response']>>>({
 			url: `/lsp/agents/${id}/vehicle/unassign`,
 			method: 'PATCH'
 		})
@@ -78,8 +78,8 @@ export default class LSPAgents {
 
 	// ── Consolidation ──────────────────────────────────────────────────────────
 
-	async scheduleConsolidation( body: LSPConsolidationScheduleValidation['body'] ): Promise<LSPConsolidationScheduleValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPConsolidationScheduleValidation['response']>>({
+	async scheduleConsolidation( body: LSPConsolidationScheduleValidation['body'] ): Promise<Data<LSPConsolidationScheduleValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPConsolidationScheduleValidation['response']>>>({
 			url: '/lsp/agents/consolidation/schedule',
 			method: 'POST',
 			body
@@ -88,8 +88,8 @@ export default class LSPAgents {
 		return data
 	}
 
-	async listConsolidations( querystring?: LSPConsolidationFetchValidation['querystring'] ): Promise<LSPConsolidationFetchValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPConsolidationFetchValidation['response']>>({
+	async listConsolidations( querystring?: LSPConsolidationFetchValidation['querystring'] ): Promise<Data<LSPConsolidationFetchValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPConsolidationFetchValidation['response']>>>({
 			url: `/lsp/agents/consolidation${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -97,8 +97,8 @@ export default class LSPAgents {
 		return data
 	}
 
-	async getConsolidation( consolidationId: string ): Promise<LSPConsolidationGetValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPConsolidationGetValidation['response']>>({
+	async getConsolidation( consolidationId: string ): Promise<Data<LSPConsolidationGetValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPConsolidationGetValidation['response']>>>({
 			url: `/lsp/agents/consolidation/${consolidationId}`,
 			method: 'GET'
 		})
@@ -106,8 +106,8 @@ export default class LSPAgents {
 		return data
 	}
 
-	async updateConsolidationState( consolidationId: string, body: LSPConsolidationUpdateStateValidation['body'] ): Promise<LSPConsolidationUpdateStateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPConsolidationUpdateStateValidation['response']>>({
+	async updateConsolidationState( consolidationId: string, body: LSPConsolidationUpdateStateValidation['body'] ): Promise<Data<LSPConsolidationUpdateStateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPConsolidationUpdateStateValidation['response']>>>({
 			url: `/lsp/agents/consolidation/${consolidationId}/state`,
 			method: 'PUT',
 			body
@@ -116,8 +116,8 @@ export default class LSPAgents {
 		return data
 	}
 
-	async createConsolidationPoint( body: LSPConsolidationCreatePointValidation['body'] ): Promise<LSPConsolidationCreatePointValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPConsolidationCreatePointValidation['response']>>({
+	async createConsolidationPoint( body: LSPConsolidationCreatePointValidation['body'] ): Promise<Data<LSPConsolidationCreatePointValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPConsolidationCreatePointValidation['response']>>>({
 			url: '/lsp/agents/consolidation/points',
 			method: 'POST',
 			body
@@ -126,8 +126,8 @@ export default class LSPAgents {
 		return data
 	}
 
-	async listConsolidationPoints( querystring?: LSPConsolidationFetchPointsValidation['querystring'] ): Promise<LSPConsolidationFetchPointsValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPConsolidationFetchPointsValidation['response']>>({
+	async listConsolidationPoints( querystring?: LSPConsolidationFetchPointsValidation['querystring'] ): Promise<Data<LSPConsolidationFetchPointsValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPConsolidationFetchPointsValidation['response']>>>({
 			url: `/lsp/agents/consolidation/points${qs( querystring )}`,
 			method: 'GET'
 		})

@@ -2,15 +2,15 @@ import type {
 	PipelineEscalationListValidation,
 	PipelineEscalationResolveValidation
 } from '@de./types'
-import { qs, type Http, type Res } from '../../utils'
+import { qs, type Http, type Res, type Data } from '../../utils'
 
 // ─── Escalations ──────────────────────────────────────────────────────────────
 
 export class PipelinesEscalations {
   constructor( private http: Http ){}
 
-  async list( querystring?: PipelineEscalationListValidation['querystring'] ): Promise<PipelineEscalationListValidation['response']> {
-    const { error, message, data } = await this.http.request<Res<PipelineEscalationListValidation['response']>>({
+  async list( querystring?: PipelineEscalationListValidation['querystring'] ): Promise<Data<PipelineEscalationListValidation['response']>> {
+    const { error, message, data } = await this.http.request<Res<Data<PipelineEscalationListValidation['response']>>>({
       url: `/pipelines/escalations${qs( querystring )}`,
       method: 'GET'
     })
@@ -18,8 +18,8 @@ export class PipelinesEscalations {
     return data
   }
 
-  async resolve( id: string, body?: PipelineEscalationResolveValidation['body'] ): Promise<PipelineEscalationResolveValidation['response']> {
-    const { error, message, data } = await this.http.request<Res<PipelineEscalationResolveValidation['response']>>({
+  async resolve( id: string, body?: PipelineEscalationResolveValidation['body'] ): Promise<Data<PipelineEscalationResolveValidation['response']>> {
+    const { error, message, data } = await this.http.request<Res<Data<PipelineEscalationResolveValidation['response']>>>({
       url: `/pipelines/escalations/${id}/resolve`,
       method: 'POST',
       body

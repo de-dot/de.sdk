@@ -63,15 +63,15 @@ import type {
 	LSPFleetMaintenanceGetUpcomingValidation,
 	LSPFleetMaintenanceGetOverdueValidation
 } from '@de./types/lsp/fleet/maintenance'
-import { qs, type Http, type Res } from '../../utils'
+import { qs, type Http, type Res, type Data } from '../../utils'
 
 // ── LSP Fleets ────────────────────────────────────────────────────────────────
 
 export default class LSPFleets {
 	constructor( private http: Http ){}
 
-	async create( body: LSPFleetCreateValidation['body'] ): Promise<LSPFleetCreateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetCreateValidation['response']>>({
+	async create( body: LSPFleetCreateValidation['body'] ): Promise<Data<LSPFleetCreateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetCreateValidation['response']>>>({
 			url: '/lsp/fleets/create',
 			method: 'POST',
 			body
@@ -80,8 +80,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async list( querystring?: LSPFleetListValidation['querystring'] ): Promise<LSPFleetListValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetListValidation['response']>>({
+	async list( querystring?: LSPFleetListValidation['querystring'] ): Promise<Data<LSPFleetListValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetListValidation['response']>>>({
 			url: `/lsp/fleets${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -89,8 +89,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async retrieve( id: string ): Promise<LSPFleetRetrieveValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetRetrieveValidation['response']>>({
+	async retrieve( id: string ): Promise<Data<LSPFleetRetrieveValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetRetrieveValidation['response']>>>({
 			url: `/lsp/fleets/${id}`,
 			method: 'GET'
 		})
@@ -98,8 +98,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async update( id: string, body: LSPFleetUpdateValidation['body'] ): Promise<LSPFleetUpdateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetUpdateValidation['response']>>({
+	async update( id: string, body: LSPFleetUpdateValidation['body'] ): Promise<Data<LSPFleetUpdateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetUpdateValidation['response']>>>({
 			url: `/lsp/fleets/${id}`,
 			method: 'PATCH',
 			body
@@ -108,8 +108,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async updateStatus( id: string, body: LSPFleetUpdateStatusValidation['body'] ): Promise<LSPFleetUpdateStatusValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetUpdateStatusValidation['response']>>({
+	async updateStatus( id: string, body: LSPFleetUpdateStatusValidation['body'] ): Promise<Data<LSPFleetUpdateStatusValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetUpdateStatusValidation['response']>>>({
 			url: `/lsp/fleets/${id}/status`,
 			method: 'PATCH',
 			body
@@ -119,7 +119,7 @@ export default class LSPFleets {
 	}
 
 	async remove( id: string ): Promise<boolean> {
-		const { error, message } = await this.http.request<Res<LSPFleetRemoveValidation['response']>>({
+		const { error, message } = await this.http.request<Res<Data<LSPFleetRemoveValidation['response']>>>({
 			url: `/lsp/fleets/${id}`,
 			method: 'DELETE'
 		})
@@ -129,8 +129,8 @@ export default class LSPFleets {
 
 	// ── Vehicles ──────────────────────────────────────────────────────────────
 
-	async addVehicle( body: LSPVehicleAddValidation['body'] ): Promise<LSPVehicleAddValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPVehicleAddValidation['response']>>({
+	async addVehicle( body: LSPVehicleAddValidation['body'] ): Promise<Data<LSPVehicleAddValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPVehicleAddValidation['response']>>>({
 			url: '/lsp/fleet/vehicles/add',
 			method: 'POST',
 			body
@@ -139,8 +139,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async listVehicles( querystring?: LSPVehicleListValidation['querystring'] ): Promise<LSPVehicleListValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPVehicleListValidation['response']>>({
+	async listVehicles( querystring?: LSPVehicleListValidation['querystring'] ): Promise<Data<LSPVehicleListValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPVehicleListValidation['response']>>>({
 			url: `/lsp/fleet/vehicles${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -148,8 +148,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async retrieveVehicle( id: string ): Promise<LSPVehicleRetrieveValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPVehicleRetrieveValidation['response']>>({
+	async retrieveVehicle( id: string ): Promise<Data<LSPVehicleRetrieveValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPVehicleRetrieveValidation['response']>>>({
 			url: `/lsp/fleet/vehicles/${id}`,
 			method: 'GET'
 		})
@@ -157,8 +157,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async updateVehicle( id: string, body: LSPVehicleUpdateValidation['body'] ): Promise<LSPVehicleUpdateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPVehicleUpdateValidation['response']>>({
+	async updateVehicle( id: string, body: LSPVehicleUpdateValidation['body'] ): Promise<Data<LSPVehicleUpdateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPVehicleUpdateValidation['response']>>>({
 			url: `/lsp/fleet/vehicles/${id}`,
 			method: 'PATCH',
 			body
@@ -167,8 +167,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async updateVehicleStatus( id: string, body: LSPVehicleUpdateStatusValidation['body'] ): Promise<LSPVehicleUpdateStatusValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPVehicleUpdateStatusValidation['response']>>({
+	async updateVehicleStatus( id: string, body: LSPVehicleUpdateStatusValidation['body'] ): Promise<Data<LSPVehicleUpdateStatusValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPVehicleUpdateStatusValidation['response']>>>({
 			url: `/lsp/fleet/vehicles/${id}/status`,
 			method: 'PATCH',
 			body
@@ -177,8 +177,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async updateVehicleSpecs( id: string, body: LSPVehicleUpdateSpecsValidation['body'] ): Promise<LSPVehicleUpdateSpecsValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPVehicleUpdateSpecsValidation['response']>>({
+	async updateVehicleSpecs( id: string, body: LSPVehicleUpdateSpecsValidation['body'] ): Promise<Data<LSPVehicleUpdateSpecsValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPVehicleUpdateSpecsValidation['response']>>>({
 			url: `/lsp/fleet/vehicles/${id}/specs`,
 			method: 'PATCH',
 			body
@@ -187,8 +187,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async updateVehicleIoT( id: string, body: LSPVehicleUpdateIoTValidation['body'] ): Promise<LSPVehicleUpdateIoTValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPVehicleUpdateIoTValidation['response']>>({
+	async updateVehicleIoT( id: string, body: LSPVehicleUpdateIoTValidation['body'] ): Promise<Data<LSPVehicleUpdateIoTValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPVehicleUpdateIoTValidation['response']>>>({
 			url: `/lsp/fleet/vehicles/${id}/iot`,
 			method: 'PATCH',
 			body
@@ -197,8 +197,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async allocateVehicle( id: string, body: LSPVehicleAllocateValidation['body'] ): Promise<LSPVehicleAllocateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPVehicleAllocateValidation['response']>>({
+	async allocateVehicle( id: string, body: LSPVehicleAllocateValidation['body'] ): Promise<Data<LSPVehicleAllocateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPVehicleAllocateValidation['response']>>>({
 			url: `/lsp/fleet/vehicles/${id}/allocate`,
 			method: 'PUT',
 			body
@@ -207,8 +207,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async deallocateVehicle( id: string ): Promise<LSPVehicleDeallocateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPVehicleDeallocateValidation['response']>>({
+	async deallocateVehicle( id: string ): Promise<Data<LSPVehicleDeallocateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPVehicleDeallocateValidation['response']>>>({
 			url: `/lsp/fleet/vehicles/${id}/deallocate`,
 			method: 'PATCH'
 		})
@@ -216,8 +216,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async removeVehicle( id: string ): Promise<LSPVehicleRemoveValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPVehicleRemoveValidation['response']>>({
+	async removeVehicle( id: string ): Promise<Data<LSPVehicleRemoveValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPVehicleRemoveValidation['response']>>>({
 			url: `/lsp/fleet/vehicles/${id}`,
 			method: 'DELETE'
 		})
@@ -227,8 +227,8 @@ export default class LSPFleets {
 
 	// ── Parking Facilities ────────────────────────────────────────────────────
 
-	async addParkingFacility( body: LSPFleetParkingAddFacilityValidation['body'] ): Promise<LSPFleetParkingAddFacilityValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingAddFacilityValidation['response']>>({
+	async addParkingFacility( body: LSPFleetParkingAddFacilityValidation['body'] ): Promise<Data<LSPFleetParkingAddFacilityValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingAddFacilityValidation['response']>>>({
 			url: '/lsp/fleet/parking/facilities',
 			method: 'POST',
 			body
@@ -237,8 +237,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async listParkingFacilities( querystring?: LSPFleetParkingFetchFacilitiesValidation['querystring'] ): Promise<LSPFleetParkingFetchFacilitiesValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingFetchFacilitiesValidation['response']>>({
+	async listParkingFacilities( querystring?: LSPFleetParkingFetchFacilitiesValidation['querystring'] ): Promise<Data<LSPFleetParkingFetchFacilitiesValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingFetchFacilitiesValidation['response']>>>({
 			url: `/lsp/fleet/parking/facilities${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -246,8 +246,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async retrieveParkingFacility( id: string ): Promise<LSPFleetParkingRetrieveFacilityValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingRetrieveFacilityValidation['response']>>({
+	async retrieveParkingFacility( id: string ): Promise<Data<LSPFleetParkingRetrieveFacilityValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingRetrieveFacilityValidation['response']>>>({
 			url: `/lsp/fleet/parking/facilities/${id}`,
 			method: 'GET'
 		})
@@ -255,8 +255,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async getParkingFacilityUtilization( id: string, querystring: LSPFleetParkingGetUtilizationValidation['querystring'] ): Promise<LSPFleetParkingGetUtilizationValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingGetUtilizationValidation['response']>>({
+	async getParkingFacilityUtilization( id: string, querystring: LSPFleetParkingGetUtilizationValidation['querystring'] ): Promise<Data<LSPFleetParkingGetUtilizationValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingGetUtilizationValidation['response']>>>({
 			url: `/lsp/fleet/parking/facilities/${id}/utilization${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -264,8 +264,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async updateParkingFacility( id: string, body: LSPFleetParkingUpdateFacilityValidation['body'] ): Promise<LSPFleetParkingUpdateFacilityValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingUpdateFacilityValidation['response']>>({
+	async updateParkingFacility( id: string, body: LSPFleetParkingUpdateFacilityValidation['body'] ): Promise<Data<LSPFleetParkingUpdateFacilityValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingUpdateFacilityValidation['response']>>>({
 			url: `/lsp/fleet/parking/facilities/${id}`,
 			method: 'PATCH',
 			body
@@ -274,8 +274,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async removeParkingFacility( id: string, body: LSPFleetParkingRemoveFacilityValidation['body'] ): Promise<LSPFleetParkingRemoveFacilityValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingRemoveFacilityValidation['response']>>({
+	async removeParkingFacility( id: string, body: LSPFleetParkingRemoveFacilityValidation['body'] ): Promise<Data<LSPFleetParkingRemoveFacilityValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingRemoveFacilityValidation['response']>>>({
 			url: `/lsp/fleet/parking/facilities/${id}`,
 			method: 'DELETE',
 			body
@@ -284,8 +284,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async addParkingSpace( id: string, body: LSPFleetParkingAddSpaceValidation['body'] ): Promise<LSPFleetParkingAddSpaceValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingAddSpaceValidation['response']>>({
+	async addParkingSpace( id: string, body: LSPFleetParkingAddSpaceValidation['body'] ): Promise<Data<LSPFleetParkingAddSpaceValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingAddSpaceValidation['response']>>>({
 			url: `/lsp/fleet/parking/facilities/${id}/spaces`,
 			method: 'POST',
 			body
@@ -294,8 +294,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async updateParkingSpace( id: string, spaceId: string, body: LSPFleetParkingUpdateSpaceValidation['body'] ): Promise<LSPFleetParkingUpdateSpaceValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingUpdateSpaceValidation['response']>>({
+	async updateParkingSpace( id: string, spaceId: string, body: LSPFleetParkingUpdateSpaceValidation['body'] ): Promise<Data<LSPFleetParkingUpdateSpaceValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingUpdateSpaceValidation['response']>>>({
 			url: `/lsp/fleet/parking/facilities/${id}/spaces/${spaceId}`,
 			method: 'PATCH',
 			body
@@ -305,7 +305,7 @@ export default class LSPFleets {
 	}
 
 	async removeParkingSpace( id: string, spaceId: string ): Promise<boolean> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingRemoveSpaceValidation['response']>>({
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingRemoveSpaceValidation['response']>>>({
 			url: `/lsp/fleet/parking/facilities/${id}/spaces/${spaceId}`,
 			method: 'DELETE'
 		})
@@ -315,8 +315,8 @@ export default class LSPFleets {
 
 	// ── Parking Assignments ───────────────────────────────────────────────────
 
-	async createParkingAssignment( body: LSPFleetParkingCreateAssignmentValidation['body'] ): Promise<LSPFleetParkingCreateAssignmentValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingCreateAssignmentValidation['response']>>({
+	async createParkingAssignment( body: LSPFleetParkingCreateAssignmentValidation['body'] ): Promise<Data<LSPFleetParkingCreateAssignmentValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingCreateAssignmentValidation['response']>>>({
 			url: '/lsp/fleet/parking/assignments',
 			method: 'POST',
 			body
@@ -325,8 +325,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async listParkingAssignments( querystring?: LSPFleetParkingFetchAssignmentsValidation['querystring'] ): Promise<LSPFleetParkingFetchAssignmentsValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingFetchAssignmentsValidation['response']>>({
+	async listParkingAssignments( querystring?: LSPFleetParkingFetchAssignmentsValidation['querystring'] ): Promise<Data<LSPFleetParkingFetchAssignmentsValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingFetchAssignmentsValidation['response']>>>({
 			url: `/lsp/fleet/parking/assignments${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -334,8 +334,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async retrieveParkingAssignment( id: string ): Promise<LSPFleetParkingRetrieveAssignmentValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingRetrieveAssignmentValidation['response']>>({
+	async retrieveParkingAssignment( id: string ): Promise<Data<LSPFleetParkingRetrieveAssignmentValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingRetrieveAssignmentValidation['response']>>>({
 			url: `/lsp/fleet/parking/assignments/${id}`,
 			method: 'GET'
 		})
@@ -343,8 +343,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async updateParkingAssignment( id: string, body: LSPFleetParkingUpdateAssignmentValidation['body'] ): Promise<LSPFleetParkingUpdateAssignmentValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingUpdateAssignmentValidation['response']>>({
+	async updateParkingAssignment( id: string, body: LSPFleetParkingUpdateAssignmentValidation['body'] ): Promise<Data<LSPFleetParkingUpdateAssignmentValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingUpdateAssignmentValidation['response']>>>({
 			url: `/lsp/fleet/parking/assignments/${id}`,
 			method: 'PATCH',
 			body
@@ -353,8 +353,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async checkInParking( id: string ): Promise<LSPFleetParkingCheckInValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingCheckInValidation['response']>>({
+	async checkInParking( id: string ): Promise<Data<LSPFleetParkingCheckInValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingCheckInValidation['response']>>>({
 			url: `/lsp/fleet/parking/assignments/${id}/check-in`,
 			method: 'PATCH'
 		})
@@ -362,8 +362,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async checkOutParking( id: string ): Promise<LSPFleetParkingCheckOutValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingCheckOutValidation['response']>>({
+	async checkOutParking( id: string ): Promise<Data<LSPFleetParkingCheckOutValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingCheckOutValidation['response']>>>({
 			url: `/lsp/fleet/parking/assignments/${id}/check-out`,
 			method: 'PATCH'
 		})
@@ -371,8 +371,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async cancelParkingAssignment( id: string ): Promise<LSPFleetParkingCancelAssignmentValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingCancelAssignmentValidation['response']>>({
+	async cancelParkingAssignment( id: string ): Promise<Data<LSPFleetParkingCancelAssignmentValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingCancelAssignmentValidation['response']>>>({
 			url: `/lsp/fleet/parking/assignments/${id}/cancel`,
 			method: 'PATCH'
 		})
@@ -382,8 +382,8 @@ export default class LSPFleets {
 
 	// ── Parking Reservations ──────────────────────────────────────────────────
 
-	async createParkingReservation( body: LSPFleetParkingCreateReservationValidation['body'] ): Promise<LSPFleetParkingCreateReservationValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingCreateReservationValidation['response']>>({
+	async createParkingReservation( body: LSPFleetParkingCreateReservationValidation['body'] ): Promise<Data<LSPFleetParkingCreateReservationValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingCreateReservationValidation['response']>>>({
 			url: '/lsp/fleet/parking/reservations',
 			method: 'POST',
 			body
@@ -392,8 +392,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async listParkingReservations( querystring?: LSPFleetParkingFetchReservationsValidation['querystring'] ): Promise<LSPFleetParkingFetchReservationsValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingFetchReservationsValidation['response']>>({
+	async listParkingReservations( querystring?: LSPFleetParkingFetchReservationsValidation['querystring'] ): Promise<Data<LSPFleetParkingFetchReservationsValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingFetchReservationsValidation['response']>>>({
 			url: `/lsp/fleet/parking/reservations${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -401,8 +401,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async retrieveParkingReservation( id: string ): Promise<LSPFleetParkingRetrieveReservationValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingRetrieveReservationValidation['response']>>({
+	async retrieveParkingReservation( id: string ): Promise<Data<LSPFleetParkingRetrieveReservationValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingRetrieveReservationValidation['response']>>>({
 			url: `/lsp/fleet/parking/reservations/${id}`,
 			method: 'GET'
 		})
@@ -410,8 +410,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async updateParkingReservation( id: string, body: LSPFleetParkingUpdateReservationValidation['body'] ): Promise<LSPFleetParkingUpdateReservationValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingUpdateReservationValidation['response']>>({
+	async updateParkingReservation( id: string, body: LSPFleetParkingUpdateReservationValidation['body'] ): Promise<Data<LSPFleetParkingUpdateReservationValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingUpdateReservationValidation['response']>>>({
 			url: `/lsp/fleet/parking/reservations/${id}`,
 			method: 'PATCH',
 			body
@@ -420,8 +420,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async confirmParkingReservation( id: string ): Promise<LSPFleetParkingConfirmReservationValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingConfirmReservationValidation['response']>>({
+	async confirmParkingReservation( id: string ): Promise<Data<LSPFleetParkingConfirmReservationValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingConfirmReservationValidation['response']>>>({
 			url: `/lsp/fleet/parking/reservations/${id}/confirm`,
 			method: 'PATCH'
 		})
@@ -429,8 +429,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async cancelParkingReservation( id: string ): Promise<LSPFleetParkingCancelReservationValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetParkingCancelReservationValidation['response']>>({
+	async cancelParkingReservation( id: string ): Promise<Data<LSPFleetParkingCancelReservationValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingCancelReservationValidation['response']>>>({
 			url: `/lsp/fleet/parking/reservations/${id}/cancel`,
 			method: 'PATCH'
 		})
@@ -440,8 +440,8 @@ export default class LSPFleets {
 
 	// ── Maintenance Records ───────────────────────────────────────────────────
 
-	async addMaintenanceRecord( body: LSPFleetMaintenanceAddRecordValidation['body'] ): Promise<LSPFleetMaintenanceAddRecordValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetMaintenanceAddRecordValidation['response']>>({
+	async addMaintenanceRecord( body: LSPFleetMaintenanceAddRecordValidation['body'] ): Promise<Data<LSPFleetMaintenanceAddRecordValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceAddRecordValidation['response']>>>({
 			url: '/lsp/fleet/maintenance/records',
 			method: 'POST',
 			body
@@ -450,8 +450,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async listMaintenanceRecords( querystring?: LSPFleetMaintenanceFetchRecordsValidation['querystring'] ): Promise<LSPFleetMaintenanceFetchRecordsValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetMaintenanceFetchRecordsValidation['response']>>({
+	async listMaintenanceRecords( querystring?: LSPFleetMaintenanceFetchRecordsValidation['querystring'] ): Promise<Data<LSPFleetMaintenanceFetchRecordsValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceFetchRecordsValidation['response']>>>({
 			url: `/lsp/fleet/maintenance/records${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -459,8 +459,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async retrieveMaintenanceRecord( id: string ): Promise<LSPFleetMaintenanceRetrieveRecordValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetMaintenanceRetrieveRecordValidation['response']>>({
+	async retrieveMaintenanceRecord( id: string ): Promise<Data<LSPFleetMaintenanceRetrieveRecordValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceRetrieveRecordValidation['response']>>>({
 			url: `/lsp/fleet/maintenance/records/${id}`,
 			method: 'GET'
 		})
@@ -468,8 +468,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async getVehicleMaintenanceHistory( vid: string, querystring: LSPFleetMaintenanceGetHistoryValidation['querystring'] ): Promise<LSPFleetMaintenanceGetHistoryValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetMaintenanceGetHistoryValidation['response']>>({
+	async getVehicleMaintenanceHistory( vid: string, querystring: LSPFleetMaintenanceGetHistoryValidation['querystring'] ): Promise<Data<LSPFleetMaintenanceGetHistoryValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceGetHistoryValidation['response']>>>({
 			url: `/lsp/fleet/maintenance/vehicles/${vid}/history${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -477,8 +477,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async updateMaintenanceRecord( id: string, body: LSPFleetMaintenanceUpdateRecordValidation['body'] ): Promise<LSPFleetMaintenanceUpdateRecordValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetMaintenanceUpdateRecordValidation['response']>>({
+	async updateMaintenanceRecord( id: string, body: LSPFleetMaintenanceUpdateRecordValidation['body'] ): Promise<Data<LSPFleetMaintenanceUpdateRecordValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceUpdateRecordValidation['response']>>>({
 			url: `/lsp/fleet/maintenance/records/${id}`,
 			method: 'PATCH',
 			body
@@ -487,8 +487,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async startMaintenance( id: string ): Promise<LSPFleetMaintenanceStartValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetMaintenanceStartValidation['response']>>({
+	async startMaintenance( id: string ): Promise<Data<LSPFleetMaintenanceStartValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceStartValidation['response']>>>({
 			url: `/lsp/fleet/maintenance/records/${id}/start`,
 			method: 'PATCH'
 		})
@@ -496,8 +496,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async completeMaintenance( id: string ): Promise<LSPFleetMaintenanceCompleteValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetMaintenanceCompleteValidation['response']>>({
+	async completeMaintenance( id: string ): Promise<Data<LSPFleetMaintenanceCompleteValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceCompleteValidation['response']>>>({
 			url: `/lsp/fleet/maintenance/records/${id}/complete`,
 			method: 'PATCH'
 		})
@@ -505,8 +505,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async cancelMaintenance( id: string ): Promise<LSPFleetMaintenanceCancelValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetMaintenanceCancelValidation['response']>>({
+	async cancelMaintenance( id: string ): Promise<Data<LSPFleetMaintenanceCancelValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceCancelValidation['response']>>>({
 			url: `/lsp/fleet/maintenance/records/${id}/cancel`,
 			method: 'PATCH'
 		})
@@ -514,8 +514,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async approveMaintenance( id: string ): Promise<LSPFleetMaintenanceApproveValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetMaintenanceApproveValidation['response']>>({
+	async approveMaintenance( id: string ): Promise<Data<LSPFleetMaintenanceApproveValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceApproveValidation['response']>>>({
 			url: `/lsp/fleet/maintenance/records/${id}/approve`,
 			method: 'PATCH'
 		})
@@ -524,7 +524,7 @@ export default class LSPFleets {
 	}
 
 	async deleteMaintenanceRecord( id: string ): Promise<boolean> {
-		const { error, message } = await this.http.request<Res<LSPFleetMaintenanceDeleteRecordValidation['response']>>({
+		const { error, message } = await this.http.request<Res<Data<LSPFleetMaintenanceDeleteRecordValidation['response']>>>({
 			url: `/lsp/fleet/maintenance/records/${id}`,
 			method: 'DELETE'
 		})
@@ -534,8 +534,8 @@ export default class LSPFleets {
 
 	// ── Maintenance Schedules ─────────────────────────────────────────────────
 
-	async addMaintenanceSchedule( body: LSPFleetMaintenanceAddScheduleValidation['body'] ): Promise<LSPFleetMaintenanceAddScheduleValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetMaintenanceAddScheduleValidation['response']>>({
+	async addMaintenanceSchedule( body: LSPFleetMaintenanceAddScheduleValidation['body'] ): Promise<Data<LSPFleetMaintenanceAddScheduleValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceAddScheduleValidation['response']>>>({
 			url: '/lsp/fleet/maintenance/schedules',
 			method: 'POST',
 			body
@@ -544,8 +544,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async listMaintenanceSchedules( querystring?: LSPFleetMaintenanceFetchSchedulesValidation['querystring'] ): Promise<LSPFleetMaintenanceFetchSchedulesValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetMaintenanceFetchSchedulesValidation['response']>>({
+	async listMaintenanceSchedules( querystring?: LSPFleetMaintenanceFetchSchedulesValidation['querystring'] ): Promise<Data<LSPFleetMaintenanceFetchSchedulesValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceFetchSchedulesValidation['response']>>>({
 			url: `/lsp/fleet/maintenance/schedules${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -553,8 +553,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async getUpcomingMaintenance( querystring?: LSPFleetMaintenanceGetUpcomingValidation['querystring'] ): Promise<LSPFleetMaintenanceGetUpcomingValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetMaintenanceGetUpcomingValidation['response']>>({
+	async getUpcomingMaintenance( querystring?: LSPFleetMaintenanceGetUpcomingValidation['querystring'] ): Promise<Data<LSPFleetMaintenanceGetUpcomingValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceGetUpcomingValidation['response']>>>({
 			url: `/lsp/fleet/maintenance/schedules/upcoming${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -562,8 +562,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async getOverdueMaintenance( querystring?: LSPFleetMaintenanceGetOverdueValidation['querystring'] ): Promise<LSPFleetMaintenanceGetOverdueValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetMaintenanceGetOverdueValidation['response']>>({
+	async getOverdueMaintenance( querystring?: LSPFleetMaintenanceGetOverdueValidation['querystring'] ): Promise<Data<LSPFleetMaintenanceGetOverdueValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceGetOverdueValidation['response']>>>({
 			url: `/lsp/fleet/maintenance/schedules/overdue${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -571,8 +571,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async retrieveMaintenanceSchedule( id: string ): Promise<LSPFleetMaintenanceRetrieveScheduleValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetMaintenanceRetrieveScheduleValidation['response']>>({
+	async retrieveMaintenanceSchedule( id: string ): Promise<Data<LSPFleetMaintenanceRetrieveScheduleValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceRetrieveScheduleValidation['response']>>>({
 			url: `/lsp/fleet/maintenance/schedules/${id}`,
 			method: 'GET'
 		})
@@ -580,8 +580,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async updateMaintenanceSchedule( id: string, body: LSPFleetMaintenanceUpdateScheduleValidation['body'] ): Promise<LSPFleetMaintenanceUpdateScheduleValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetMaintenanceUpdateScheduleValidation['response']>>({
+	async updateMaintenanceSchedule( id: string, body: LSPFleetMaintenanceUpdateScheduleValidation['body'] ): Promise<Data<LSPFleetMaintenanceUpdateScheduleValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceUpdateScheduleValidation['response']>>>({
 			url: `/lsp/fleet/maintenance/schedules/${id}`,
 			method: 'PATCH',
 			body
@@ -590,8 +590,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async activateMaintenanceSchedule( id: string ): Promise<LSPFleetMaintenanceActivateScheduleValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetMaintenanceActivateScheduleValidation['response']>>({
+	async activateMaintenanceSchedule( id: string ): Promise<Data<LSPFleetMaintenanceActivateScheduleValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceActivateScheduleValidation['response']>>>({
 			url: `/lsp/fleet/maintenance/schedules/${id}/activate`,
 			method: 'PATCH'
 		})
@@ -599,8 +599,8 @@ export default class LSPFleets {
 		return data
 	}
 
-	async deactivateMaintenanceSchedule( id: string ): Promise<LSPFleetMaintenanceDeactivateScheduleValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPFleetMaintenanceDeactivateScheduleValidation['response']>>({
+	async deactivateMaintenanceSchedule( id: string ): Promise<Data<LSPFleetMaintenanceDeactivateScheduleValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceDeactivateScheduleValidation['response']>>>({
 			url: `/lsp/fleet/maintenance/schedules/${id}/deactivate`,
 			method: 'PATCH'
 		})
@@ -609,7 +609,7 @@ export default class LSPFleets {
 	}
 
 	async deleteMaintenanceSchedule( id: string ): Promise<boolean> {
-		const { error, message } = await this.http.request<Res<LSPFleetMaintenanceDeleteScheduleValidation['response']>>({
+		const { error, message } = await this.http.request<Res<Data<LSPFleetMaintenanceDeleteScheduleValidation['response']>>>({
 			url: `/lsp/fleet/maintenance/schedules/${id}`,
 			method: 'DELETE'
 		})

@@ -12,13 +12,13 @@ import type {
 	SharedBucketPackagedValidation
 } from '@de./types/shared/bucket'
 import type { UserContextType } from '@de./types'
-import { type Http, type Res } from '../../utils'
+import { type Http, type Res, type Data } from '../../utils'
 
 export default class SharedBuckets {
 	constructor( private http: Http, private ctype: UserContextType ){}
 
-	async create( body: SharedBucketCreateValidation['body'] ): Promise<SharedBucketCreateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<SharedBucketCreateValidation['response']>>({
+	async create( body: SharedBucketCreateValidation['body'] ): Promise<Data<SharedBucketCreateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<SharedBucketCreateValidation['response']>>>({
 			url: `/${this.ctype.toLowerCase()}/buckets`,
 			method: 'POST',
 			body
@@ -27,8 +27,8 @@ export default class SharedBuckets {
 		return data
 	}
 
-	async list(): Promise<SharedBucketFetchValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<SharedBucketFetchValidation['response']>>({
+	async list(): Promise<Data<SharedBucketFetchValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<SharedBucketFetchValidation['response']>>>({
 			url: `/${this.ctype.toLowerCase()}/buckets`,
 			method: 'GET'
 		})
@@ -36,8 +36,8 @@ export default class SharedBuckets {
 		return data
 	}
 
-	async retrieve( reference: string ): Promise<SharedBucketRetrieveValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<SharedBucketRetrieveValidation['response']>>({
+	async retrieve( reference: string ): Promise<Data<SharedBucketRetrieveValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<SharedBucketRetrieveValidation['response']>>>({
 			url: `/${this.ctype.toLowerCase()}/buckets/${reference}`,
 			method: 'GET'
 		})
@@ -45,8 +45,8 @@ export default class SharedBuckets {
 		return data
 	}
 
-	async update( reference: string, body: SharedBucketUpdateValidation['body'] ): Promise<SharedBucketUpdateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<SharedBucketUpdateValidation['response']>>({
+	async update( reference: string, body: SharedBucketUpdateValidation['body'] ): Promise<Data<SharedBucketUpdateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<SharedBucketUpdateValidation['response']>>>({
 			url: `/${this.ctype.toLowerCase()}/buckets/${reference}`,
 			method: 'PATCH',
 			body
@@ -55,8 +55,8 @@ export default class SharedBuckets {
 		return data
 	}
 
-	async remove( reference: string ): Promise<SharedBucketRemoveValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<SharedBucketRemoveValidation['response']>>({
+	async remove( reference: string ): Promise<Data<SharedBucketRemoveValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<SharedBucketRemoveValidation['response']>>>({
 			url: `/${this.ctype.toLowerCase()}/buckets/${reference}`,
 			method: 'DELETE'
 		})
@@ -64,8 +64,8 @@ export default class SharedBuckets {
 		return data
 	}
 
-	async assign( reference: string, to: SharedBucketAssignValidation['params']['to'], body: SharedBucketAssignValidation['body'] ): Promise<SharedBucketAssignValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<SharedBucketAssignValidation['response']>>({
+	async assign( reference: string, to: SharedBucketAssignValidation['params']['to'], body: SharedBucketAssignValidation['body'] ): Promise<Data<SharedBucketAssignValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<SharedBucketAssignValidation['response']>>>({
 			url: `/${this.ctype.toLowerCase()}/buckets/${reference}/assign/${to}`,
 			method: 'POST',
 			body
@@ -74,8 +74,8 @@ export default class SharedBuckets {
 		return data
 	}
 
-	async unassign( reference: string, to: SharedBucketUnassignValidation['params']['to'], body: SharedBucketUnassignValidation['body'] ): Promise<SharedBucketUnassignValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<SharedBucketUnassignValidation['response']>>({
+	async unassign( reference: string, to: SharedBucketUnassignValidation['params']['to'], body: SharedBucketUnassignValidation['body'] ): Promise<Data<SharedBucketUnassignValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<SharedBucketUnassignValidation['response']>>>({
 			url: `/${this.ctype.toLowerCase()}/buckets/${reference}/unassign/${to}`,
 			method: 'POST',
 			body
@@ -84,8 +84,8 @@ export default class SharedBuckets {
 		return data
 	}
 
-	async lock( reference: string ): Promise<SharedBucketLockOrUnlockValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<SharedBucketLockOrUnlockValidation['response']>>({
+	async lock( reference: string ): Promise<Data<SharedBucketLockOrUnlockValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<SharedBucketLockOrUnlockValidation['response']>>>({
 			url: `/${this.ctype.toLowerCase()}/buckets/${reference}/lock`,
 			method: 'PATCH'
 		})
@@ -93,8 +93,8 @@ export default class SharedBuckets {
 		return data
 	}
 
-	async unlock( reference: string ): Promise<SharedBucketLockOrUnlockValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<SharedBucketLockOrUnlockValidation['response']>>({
+	async unlock( reference: string ): Promise<Data<SharedBucketLockOrUnlockValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<SharedBucketLockOrUnlockValidation['response']>>>({
 			url: `/${this.ctype.toLowerCase()}/buckets/${reference}/unlock`,
 			method: 'PATCH'
 		})
@@ -102,8 +102,8 @@ export default class SharedBuckets {
 		return data
 	}
 
-	async addItem( reference: string, body: SharedBucketAddOrRemoveItemValidation['body'] ): Promise<SharedBucketAddOrRemoveItemValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<SharedBucketAddOrRemoveItemValidation['response']>>({
+	async addItem( reference: string, body: SharedBucketAddOrRemoveItemValidation['body'] ): Promise<Data<SharedBucketAddOrRemoveItemValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<SharedBucketAddOrRemoveItemValidation['response']>>>({
 			url: `/${this.ctype.toLowerCase()}/buckets/${reference}/items`,
 			method: 'POST',
 			body
@@ -112,8 +112,8 @@ export default class SharedBuckets {
 		return data
 	}
 
-	async removeItem( reference: string, body: SharedBucketAddOrRemoveItemValidation['body'] ): Promise<SharedBucketAddOrRemoveItemValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<SharedBucketAddOrRemoveItemValidation['response']>>({
+	async removeItem( reference: string, body: SharedBucketAddOrRemoveItemValidation['body'] ): Promise<Data<SharedBucketAddOrRemoveItemValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<SharedBucketAddOrRemoveItemValidation['response']>>>({
 			url: `/${this.ctype.toLowerCase()}/buckets/${reference}/items`,
 			method: 'DELETE',
 			body
@@ -122,8 +122,8 @@ export default class SharedBuckets {
 		return data
 	}
 
-	async listItems( reference: string ): Promise<SharedBucketFetchItemsValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<SharedBucketFetchItemsValidation['response']>>({
+	async listItems( reference: string ): Promise<Data<SharedBucketFetchItemsValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<SharedBucketFetchItemsValidation['response']>>>({
 			url: `/${this.ctype.toLowerCase()}/buckets/${reference}/items`,
 			method: 'GET'
 		})
@@ -131,8 +131,8 @@ export default class SharedBuckets {
 		return data
 	}
 
-	async markPackaged( reference: string, body: SharedBucketPackagedValidation['body'] ): Promise<SharedBucketPackagedValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<SharedBucketPackagedValidation['response']>>({
+	async markPackaged( reference: string, body: SharedBucketPackagedValidation['body'] ): Promise<Data<SharedBucketPackagedValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<SharedBucketPackagedValidation['response']>>>({
 			url: `/${this.ctype.toLowerCase()}/buckets/${reference}/packaged`,
 			method: 'POST',
 			body

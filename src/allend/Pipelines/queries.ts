@@ -2,15 +2,15 @@ import type {
 	PipelineQueriesSearchValidation,
 	PipelineQueriesRecommendValidation
 } from '@de./types'
-import { type Http, type Res } from '../../utils'
+import { type Http, type Res, type Data } from '../../utils'
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
 
 export class PipelinesQueries {
   constructor( private http: Http ){}
 
-  async search( body: PipelineQueriesSearchValidation['body'] ): Promise<PipelineQueriesSearchValidation['response']> {
-    const { error, message, data } = await this.http.request<Res<PipelineQueriesSearchValidation['response']>>({
+  async search( body: PipelineQueriesSearchValidation['body'] ): Promise<Data<PipelineQueriesSearchValidation['response']>> {
+    const { error, message, data } = await this.http.request<Res<Data<PipelineQueriesSearchValidation['response']>>>({
       url: '/pipelines/queries/search',
       method: 'POST',
       body
@@ -19,8 +19,8 @@ export class PipelinesQueries {
     return data
   }
 
-  async recommend( body: PipelineQueriesRecommendValidation['body'] ): Promise<PipelineQueriesRecommendValidation['response']> {
-    const { error, message, data } = await this.http.request<Res<PipelineQueriesRecommendValidation['response']>>({
+  async recommend( body: PipelineQueriesRecommendValidation['body'] ): Promise<Data<PipelineQueriesRecommendValidation['response']>> {
+    const { error, message, data } = await this.http.request<Res<Data<PipelineQueriesRecommendValidation['response']>>>({
       url: '/pipelines/queries/recommend',
       method: 'POST',
       body

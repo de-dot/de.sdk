@@ -3,15 +3,15 @@ import type {
 	PipelineMonitorGetValidation,
 	PipelineMonitorOverviewValidation
 } from '@de./types'
-import { qs, type Http, type Res } from '../../utils'
+import { qs, type Http, type Res, type Data } from '../../utils'
 
 // ─── Monitor ──────────────────────────────────────────────────────────────────
 
 export class PipelinesMonitor {
   constructor( private http: Http ){}
 
-  async list( querystring?: PipelineMonitorListValidation['querystring'] ): Promise<PipelineMonitorListValidation['response']> {
-    const { error, message, data } = await this.http.request<Res<PipelineMonitorListValidation['response']>>({
+  async list( querystring?: PipelineMonitorListValidation['querystring'] ): Promise<Data<PipelineMonitorListValidation['response']>> {
+    const { error, message, data } = await this.http.request<Res<Data<PipelineMonitorListValidation['response']>>>({
       url: `/pipelines/monitor${qs( querystring )}`,
       method: 'GET'
     })
@@ -19,8 +19,8 @@ export class PipelinesMonitor {
     return data
   }
 
-  async get( executionId: string ): Promise<PipelineMonitorGetValidation['response']> {
-    const { error, message, data } = await this.http.request<Res<PipelineMonitorGetValidation['response']>>({
+  async get( executionId: string ): Promise<Data<PipelineMonitorGetValidation['response']>> {
+    const { error, message, data } = await this.http.request<Res<Data<PipelineMonitorGetValidation['response']>>>({
       url: `/pipelines/monitor/${executionId}`,
       method: 'GET'
     })
@@ -28,8 +28,8 @@ export class PipelinesMonitor {
     return data
   }
 
-  async overview(): Promise<PipelineMonitorOverviewValidation['response']> {
-    const { error, message, data } = await this.http.request<Res<PipelineMonitorOverviewValidation['response']>>({
+  async overview(): Promise<Data<PipelineMonitorOverviewValidation['response']>> {
+    const { error, message, data } = await this.http.request<Res<Data<PipelineMonitorOverviewValidation['response']>>>({
       url: '/pipelines/monitor/overview',
       method: 'GET'
     })

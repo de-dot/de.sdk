@@ -3,15 +3,15 @@ import type {
 	DEVDeveloperFetchValidation,
 	DEVDeveloperUpdateValidation
 } from '@de./types/dev/developer'
-import { type Http, type Res } from '../../utils'
+import { type Http, type Res, type Data } from '../../utils'
 
 // ── DEV Developers ──────────────────────────────────────────────────────────────
 
 export default class DEVDevelopers {
 	constructor( private http: Http ){}
 
-	async list(): Promise<DEVDeveloperFetchValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<DEVDeveloperFetchValidation['response']>>({
+	async list(): Promise<Data<DEVDeveloperFetchValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<DEVDeveloperFetchValidation['response']>>>({
 			url: '/dev/developers',
 			method: 'GET'
 		})
@@ -19,8 +19,8 @@ export default class DEVDevelopers {
 		return data
 	}
 
-	async retrieve( id: string ): Promise<DEVDeveloperRetrieveValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<DEVDeveloperRetrieveValidation['response']>>({
+	async retrieve( id: string ): Promise<Data<DEVDeveloperRetrieveValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<DEVDeveloperRetrieveValidation['response']>>>({
 			url: `/dev/developers/${id}`,
 			method: 'GET'
 		})
@@ -28,8 +28,8 @@ export default class DEVDevelopers {
 		return data
 	}
 
-	async update( id: string, body: DEVDeveloperUpdateValidation['body'] ): Promise<DEVDeveloperUpdateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<DEVDeveloperUpdateValidation['response']>>({
+	async update( id: string, body: DEVDeveloperUpdateValidation['body'] ): Promise<Data<DEVDeveloperUpdateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<DEVDeveloperUpdateValidation['response']>>>({
 			url: `/dev/developers/${id}`,
 			method: 'PATCH',
 			body

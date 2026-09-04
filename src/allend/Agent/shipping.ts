@@ -5,15 +5,15 @@ import type {
 	AgentShippingUpdateStatusValidation,
 	AgentShippingReportIssueValidation
 } from '@de./types'
-import { qs, type Http, type Res } from '../../utils'
+import { qs, type Http, type Res, type Data } from '../../utils'
 
 // ─── Agent Shipping Orders ────────────────────────────────────────────────────
 
 export default class AgentShipping {
 	constructor( private http: Http ){}
 
-	async list( querystring?: AgentShippingListValidation['querystring'] ): Promise<AgentShippingListValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<AgentShippingListValidation['response']>>({
+	async list( querystring?: AgentShippingListValidation['querystring'] ): Promise<Data<AgentShippingListValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<AgentShippingListValidation['response']>>>({
 			url: `/agent/shipping/orders${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -21,8 +21,8 @@ export default class AgentShipping {
 		return data
 	}
 
-	async get( reference: string ): Promise<AgentShippingGetValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<AgentShippingGetValidation['response']>>({
+	async get( reference: string ): Promise<Data<AgentShippingGetValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<AgentShippingGetValidation['response']>>>({
 			url: `/agent/shipping/orders/${reference}`,
 			method: 'GET'
 		})
@@ -30,8 +30,8 @@ export default class AgentShipping {
 		return data
 	}
 
-	async accept( reference: string ): Promise<AgentShippingAcceptValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<AgentShippingAcceptValidation['response']>>({
+	async accept( reference: string ): Promise<Data<AgentShippingAcceptValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<AgentShippingAcceptValidation['response']>>>({
 			url: `/agent/shipping/orders/${reference}/accept`,
 			method: 'POST'
 		})
@@ -39,8 +39,8 @@ export default class AgentShipping {
 		return data
 	}
 
-	async updateStatus( reference: string, body: AgentShippingUpdateStatusValidation['body'] ): Promise<AgentShippingUpdateStatusValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<AgentShippingUpdateStatusValidation['response']>>({
+	async updateStatus( reference: string, body: AgentShippingUpdateStatusValidation['body'] ): Promise<Data<AgentShippingUpdateStatusValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<AgentShippingUpdateStatusValidation['response']>>>({
 			url: `/agent/shipping/orders/${reference}/status`,
 			method: 'PATCH',
 			body
@@ -49,8 +49,8 @@ export default class AgentShipping {
 		return data
 	}
 
-	async reportIssue( reference: string, body: AgentShippingReportIssueValidation['body'] ): Promise<AgentShippingReportIssueValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<AgentShippingReportIssueValidation['response']>>({
+	async reportIssue( reference: string, body: AgentShippingReportIssueValidation['body'] ): Promise<Data<AgentShippingReportIssueValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<AgentShippingReportIssueValidation['response']>>>({
 			url: `/agent/shipping/orders/${reference}/issue`,
 			method: 'POST',
 			body

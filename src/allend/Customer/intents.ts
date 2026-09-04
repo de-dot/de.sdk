@@ -6,15 +6,15 @@ import type {
 	CustomerIntentSubmitValidation,
 	CustomerIntentCancelValidation
 } from '@de./types'
-import { type Http, type Res } from '../../utils'
+import { type Http, type Res, type Data } from '../../utils'
 
 // ─── Customer Intents ─────────────────────────────────────────────────────────
 
 export default class CustomerIntents {
 	constructor( private http: Http ){}
 
-	async create( body: CustomerIntentCreateValidation['body'] ): Promise<CustomerIntentCreateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CustomerIntentCreateValidation['response']>>({
+	async create( body: CustomerIntentCreateValidation['body'] ): Promise<Data<CustomerIntentCreateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CustomerIntentCreateValidation['response']>>>({
 			url: '/customer/intents',
 			method: 'POST',
 			body
@@ -23,8 +23,8 @@ export default class CustomerIntents {
 		return data
 	}
 
-	async get( intentToken: string ): Promise<CustomerIntentGetValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CustomerIntentGetValidation['response']>>({
+	async get( intentToken: string ): Promise<Data<CustomerIntentGetValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CustomerIntentGetValidation['response']>>>({
 			url: '/customer/intents',
 			method: 'GET',
 			headers: { 'x-intent-token': intentToken }
@@ -33,8 +33,8 @@ export default class CustomerIntents {
 		return data
 	}
 
-	async addWaypoints( intentToken: string, body: CustomerIntentAddWaypointsValidation['body'] ): Promise<CustomerIntentAddWaypointsValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CustomerIntentAddWaypointsValidation['response']>>({
+	async addWaypoints( intentToken: string, body: CustomerIntentAddWaypointsValidation['body'] ): Promise<Data<CustomerIntentAddWaypointsValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CustomerIntentAddWaypointsValidation['response']>>>({
 			url: '/customer/intents/waypoints',
 			method: 'POST',
 			headers: { 'x-intent-token': intentToken },
@@ -44,8 +44,8 @@ export default class CustomerIntents {
 		return data
 	}
 
-	async addPackages( intentToken: string, body: CustomerIntentAddPackagesValidation['body'] ): Promise<CustomerIntentAddPackagesValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CustomerIntentAddPackagesValidation['response']>>({
+	async addPackages( intentToken: string, body: CustomerIntentAddPackagesValidation['body'] ): Promise<Data<CustomerIntentAddPackagesValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CustomerIntentAddPackagesValidation['response']>>>({
 			url: '/customer/intents/packages',
 			method: 'POST',
 			headers: { 'x-intent-token': intentToken },
@@ -55,8 +55,8 @@ export default class CustomerIntents {
 		return data
 	}
 
-	async submit( intentToken: string, body: CustomerIntentSubmitValidation['body'] ): Promise<CustomerIntentSubmitValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CustomerIntentSubmitValidation['response']>>({
+	async submit( intentToken: string, body: CustomerIntentSubmitValidation['body'] ): Promise<Data<CustomerIntentSubmitValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CustomerIntentSubmitValidation['response']>>>({
 			url: '/customer/intents/submit',
 			method: 'POST',
 			headers: { 'x-intent-token': intentToken },
@@ -66,8 +66,8 @@ export default class CustomerIntents {
 		return data
 	}
 
-	async cancel( intentToken: string ): Promise<CustomerIntentCancelValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CustomerIntentCancelValidation['response']>>({
+	async cancel( intentToken: string ): Promise<Data<CustomerIntentCancelValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CustomerIntentCancelValidation['response']>>>({
 			url: '/customer/intents',
 			method: 'DELETE',
 			headers: { 'x-intent-token': intentToken }

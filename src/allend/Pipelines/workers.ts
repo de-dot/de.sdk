@@ -3,15 +3,15 @@ import type {
 	PipelineWorkerStatsValidation,
 	PipelineWorkerStatsByNameValidation
 } from '@de./types'
-import { type Http, type Res } from '../../utils'
+import { type Http, type Res, type Data } from '../../utils'
 
 // ─── Workers ──────────────────────────────────────────────────────────────────
 
 export class PipelinesWorkers {
   constructor( private http: Http ){}
 
-  async initialize(): Promise<PipelineWorkerInitializeValidation['response']> {
-    const { error, message, data } = await this.http.request<Res<PipelineWorkerInitializeValidation['response']>>({
+  async initialize(): Promise<Data<PipelineWorkerInitializeValidation['response']>> {
+    const { error, message, data } = await this.http.request<Res<Data<PipelineWorkerInitializeValidation['response']>>>({
       url: '/pipelines/workers/initialize',
       method: 'POST'
     })
@@ -35,8 +35,8 @@ export class PipelinesWorkers {
     if( error ) throw new Error( message )
   }
 
-  async stats(): Promise<PipelineWorkerStatsValidation['response']> {
-    const { error, message, data } = await this.http.request<Res<PipelineWorkerStatsValidation['response']>>({
+  async stats(): Promise<Data<PipelineWorkerStatsValidation['response']>> {
+    const { error, message, data } = await this.http.request<Res<Data<PipelineWorkerStatsValidation['response']>>>({
       url: '/pipelines/workers/stats',
       method: 'GET'
     })
@@ -44,8 +44,8 @@ export class PipelinesWorkers {
     return data
   }
 
-  async statsByName( name: string ): Promise<PipelineWorkerStatsByNameValidation['response']> {
-    const { error, message, data } = await this.http.request<Res<PipelineWorkerStatsByNameValidation['response']>>({
+  async statsByName( name: string ): Promise<Data<PipelineWorkerStatsByNameValidation['response']>> {
+    const { error, message, data } = await this.http.request<Res<Data<PipelineWorkerStatsByNameValidation['response']>>>({
       url: `/pipelines/workers/stats/${name}`,
       method: 'GET'
     })

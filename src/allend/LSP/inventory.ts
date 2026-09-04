@@ -6,7 +6,7 @@ import type {
 	LSPInventoryAdjustValidation,
 	LSPInventoryRemoveValidation
 } from '@de./types/inventory'
-import { qs, type Http, type Res } from '../../utils'
+import { qs, type Http, type Res, type Data } from '../../utils'
 
 // ── LSP Facility Inventory ──────────────────────────────────────────────────────
 //
@@ -18,8 +18,8 @@ import { qs, type Http, type Res } from '../../utils'
 export default class LSPFacilityInventory {
 	constructor( private http: Http, private segment: 'hubs' | 'warehouses' ){}
 
-	async create( facilityId: string, body: LSPInventoryCreateValidation['body'] ): Promise<LSPInventoryCreateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPInventoryCreateValidation['response']>>({
+	async create( facilityId: string, body: LSPInventoryCreateValidation['body'] ): Promise<Data<LSPInventoryCreateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPInventoryCreateValidation['response']>>>({
 			url: `/lsp/${this.segment}/${facilityId}/inventory/create`,
 			method: 'POST',
 			body
@@ -28,8 +28,8 @@ export default class LSPFacilityInventory {
 		return data
 	}
 
-	async list( facilityId: string, querystring?: LSPInventoryFetchValidation['querystring'] ): Promise<LSPInventoryFetchValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPInventoryFetchValidation['response']>>({
+	async list( facilityId: string, querystring?: LSPInventoryFetchValidation['querystring'] ): Promise<Data<LSPInventoryFetchValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPInventoryFetchValidation['response']>>>({
 			url: `/lsp/${this.segment}/${facilityId}/inventory${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -37,8 +37,8 @@ export default class LSPFacilityInventory {
 		return data
 	}
 
-	async retrieve( facilityId: string, itemId: string ): Promise<LSPInventoryRetrieveValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPInventoryRetrieveValidation['response']>>({
+	async retrieve( facilityId: string, itemId: string ): Promise<Data<LSPInventoryRetrieveValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPInventoryRetrieveValidation['response']>>>({
 			url: `/lsp/${this.segment}/${facilityId}/inventory/${itemId}`,
 			method: 'GET'
 		})
@@ -46,8 +46,8 @@ export default class LSPFacilityInventory {
 		return data
 	}
 
-	async update( facilityId: string, itemId: string, body: LSPInventoryUpdateValidation['body'] ): Promise<LSPInventoryUpdateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPInventoryUpdateValidation['response']>>({
+	async update( facilityId: string, itemId: string, body: LSPInventoryUpdateValidation['body'] ): Promise<Data<LSPInventoryUpdateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPInventoryUpdateValidation['response']>>>({
 			url: `/lsp/${this.segment}/${facilityId}/inventory/${itemId}`,
 			method: 'PATCH',
 			body
@@ -56,8 +56,8 @@ export default class LSPFacilityInventory {
 		return data
 	}
 
-	async adjust( facilityId: string, itemId: string, body: LSPInventoryAdjustValidation['body'] ): Promise<LSPInventoryAdjustValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPInventoryAdjustValidation['response']>>({
+	async adjust( facilityId: string, itemId: string, body: LSPInventoryAdjustValidation['body'] ): Promise<Data<LSPInventoryAdjustValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPInventoryAdjustValidation['response']>>>({
 			url: `/lsp/${this.segment}/${facilityId}/inventory/${itemId}/adjust`,
 			method: 'POST',
 			body
@@ -66,8 +66,8 @@ export default class LSPFacilityInventory {
 		return data
 	}
 
-	async remove( facilityId: string, itemId: string ): Promise<LSPInventoryRemoveValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPInventoryRemoveValidation['response']>>({
+	async remove( facilityId: string, itemId: string ): Promise<Data<LSPInventoryRemoveValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPInventoryRemoveValidation['response']>>>({
 			url: `/lsp/${this.segment}/${facilityId}/inventory/${itemId}`,
 			method: 'DELETE'
 		})

@@ -13,15 +13,15 @@ import type {
 	CSPOrderSplitValidation,
 	CSPOrderUpdateStatusValidation
 } from '@de./types/csp/order'
-import { qs, type Http, type Res } from '../../utils'
+import { qs, type Http, type Res, type Data } from '../../utils'
 
 // ── CSP Orders ────────────────────────────────────────────────────────────
 
 export default class CSPOrders {
 	constructor( private http: Http ){}
 
-	async create( body: CSPOrderCreateValidation['body'] ): Promise<CSPOrderCreateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPOrderCreateValidation['response']>>({
+	async create( body: CSPOrderCreateValidation['body'] ): Promise<Data<CSPOrderCreateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPOrderCreateValidation['response']>>>({
 			url: '/csp/orders',
 			method: 'POST',
 			body
@@ -30,8 +30,8 @@ export default class CSPOrders {
 		return data
 	}
 
-	async retrieve( reference: string ): Promise<CSPOrderRetrieveValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPOrderRetrieveValidation['response']>>({
+	async retrieve( reference: string ): Promise<Data<CSPOrderRetrieveValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPOrderRetrieveValidation['response']>>>({
 			url: `/csp/orders/${reference}`,
 			method: 'GET'
 		})
@@ -39,8 +39,8 @@ export default class CSPOrders {
 		return data
 	}
 
-	async list( querystring?: CSPOrderListValidation['querystring'] ): Promise<CSPOrderListValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPOrderListValidation['response']>>({
+	async list( querystring?: CSPOrderListValidation['querystring'] ): Promise<Data<CSPOrderListValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPOrderListValidation['response']>>>({
 			url: `/csp/orders${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -48,8 +48,8 @@ export default class CSPOrders {
 		return data
 	}
 
-	async update( reference: string, body: CSPOrderUpdateValidation['body'] ): Promise<CSPOrderUpdateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPOrderUpdateValidation['response']>>({
+	async update( reference: string, body: CSPOrderUpdateValidation['body'] ): Promise<Data<CSPOrderUpdateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPOrderUpdateValidation['response']>>>({
 			url: `/csp/orders/${reference}`,
 			method: 'PATCH',
 			body
@@ -58,8 +58,8 @@ export default class CSPOrders {
 		return data
 	}
 
-	async tracking( reference: string ): Promise<CSPOrderTrackingValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPOrderTrackingValidation['response']>>({
+	async tracking( reference: string ): Promise<Data<CSPOrderTrackingValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPOrderTrackingValidation['response']>>>({
 			url: `/csp/orders/${reference}/tracking`,
 			method: 'GET'
 		})
@@ -67,8 +67,8 @@ export default class CSPOrders {
 		return data
 	}
 
-	async cancel( reference: string, body: CSPOrderCancelValidation['body'] ): Promise<CSPOrderCancelValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPOrderCancelValidation['response']>>({
+	async cancel( reference: string, body: CSPOrderCancelValidation['body'] ): Promise<Data<CSPOrderCancelValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPOrderCancelValidation['response']>>>({
 			url: `/csp/orders/${reference}/cancel`,
 			method: 'POST',
 			body
@@ -77,8 +77,8 @@ export default class CSPOrders {
 		return data
 	}
 
-	async timeline( reference: string ): Promise<CSPOrderTimelineValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPOrderTimelineValidation['response']>>({
+	async timeline( reference: string ): Promise<Data<CSPOrderTimelineValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPOrderTimelineValidation['response']>>>({
 			url: `/csp/orders/${reference}/timeline`,
 			method: 'GET'
 		})
@@ -86,8 +86,8 @@ export default class CSPOrders {
 		return data
 	}
 
-	async reportException( reference: string, body: CSPOrderReportExceptionValidation['body'] ): Promise<CSPOrderReportExceptionValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPOrderReportExceptionValidation['response']>>({
+	async reportException( reference: string, body: CSPOrderReportExceptionValidation['body'] ): Promise<Data<CSPOrderReportExceptionValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPOrderReportExceptionValidation['response']>>>({
 			url: `/csp/orders/${reference}/exceptions`,
 			method: 'POST',
 			body
@@ -96,8 +96,8 @@ export default class CSPOrders {
 		return data
 	}
 
-	async listExceptions( reference: string ): Promise<CSPOrderListExceptionsValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPOrderListExceptionsValidation['response']>>({
+	async listExceptions( reference: string ): Promise<Data<CSPOrderListExceptionsValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPOrderListExceptionsValidation['response']>>>({
 			url: `/csp/orders/${reference}/exceptions`,
 			method: 'GET'
 		})
@@ -105,8 +105,8 @@ export default class CSPOrders {
 		return data
 	}
 
-	async resolveException( reference: string, exceptionId: string, body: CSPOrderResolveExceptionValidation['body'] ): Promise<CSPOrderResolveExceptionValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPOrderResolveExceptionValidation['response']>>({
+	async resolveException( reference: string, exceptionId: string, body: CSPOrderResolveExceptionValidation['body'] ): Promise<Data<CSPOrderResolveExceptionValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPOrderResolveExceptionValidation['response']>>>({
 			url: `/csp/orders/${reference}/exceptions/${exceptionId}/resolve`,
 			method: 'POST',
 			body
@@ -115,8 +115,8 @@ export default class CSPOrders {
 		return data
 	}
 
-	async dispatch( reference: string, body: CSPOrderDispatchValidation['body'] ): Promise<CSPOrderDispatchValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPOrderDispatchValidation['response']>>({
+	async dispatch( reference: string, body: CSPOrderDispatchValidation['body'] ): Promise<Data<CSPOrderDispatchValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPOrderDispatchValidation['response']>>>({
 			url: `/csp/orders/${reference}/dispatch`,
 			method: 'POST',
 			body
@@ -125,8 +125,8 @@ export default class CSPOrders {
 		return data
 	}
 
-	async split( reference: string, body: CSPOrderSplitValidation['body'] ): Promise<CSPOrderSplitValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPOrderSplitValidation['response']>>({
+	async split( reference: string, body: CSPOrderSplitValidation['body'] ): Promise<Data<CSPOrderSplitValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPOrderSplitValidation['response']>>>({
 			url: `/csp/orders/${reference}/split`,
 			method: 'POST',
 			body
@@ -135,8 +135,8 @@ export default class CSPOrders {
 		return data
 	}
 
-	async updateStatus( reference: string, body: CSPOrderUpdateStatusValidation['body'] ): Promise<CSPOrderUpdateStatusValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPOrderUpdateStatusValidation['response']>>({
+	async updateStatus( reference: string, body: CSPOrderUpdateStatusValidation['body'] ): Promise<Data<CSPOrderUpdateStatusValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPOrderUpdateStatusValidation['response']>>>({
 			url: `/csp/orders/${reference}/status`,
 			method: 'PATCH',
 			body

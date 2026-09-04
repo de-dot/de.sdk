@@ -5,15 +5,15 @@ import type {
 	AgentDeliveryUpdateStatusValidation,
 	AgentDeliveryReportIssueValidation
 } from '@de./types'
-import { qs, type Http, type Res } from '../../utils'
+import { qs, type Http, type Res, type Data } from '../../utils'
 
 // ─── Agent Delivery Orders ────────────────────────────────────────────────────
 
 export default class AgentDelivery {
 	constructor( private http: Http ){}
 
-	async list( querystring?: AgentDeliveryListValidation['querystring'] ): Promise<AgentDeliveryListValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<AgentDeliveryListValidation['response']>>({
+	async list( querystring?: AgentDeliveryListValidation['querystring'] ): Promise<Data<AgentDeliveryListValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<AgentDeliveryListValidation['response']>>>({
 			url: `/agent/delivery/orders${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -21,8 +21,8 @@ export default class AgentDelivery {
 		return data
 	}
 
-	async get( reference: string ): Promise<AgentDeliveryGetValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<AgentDeliveryGetValidation['response']>>({
+	async get( reference: string ): Promise<Data<AgentDeliveryGetValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<AgentDeliveryGetValidation['response']>>>({
 			url: `/agent/delivery/orders/${reference}`,
 			method: 'GET'
 		})
@@ -30,8 +30,8 @@ export default class AgentDelivery {
 		return data
 	}
 
-	async accept( reference: string ): Promise<AgentDeliveryAcceptValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<AgentDeliveryAcceptValidation['response']>>({
+	async accept( reference: string ): Promise<Data<AgentDeliveryAcceptValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<AgentDeliveryAcceptValidation['response']>>>({
 			url: `/agent/delivery/orders/${reference}/accept`,
 			method: 'POST'
 		})
@@ -39,8 +39,8 @@ export default class AgentDelivery {
 		return data
 	}
 
-	async updateStatus( reference: string, body: AgentDeliveryUpdateStatusValidation['body'] ): Promise<AgentDeliveryUpdateStatusValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<AgentDeliveryUpdateStatusValidation['response']>>({
+	async updateStatus( reference: string, body: AgentDeliveryUpdateStatusValidation['body'] ): Promise<Data<AgentDeliveryUpdateStatusValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<AgentDeliveryUpdateStatusValidation['response']>>>({
 			url: `/agent/delivery/orders/${reference}/status`,
 			method: 'PATCH',
 			body
@@ -49,8 +49,8 @@ export default class AgentDelivery {
 		return data
 	}
 
-	async reportIssue( reference: string, body: AgentDeliveryReportIssueValidation['body'] ): Promise<AgentDeliveryReportIssueValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<AgentDeliveryReportIssueValidation['response']>>({
+	async reportIssue( reference: string, body: AgentDeliveryReportIssueValidation['body'] ): Promise<Data<AgentDeliveryReportIssueValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<AgentDeliveryReportIssueValidation['response']>>>({
 			url: `/agent/delivery/orders/${reference}/issue`,
 			method: 'POST',
 			body

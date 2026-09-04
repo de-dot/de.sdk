@@ -3,13 +3,13 @@ import type {
 	SharedAccountRetrieveValidation
 } from '@de./types/shared/account'
 import type { UserContextType } from '@de./types'
-import type { Http, Res } from '../../utils'
+import type { Http, Res, Data } from '../../utils'
 
 export default class SharedAccount {
 	constructor( private http: Http, private ctype: UserContextType ){}
 
-	async knows(): Promise<SharedAccountKnowsValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<SharedAccountKnowsValidation['response']>>({
+	async knows(): Promise<Data<SharedAccountKnowsValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<SharedAccountKnowsValidation['response']>>>({
 			url: `/${this.ctype.toLowerCase()}/account/knows`,
 			method: 'GET'
 		})
@@ -17,8 +17,8 @@ export default class SharedAccount {
 		return data
 	}
 
-	async retrieve(): Promise<SharedAccountRetrieveValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<SharedAccountRetrieveValidation['response']>>({
+	async retrieve(): Promise<Data<SharedAccountRetrieveValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<SharedAccountRetrieveValidation['response']>>>({
 			url: `/${this.ctype.toLowerCase()}/account`,
 			method: 'GET'
 		})

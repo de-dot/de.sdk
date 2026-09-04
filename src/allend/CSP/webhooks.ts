@@ -7,15 +7,15 @@ import type {
 	CSPWebhookLogsValidation,
 	CSPWebhookTestValidation
 } from '@de./types/csp/webhook'
-import { qs, type Http, type Res } from '../../utils'
+import { qs, type Http, type Res, type Data } from '../../utils'
 
 // ── CSP Webhooks ──────────────────────────────────────────────────────────
 
 export default class CSPWebhooks {
 	constructor( private http: Http ){}
 
-	async create( body: CSPWebhookCreateValidation['body'] ): Promise<CSPWebhookCreateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPWebhookCreateValidation['response']>>({
+	async create( body: CSPWebhookCreateValidation['body'] ): Promise<Data<CSPWebhookCreateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPWebhookCreateValidation['response']>>>({
 			url: '/csp/webhooks',
 			method: 'POST',
 			body
@@ -24,8 +24,8 @@ export default class CSPWebhooks {
 		return data
 	}
 
-	async list( querystring?: CSPWebhookListValidation['querystring'] ): Promise<CSPWebhookListValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPWebhookListValidation['response']>>({
+	async list( querystring?: CSPWebhookListValidation['querystring'] ): Promise<Data<CSPWebhookListValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPWebhookListValidation['response']>>>({
 			url: `/csp/webhooks${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -33,8 +33,8 @@ export default class CSPWebhooks {
 		return data
 	}
 
-	async retrieve( id: string ): Promise<CSPWebhookRetrieveValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPWebhookRetrieveValidation['response']>>({
+	async retrieve( id: string ): Promise<Data<CSPWebhookRetrieveValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPWebhookRetrieveValidation['response']>>>({
 			url: `/csp/webhooks/${id}`,
 			method: 'GET'
 		})
@@ -42,8 +42,8 @@ export default class CSPWebhooks {
 		return data
 	}
 
-	async update( id: string, body: CSPWebhookUpdateValidation['body'] ): Promise<CSPWebhookUpdateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPWebhookUpdateValidation['response']>>({
+	async update( id: string, body: CSPWebhookUpdateValidation['body'] ): Promise<Data<CSPWebhookUpdateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPWebhookUpdateValidation['response']>>>({
 			url: `/csp/webhooks/${id}`,
 			method: 'PATCH',
 			body
@@ -52,8 +52,8 @@ export default class CSPWebhooks {
 		return data
 	}
 
-	async remove( id: string ): Promise<CSPWebhookRemoveValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPWebhookRemoveValidation['response']>>({
+	async remove( id: string ): Promise<Data<CSPWebhookRemoveValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPWebhookRemoveValidation['response']>>>({
 			url: `/csp/webhooks/${id}`,
 			method: 'DELETE'
 		})
@@ -61,8 +61,8 @@ export default class CSPWebhooks {
 		return data
 	}
 
-	async logs( id: string, querystring?: CSPWebhookLogsValidation['querystring'] ): Promise<CSPWebhookLogsValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPWebhookLogsValidation['response']>>({
+	async logs( id: string, querystring?: CSPWebhookLogsValidation['querystring'] ): Promise<Data<CSPWebhookLogsValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPWebhookLogsValidation['response']>>>({
 			url: `/csp/webhooks/${id}/logs${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -70,8 +70,8 @@ export default class CSPWebhooks {
 		return data
 	}
 
-	async test( id: string, body?: CSPWebhookTestValidation['body'] ): Promise<CSPWebhookTestValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<CSPWebhookTestValidation['response']>>({
+	async test( id: string, body?: CSPWebhookTestValidation['body'] ): Promise<Data<CSPWebhookTestValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<CSPWebhookTestValidation['response']>>>({
 			url: `/csp/webhooks/${id}/test`,
 			method: 'POST',
 			body

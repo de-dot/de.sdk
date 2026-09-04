@@ -3,15 +3,15 @@ import type {
 	AgentConsolidationHandoffValidation,
 	AgentConsolidationCompleteValidation
 } from '@de./types'
-import { type Http, type Res } from '../../utils'
+import { type Http, type Res, type Data } from '../../utils'
 
 // ─── Agent Consolidation ──────────────────────────────────────────────────────
 
 export default class AgentConsolidation {
 	constructor( private http: Http ){}
 
-	async respond( body: AgentConsolidationRespondValidation['body'] ): Promise<AgentConsolidationRespondValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<AgentConsolidationRespondValidation['response']>>({
+	async respond( body: AgentConsolidationRespondValidation['body'] ): Promise<Data<AgentConsolidationRespondValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<AgentConsolidationRespondValidation['response']>>>({
 			url: '/agent/consolidation/respond',
 			method: 'POST',
 			body
@@ -20,8 +20,8 @@ export default class AgentConsolidation {
 		return data
 	}
 
-	async handoffConfirm( body: AgentConsolidationHandoffValidation['body'] ): Promise<AgentConsolidationHandoffValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<AgentConsolidationHandoffValidation['response']>>({
+	async handoffConfirm( body: AgentConsolidationHandoffValidation['body'] ): Promise<Data<AgentConsolidationHandoffValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<AgentConsolidationHandoffValidation['response']>>>({
 			url: '/agent/consolidation/handoff/confirm',
 			method: 'POST',
 			body
@@ -37,8 +37,8 @@ export default class AgentConsolidation {
 	 * confirm. This is what takes the offer out of IN_PROGRESS and returns the
 	 * rider to their zone pool.
 	 */
-	async handoffComplete( body: AgentConsolidationCompleteValidation['body'] ): Promise<AgentConsolidationCompleteValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<AgentConsolidationCompleteValidation['response']>>({
+	async handoffComplete( body: AgentConsolidationCompleteValidation['body'] ): Promise<Data<AgentConsolidationCompleteValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<AgentConsolidationCompleteValidation['response']>>>({
 			url: '/agent/consolidation/handoff/complete',
 			method: 'POST',
 			body

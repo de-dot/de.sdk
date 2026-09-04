@@ -5,15 +5,15 @@ import type {
 	QueryCountServicesValidation,
 	QueryGetServiceValidation
 } from '@de./types'
-import { type Http, type Res } from '../../utils'
+import { type Http, type Res, type Data } from '../../utils'
 
 // ─── Discovery ────────────────────────────────────────────────────────────────
 
 export class QueriesDiscovery {
 	constructor( private http: Http ){}
 
-	async discover( body: QueryDiscoverValidation['body'] ): Promise<QueryDiscoverValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<QueryDiscoverValidation['response']>>({
+	async discover( body: QueryDiscoverValidation['body'] ): Promise<Data<QueryDiscoverValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<QueryDiscoverValidation['response']>>>({
 			url: '/queries/discovery/discover',
 			method: 'POST',
 			body
@@ -22,8 +22,8 @@ export class QueriesDiscovery {
 		return data
 	}
 
-	async advancedDiscover( body: QueryAdvancedDiscoverValidation['body'] ): Promise<QueryAdvancedDiscoverValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<QueryAdvancedDiscoverValidation['response']>>({
+	async advancedDiscover( body: QueryAdvancedDiscoverValidation['body'] ): Promise<Data<QueryAdvancedDiscoverValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<QueryAdvancedDiscoverValidation['response']>>>({
 			url: '/queries/discovery/discover/advanced',
 			method: 'POST',
 			body
@@ -32,8 +32,8 @@ export class QueriesDiscovery {
 		return data
 	}
 
-	async findAvailable( body: QueryFindAvailableValidation['body'] ): Promise<QueryFindAvailableValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<QueryFindAvailableValidation['response']>>({
+	async findAvailable( body: QueryFindAvailableValidation['body'] ): Promise<Data<QueryFindAvailableValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<QueryFindAvailableValidation['response']>>>({
 			url: '/queries/discovery/available',
 			method: 'POST',
 			body
@@ -42,8 +42,8 @@ export class QueriesDiscovery {
 		return data
 	}
 
-	async count( body: QueryCountServicesValidation['body'] ): Promise<QueryCountServicesValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<QueryCountServicesValidation['response']>>({
+	async count( body: QueryCountServicesValidation['body'] ): Promise<Data<QueryCountServicesValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<QueryCountServicesValidation['response']>>>({
 			url: '/queries/discovery/count',
 			method: 'POST',
 			body
@@ -52,8 +52,8 @@ export class QueriesDiscovery {
 		return data
 	}
 
-	async get( compositeId: string ): Promise<QueryGetServiceValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<QueryGetServiceValidation['response']>>({
+	async get( compositeId: string ): Promise<Data<QueryGetServiceValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<QueryGetServiceValidation['response']>>>({
 			url: `/queries/discovery/${compositeId}`,
 			method: 'GET'
 		})

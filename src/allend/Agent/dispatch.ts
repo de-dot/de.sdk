@@ -2,15 +2,15 @@ import type {
 	AgentDispatchRespondValidation,
 	AgentDispatchRateValidation
 } from '@de./types'
-import { type Http, type Res } from '../../utils'
+import { type Http, type Res, type Data } from '../../utils'
 
 // ─── Agent Dispatch ───────────────────────────────────────────────────────────
 
 export default class AgentDispatch {
 	constructor( private http: Http ){}
 
-	async respond( body: AgentDispatchRespondValidation['body'] ): Promise<AgentDispatchRespondValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<AgentDispatchRespondValidation['response']>>({
+	async respond( body: AgentDispatchRespondValidation['body'] ): Promise<Data<AgentDispatchRespondValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<AgentDispatchRespondValidation['response']>>>({
 			url: '/agent/dispatch/respond',
 			method: 'POST',
 			body
@@ -19,8 +19,8 @@ export default class AgentDispatch {
 		return data
 	}
 
-	async rate( body: AgentDispatchRateValidation['body'] ): Promise<AgentDispatchRateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<AgentDispatchRateValidation['response']>>({
+	async rate( body: AgentDispatchRateValidation['body'] ): Promise<Data<AgentDispatchRateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<AgentDispatchRateValidation['response']>>>({
 			url: '/agent/dispatch/rate',
 			method: 'POST',
 			body

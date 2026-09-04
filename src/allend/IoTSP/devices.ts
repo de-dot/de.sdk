@@ -7,15 +7,15 @@ import type {
 	IoTDeviceStatusValidation,
 	IoTDeviceUpdateValidation
 } from '@de./types/iotsp/device'
-import { qs, type Http, type Res } from '../../utils'
+import { qs, type Http, type Res, type Data } from '../../utils'
 
 // ── Devices ───────────────────────────────────────────────────────────────
 
 export default class IoTDevices {
 	constructor( private http: Http ){}
 
-	async add( body: IoTDeviceAddValidation['body'] ): Promise<IoTDeviceAddValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<IoTDeviceAddValidation['response']>>({
+	async add( body: IoTDeviceAddValidation['body'] ): Promise<Data<IoTDeviceAddValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<IoTDeviceAddValidation['response']>>>({
 			url: `/iotsp/devices/add`,
 			method: 'POST',
 			body
@@ -24,8 +24,8 @@ export default class IoTDevices {
 		return data
 	}
 
-	async update( id: string, body: IoTDeviceUpdateValidation['body'] ): Promise<IoTDeviceUpdateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<IoTDeviceUpdateValidation['response']>>({
+	async update( id: string, body: IoTDeviceUpdateValidation['body'] ): Promise<Data<IoTDeviceUpdateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<IoTDeviceUpdateValidation['response']>>>({
 			url: `/iotsp/devices/${id}`,
 			method: 'PATCH',
 			body
@@ -34,8 +34,8 @@ export default class IoTDevices {
 		return data
 	}
 
-	async list( querystring?: IoTDeviceListValidation['querystring'] ): Promise<IoTDeviceListValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<IoTDeviceListValidation['response']>>({
+	async list( querystring?: IoTDeviceListValidation['querystring'] ): Promise<Data<IoTDeviceListValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<IoTDeviceListValidation['response']>>>({
 			url: `/iotsp/devices${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -43,8 +43,8 @@ export default class IoTDevices {
 		return data
 	}
 
-	async find( querystring: IoTDeviceFindValidation['querystring'] ): Promise<IoTDeviceFindValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<IoTDeviceFindValidation['response']>>({
+	async find( querystring: IoTDeviceFindValidation['querystring'] ): Promise<Data<IoTDeviceFindValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<IoTDeviceFindValidation['response']>>>({
 			url: `/iotsp/devices/find${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -52,8 +52,8 @@ export default class IoTDevices {
 		return data
 	}
 
-	async get( id: string ): Promise<IoTDeviceRetrieveValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<IoTDeviceRetrieveValidation['response']>>({
+	async get( id: string ): Promise<Data<IoTDeviceRetrieveValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<IoTDeviceRetrieveValidation['response']>>>({
 			url: `/iotsp/devices/${id}`,
 			method: 'GET'
 		})
@@ -61,8 +61,8 @@ export default class IoTDevices {
 		return data
 	}
 
-	async enable( id: string ): Promise<IoTDeviceStatusValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<IoTDeviceStatusValidation['response']>>({
+	async enable( id: string ): Promise<Data<IoTDeviceStatusValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<IoTDeviceStatusValidation['response']>>>({
 			url: `/iotsp/devices/${id}/enable`,
 			method: 'PATCH'
 		})
@@ -70,8 +70,8 @@ export default class IoTDevices {
 		return data
 	}
  
-	async disable( id: string ): Promise<IoTDeviceStatusValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<IoTDeviceStatusValidation['response']>>({
+	async disable( id: string ): Promise<Data<IoTDeviceStatusValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<IoTDeviceStatusValidation['response']>>>({
 			url: `/iotsp/devices/${id}/disable`,
 			method: 'PATCH'
 		})
@@ -79,8 +79,8 @@ export default class IoTDevices {
 		return data
 	}
 
-	async delete( id: string ): Promise<IoTDeviceRemoveValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<IoTDeviceRemoveValidation['response']>>({
+	async delete( id: string ): Promise<Data<IoTDeviceRemoveValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<IoTDeviceRemoveValidation['response']>>>({
 			url: `/iotsp/devices/${id}`,
 			method: 'DELETE'
 		})

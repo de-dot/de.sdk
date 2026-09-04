@@ -6,15 +6,15 @@ import type {
 	UtilETAValidation,
 	UtilBatchGeocodeValidation
 } from '@de./types'
-import { type Http, type Res } from '../../utils'
+import { type Http, type Res, type Data } from '../../utils'
 
 // ─── Common Utilities ─────────────────────────────────────────────────────────
 
 export class UtilitiesCommon {
 	constructor( private http: Http ){}
 
-	async distance( body: UtilDistanceValidation['body'] ): Promise<UtilDistanceValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<UtilDistanceValidation['response']>>({
+	async distance( body: UtilDistanceValidation['body'] ): Promise<Data<UtilDistanceValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<UtilDistanceValidation['response']>>>({
 			url: '/utilities/distance',
 			method: 'POST',
 			body
@@ -23,8 +23,8 @@ export class UtilitiesCommon {
 		return data
 	}
 
-	async distanceMatrix( body: UtilBatchDistanceMatrixValidation['body'] ): Promise<UtilBatchDistanceMatrixValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<UtilBatchDistanceMatrixValidation['response']>>({
+	async distanceMatrix( body: UtilBatchDistanceMatrixValidation['body'] ): Promise<Data<UtilBatchDistanceMatrixValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<UtilBatchDistanceMatrixValidation['response']>>>({
 			url: '/utilities/distance/matrix',
 			method: 'POST',
 			body
@@ -33,8 +33,8 @@ export class UtilitiesCommon {
 		return data
 	}
 
-	async savingsMatrix( body: UtilSavingsMatrixValidation['body'] ): Promise<UtilSavingsMatrixValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<UtilSavingsMatrixValidation['response']>>({
+	async savingsMatrix( body: UtilSavingsMatrixValidation['body'] ): Promise<Data<UtilSavingsMatrixValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<UtilSavingsMatrixValidation['response']>>>({
 			url: '/utilities/distance/savings',
 			method: 'POST',
 			body
@@ -43,8 +43,8 @@ export class UtilitiesCommon {
 		return data
 	}
 
-	async assignZone( body: UtilAssignZoneValidation['body'] ): Promise<UtilAssignZoneValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<UtilAssignZoneValidation['response']>>({
+	async assignZone( body: UtilAssignZoneValidation['body'] ): Promise<Data<UtilAssignZoneValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<UtilAssignZoneValidation['response']>>>({
 			url: '/utilities/zone',
 			method: 'POST',
 			body
@@ -53,8 +53,8 @@ export class UtilitiesCommon {
 		return data
 	}
 
-	async eta( body: UtilETAValidation['body'] ): Promise<UtilETAValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<UtilETAValidation['response']>>({
+	async eta( body: UtilETAValidation['body'] ): Promise<Data<UtilETAValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<UtilETAValidation['response']>>>({
 			url: '/utilities/eta',
 			method: 'POST',
 			body
@@ -63,8 +63,8 @@ export class UtilitiesCommon {
 		return data
 	}
 
-	async batchGeocode( body: UtilBatchGeocodeValidation['body'] ): Promise<UtilBatchGeocodeValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<UtilBatchGeocodeValidation['response']>>({
+	async batchGeocode( body: UtilBatchGeocodeValidation['body'] ): Promise<Data<UtilBatchGeocodeValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<UtilBatchGeocodeValidation['response']>>>({
 			url: '/utilities/geocode/batch',
 			method: 'POST',
 			body

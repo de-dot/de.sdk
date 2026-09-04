@@ -2,15 +2,15 @@ import type {
 	PipelineWebhookProcessValidation,
 	PipelineWebhookRegisterValidation
 } from '@de./types'
-import { type Http, type Res } from '../../utils'
+import { type Http, type Res, type Data } from '../../utils'
 
 // ─── Webhooks ─────────────────────────────────────────────────────────────────
 
 export class PipelinesWebhooks {
   constructor( private http: Http ){}
 
-  async process( body: PipelineWebhookProcessValidation['body'] ): Promise<PipelineWebhookProcessValidation['response']> {
-    const { error, message, data } = await this.http.request<Res<PipelineWebhookProcessValidation['response']>>({
+  async process( body: PipelineWebhookProcessValidation['body'] ): Promise<Data<PipelineWebhookProcessValidation['response']>> {
+    const { error, message, data } = await this.http.request<Res<Data<PipelineWebhookProcessValidation['response']>>>({
       url: '/pipelines/webhooks',
       method: 'POST',
       body

@@ -1,7 +1,7 @@
 import type { AccessOptions } from '../../types/access'
 import type { SharedTrackingSessionValidation } from '@de./types/shared/tracking'
 import AccessManager from '../Access'
-import { qs, type Res } from '../../utils'
+import { qs, type Res, type Data } from '../../utils'
 
 export type TrackingConfig = {
 	accessToken: string
@@ -39,8 +39,8 @@ export default class Tracking extends AccessManager {
 		super( access, 'API' )
 	}
 
-	async getSession( reference: string, role: SharedTrackingSessionValidation['querystring']['role'] ): Promise<SharedTrackingSessionValidation['response']> {
-		const { error, message, data } = await this.request<Res<SharedTrackingSessionValidation['response']>>({
+	async getSession( reference: string, role: SharedTrackingSessionValidation['querystring']['role'] ): Promise<Data<SharedTrackingSessionValidation['response']>> {
+		const { error, message, data } = await this.request<Res<Data<SharedTrackingSessionValidation['response']>>>({
 			url: `/tracking/${reference}${qs({ role })}`,
 			method: 'GET'
 		})

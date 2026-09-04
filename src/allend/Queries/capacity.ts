@@ -5,15 +5,15 @@ import type {
 	QueryCapacityInvalidateCacheValidation,
 	QueryCapacityCacheStatsValidation
 } from '@de./types'
-import { type Http, type Res, qs } from '../../utils'
+import { type Http, type Res, type Data, qs } from '../../utils'
 
 // ─── Capacity ─────────────────────────────────────────────────────────────────
 
 export class QueriesCapacity {
 	constructor( private http: Http ){}
 
-	async query( body: QueryCapacityValidation['body'] ): Promise<QueryCapacityValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<QueryCapacityValidation['response']>>({
+	async query( body: QueryCapacityValidation['body'] ): Promise<Data<QueryCapacityValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<QueryCapacityValidation['response']>>>({
 			url: '/queries/capacity/query',
 			method: 'POST',
 			body
@@ -22,8 +22,8 @@ export class QueriesCapacity {
 		return data
 	}
 
-	async batchQuery( body: QueryBatchCapacityValidation['body'] ): Promise<QueryBatchCapacityValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<QueryBatchCapacityValidation['response']>>({
+	async batchQuery( body: QueryBatchCapacityValidation['body'] ): Promise<Data<QueryBatchCapacityValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<QueryBatchCapacityValidation['response']>>>({
 			url: '/queries/capacity/query/batch',
 			method: 'POST',
 			body
@@ -32,8 +32,8 @@ export class QueriesCapacity {
 		return data
 	}
 
-	async getAll( lsp: string, serviceId: string ): Promise<QueryAllCapacitiesValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<QueryAllCapacitiesValidation['response']>>({
+	async getAll( lsp: string, serviceId: string ): Promise<Data<QueryAllCapacitiesValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<QueryAllCapacitiesValidation['response']>>>({
 			url: `/queries/capacity/${lsp}/${serviceId}`,
 			method: 'GET'
 		})
@@ -41,8 +41,8 @@ export class QueriesCapacity {
 		return data
 	}
 
-	async invalidateCache( lsp: string, serviceId: string, querystring?: QueryCapacityInvalidateCacheValidation['querystring'] ): Promise<QueryCapacityInvalidateCacheValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<QueryCapacityInvalidateCacheValidation['response']>>({
+	async invalidateCache( lsp: string, serviceId: string, querystring?: QueryCapacityInvalidateCacheValidation['querystring'] ): Promise<Data<QueryCapacityInvalidateCacheValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<QueryCapacityInvalidateCacheValidation['response']>>>({
 			url: `/queries/capacity/cache/${lsp}/${serviceId}${qs( querystring )}`,
 			method: 'DELETE'
 		})
@@ -50,8 +50,8 @@ export class QueriesCapacity {
 		return data
 	}
 
-	async cacheStats(): Promise<QueryCapacityCacheStatsValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<QueryCapacityCacheStatsValidation['response']>>({
+	async cacheStats(): Promise<Data<QueryCapacityCacheStatsValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<QueryCapacityCacheStatsValidation['response']>>>({
 			url: '/queries/capacity/cache/stats',
 			method: 'GET'
 		})

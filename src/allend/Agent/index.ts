@@ -5,7 +5,7 @@ import type {
 	AgentUpdateValidation
 } from '@de./types'
 import AccessManager from '../Access'
-import { type Res } from '../../utils'
+import { type Res, type Data } from '../../utils'
 import AgentRides from './rides'
 import AgentDelivery from './delivery'
 import AgentShipping from './shipping'
@@ -89,8 +89,8 @@ export default class Agent extends AccessManager {
 
 	// ── Agent profile ─────────────────────────────────────────────────────────
 
-	async info(): Promise<AgentInfoValidation['response']> {
-		const { error, message, data } = await this.request<Res<AgentInfoValidation['response']>>({
+	async info(): Promise<Data<AgentInfoValidation['response']>> {
+		const { error, message, data } = await this.request<Res<Data<AgentInfoValidation['response']>>>({
 			url: '/agent',
 			method: 'GET'
 		})
@@ -98,8 +98,8 @@ export default class Agent extends AccessManager {
 		return data
 	}
 
-	async update( body: AgentUpdateValidation['body'] ): Promise<AgentUpdateValidation['response']> {
-		const { error, message, data } = await this.request<Res<AgentUpdateValidation['response']>>({
+	async update( body: AgentUpdateValidation['body'] ): Promise<Data<AgentUpdateValidation['response']>> {
+		const { error, message, data } = await this.request<Res<Data<AgentUpdateValidation['response']>>>({
 			url: '/agent',
 			method: 'PATCH',
 			body
@@ -108,8 +108,8 @@ export default class Agent extends AccessManager {
 		return data
 	}
 
-	async availability( status: AgentAvailabilityValidation['params']['availability'] ): Promise<AgentAvailabilityValidation['response']> {
-		const { error, message, data } = await this.request<Res<AgentAvailabilityValidation['response']>>({
+	async availability( status: AgentAvailabilityValidation['params']['availability'] ): Promise<Data<AgentAvailabilityValidation['response']>> {
+		const { error, message, data } = await this.request<Res<Data<AgentAvailabilityValidation['response']>>>({
 			url: `/agent/${status}`,
 			method: 'GET'
 		})

@@ -8,7 +8,7 @@ import type {
 	LSPPSLAvailableValidation,
 	LSPPSLRemoveValidation
 } from '@de./types/lsp/psl'
-import { qs, type Http, type Res } from '../../utils'
+import { qs, type Http, type Res, type Data } from '../../utils'
 
 // ── LSP Facility PSL (Pick/Sort/Locations) ──────────────────────────────────────
 //
@@ -20,8 +20,8 @@ import { qs, type Http, type Res } from '../../utils'
 export default class LSPFacilityPSL {
 	constructor( private http: Http, private segment: 'hubs' | 'warehouses' ){}
 
-	async create( facilityId: string, body: LSPPSLCreateValidation['body'] ): Promise<LSPPSLCreateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPPSLCreateValidation['response']>>({
+	async create( facilityId: string, body: LSPPSLCreateValidation['body'] ): Promise<Data<LSPPSLCreateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPPSLCreateValidation['response']>>>({
 			url: `/lsp/${this.segment}/${facilityId}/psl/create`,
 			method: 'POST',
 			body
@@ -30,8 +30,8 @@ export default class LSPFacilityPSL {
 		return data
 	}
 
-	async list( facilityId: string, querystring?: LSPPSLFetchValidation['querystring'] ): Promise<LSPPSLFetchValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPPSLFetchValidation['response']>>({
+	async list( facilityId: string, querystring?: LSPPSLFetchValidation['querystring'] ): Promise<Data<LSPPSLFetchValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPPSLFetchValidation['response']>>>({
 			url: `/lsp/${this.segment}/${facilityId}/psl${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -39,8 +39,8 @@ export default class LSPFacilityPSL {
 		return data
 	}
 
-	async retrieve( facilityId: string, locationId: string ): Promise<LSPPSLRetrieveValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPPSLRetrieveValidation['response']>>({
+	async retrieve( facilityId: string, locationId: string ): Promise<Data<LSPPSLRetrieveValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPPSLRetrieveValidation['response']>>>({
 			url: `/lsp/${this.segment}/${facilityId}/psl/${locationId}`,
 			method: 'GET'
 		})
@@ -48,8 +48,8 @@ export default class LSPFacilityPSL {
 		return data
 	}
 
-	async update( facilityId: string, locationId: string, body: LSPPSLUpdateValidation['body'] ): Promise<LSPPSLUpdateValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPPSLUpdateValidation['response']>>({
+	async update( facilityId: string, locationId: string, body: LSPPSLUpdateValidation['body'] ): Promise<Data<LSPPSLUpdateValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPPSLUpdateValidation['response']>>>({
 			url: `/lsp/${this.segment}/${facilityId}/psl/${locationId}`,
 			method: 'PATCH',
 			body
@@ -58,8 +58,8 @@ export default class LSPFacilityPSL {
 		return data
 	}
 
-	async updateStatus( facilityId: string, locationId: string, body: LSPPSLUpdateStatusValidation['body'] ): Promise<LSPPSLUpdateStatusValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPPSLUpdateStatusValidation['response']>>({
+	async updateStatus( facilityId: string, locationId: string, body: LSPPSLUpdateStatusValidation['body'] ): Promise<Data<LSPPSLUpdateStatusValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPPSLUpdateStatusValidation['response']>>>({
 			url: `/lsp/${this.segment}/${facilityId}/psl/${locationId}/status`,
 			method: 'PATCH',
 			body
@@ -68,8 +68,8 @@ export default class LSPFacilityPSL {
 		return data
 	}
 
-	async hierarchy( facilityId: string, locationId: string ): Promise<LSPPSLHierarchyValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPPSLHierarchyValidation['response']>>({
+	async hierarchy( facilityId: string, locationId: string ): Promise<Data<LSPPSLHierarchyValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPPSLHierarchyValidation['response']>>>({
 			url: `/lsp/${this.segment}/${facilityId}/psl/${locationId}/hierarchy`,
 			method: 'GET'
 		})
@@ -77,8 +77,8 @@ export default class LSPFacilityPSL {
 		return data
 	}
 
-	async available( facilityId: string, querystring?: LSPPSLAvailableValidation['querystring'] ): Promise<LSPPSLAvailableValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPPSLAvailableValidation['response']>>({
+	async available( facilityId: string, querystring?: LSPPSLAvailableValidation['querystring'] ): Promise<Data<LSPPSLAvailableValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPPSLAvailableValidation['response']>>>({
 			url: `/lsp/${this.segment}/${facilityId}/psl/query/available${qs( querystring )}`,
 			method: 'GET'
 		})
@@ -86,8 +86,8 @@ export default class LSPFacilityPSL {
 		return data
 	}
 
-	async remove( facilityId: string, locationId: string ): Promise<LSPPSLRemoveValidation['response']> {
-		const { error, message, data } = await this.http.request<Res<LSPPSLRemoveValidation['response']>>({
+	async remove( facilityId: string, locationId: string ): Promise<Data<LSPPSLRemoveValidation['response']>> {
+		const { error, message, data } = await this.http.request<Res<Data<LSPPSLRemoveValidation['response']>>>({
 			url: `/lsp/${this.segment}/${facilityId}/psl/${locationId}`,
 			method: 'DELETE'
 		})
