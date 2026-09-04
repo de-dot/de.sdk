@@ -40,8 +40,12 @@ export default class AgentRealtime extends AccessManager {
   constructor( access: AccessOptions ){
     super( access, 'API' )
 
-    // Socket.io is served by the same de.arch API server
-    this.iosHost = baseURL('API', access.env || 'dev', access.devHostname )
+    // Socket.io is served by the same de.arch API server, so an explicit
+    // origin governs the socket exactly as it governs the requests — without
+    // this, a client pointed at a self-hosted De. still opened its socket
+    // against the environment table's host.
+    this.iosHost = access.baseUrl?.replace( /\/+$/, '' )
+                    || baseURL('API', access.env || 'dev', access.devHostname )
   }
 
   connect( agentId: string ): Promise<void> {

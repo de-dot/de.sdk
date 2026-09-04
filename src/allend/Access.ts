@@ -3,7 +3,14 @@ import type { HTTPRequestOptions } from '../types'
 import { baseURL } from '../baseUrl'
 import APIError from '../error'
 
-type AccessType = 'API' | 'ASI'
+/**
+ * Which service the client addresses.
+ *
+ * De. is more than one server: de.arch answers the API, de.auth the ASI, and
+ * de.workspace the control plane. They are separate hosts, so the client has
+ * to say which one it means rather than assume the API.
+ */
+type AccessType = 'API' | 'ASI' | 'WSP'
 
 const USER_ACCOUNT_SERVICE = 'De.API'
 
@@ -31,6 +38,16 @@ export default class AccessManager {
   private version: number
   private platform: AccessOptions['platform']
   private baseURL: string
+  /**
+   * The client's own `wid:TYPE:xcode`, base64-encoded.
+   *
+   * Not a transport header: de.arch resolves the workspace from the access
+   * token, and its header contract has no context field. It is kept because a
+   * client is scoped to one context for its lifetime, and a caller holding
+   * several — a proxy serving many workspaces — needs to ask which is which.
+   * `scope` decodes it.
+   */
+  readonly context: string
   protected accessToken?: string
   protected remoteOrigin?: string
   protected session?: UserSession
@@ -41,6 +58,7 @@ export default class AccessManager {
     if( !options.context ) throw new Error('Undefined Context Reference. Check https://doc.dedot.io/sdk/auth')
     if( !options.accessToken ) throw new Error('Undefined Access Token. Check https://doc.dedot.io/sdk/auth')
     
+    this.context = options.context
     this.atype = atype
     this.version = options.version || 1
     this.platform = options.platform || 'proxy'
@@ -49,7 +67,7 @@ export default class AccessManager {
     this.session = options.session
     this.timeout = options.timeout
     this.baseURL = options.baseUrl?.replace( /\/+$/, '' )
-                    || baseURL( this.atype === 'ASI' ? 'ASI' : 'API', options.env || 'dev', options.devHostname )
+                    || baseURL( this.atype, options.env || 'dev', options.devHostname )
   }
 
   async request<Response>({ url, timeout, ...options }: HTTPRequestOptions ): Promise<Response> {
@@ -123,22 +141,61 @@ export default class AccessManager {
     let body: any
     try { body = await response.json() }
     catch {
+      /**
+       * Not De. answering — a gateway's HTML 502, a proxy timeout, an empty
+       * 204. There is no envelope to hand back, so this is the one case that
+       * raises, carrying the status and URL rather than a JSON syntax error.
+       */
       throw new APIError(`${options.method} ${url} — ${response.statusText || 'no JSON body'}`, response.status )
     }
 
     /**
-     * Failures are raised here rather than in each client.
+     * A refusal is returned, not raised.
      *
-     * The clients all threw on `error: true` anyway; doing it once is what
-     * lets the status travel with the message, which is the part they could
-     * not have supplied — by the time a client sees the envelope, the response
-     * is gone. Their own guards stay as the fallback for a client built over
-     * some other transport.
+     * De.'s answer is the `{ error, status, message, data }` envelope whether
+     * it succeeded or not, and `status` names the refusal precisely —
+     * SENDER_CAP_REACHED, CONSOLIDATION::NOT_IN_PROGRESS. Throwing that away
+     * and reconstructing it from an exception message is what callers were
+     * reduced to; handing back the envelope lets them read it.
+     *
+     * A non-2xx carrying an envelope is still De. answering, so it comes back
+     * the same way.
+     *
+     * What is NOT De. answering is raised. A wrong path gets Fastify's own
+     * 404 body, which is JSON but not the envelope — `error` there is the
+     * string 'Not Found', not a boolean. Returning that as though it were a
+     * refusal is how a client addressing a route that does not exist would
+     * look like a workspace being told no, which is precisely the bug that
+     * hid `/LSP/invitation/agent` behind a plausible-looking failure.
      */
-    if( body?.error || !response.ok )
-      throw new APIError( body?.message || `${options.method} ${url} failed`, response.status, body )
+    if( typeof body?.error !== 'boolean' )
+      throw new APIError(
+        body?.message || `${options.method} ${url} — ${response.status} ${response.statusText || 'not a De. response'}`,
+        response.status,
+        body
+      )
 
     return body as Response
+  }
+
+  /**
+   * The context decoded into its parts.
+   *
+   * Every consumer was decoding the base64 and splitting on ':' by hand,
+   * including validating that it produced three fields. Returns undefined
+   * rather than throwing when the string is not a context, since a caller
+   * asking is usually checking.
+   */
+  get scope(): { wid: string, type: string, xcode: string } | undefined {
+    try {
+      const decoded = typeof atob === 'function'
+                        ? atob( this.context )
+                        : Buffer.from( this.context, 'base64' ).toString('utf8'),
+            [ wid, type, xcode ] = decoded.split(':')
+
+      return wid && type && xcode ? { wid, type, xcode } : undefined
+    }
+    catch { return undefined }
   }
 
   setToken( token: string ): void { this.accessToken = token }

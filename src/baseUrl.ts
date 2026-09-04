@@ -15,7 +15,8 @@ const DEV_PORTS = {
 	ASI: 44000,
 	RTS: 24800,
 	API: 24800,
-	IOT: 11011
+	IOT: 11011,
+	WSP: 22200
 }
 
 export const ASI_SERVER_BASEURL = {
@@ -34,6 +35,23 @@ export const API_SERVER_BASEURL = {
 	staging: 'https://api.staging.dedot.io',
 	prod:    'https://api.dedot.io'
 }
+/**
+ * de.workspace — the control plane, a separate service from de.arch.
+ *
+ * It is not reachable through the API host: de.arch serves no `/workspace`
+ * routes, so a client pointed there gets 404 for the whole surface.
+ *
+ * The staging and production hosts follow the naming of the other services
+ * (auth.dedot.io, iot.dedot.io). Confirm them against the deployment before
+ * relying on them, and pass `baseUrl` to address a host that differs — which
+ * is also what a self-hosted De. needs, and what a dev machine running
+ * de.workspace on a port other than 22200 needs.
+ */
+export const WSP_SERVER_BASEURL = {
+	dev:     `http://localhost:${DEV_PORTS.WSP}`,
+	staging: 'https://workspace.staging.dedot.io',
+	prod:    'https://workspace.dedot.io'
+}
 export const IOT_SERVER_BASEURL = {
 	dev:     `http://localhost:${DEV_PORTS.IOT}`,
 	staging: 'https://iot.staging.dedot.io',
@@ -47,7 +65,8 @@ const BASEURLS = {
 	ASI: ASI_SERVER_BASEURL,
 	RTS: RTS_SERVER_BASEURL,
 	API: API_SERVER_BASEURL,
-	IOT: IOT_SERVER_BASEURL
+	IOT: IOT_SERVER_BASEURL,
+	WSP: WSP_SERVER_BASEURL
 }
 
 /**

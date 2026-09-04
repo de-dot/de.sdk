@@ -13,7 +13,9 @@ export default class Realtime extends AccessManager {
   constructor( access: AccessOptions ){
     super( access, 'API' )
     // Socket server host
-    this.iosHost = baseURL('RTS', access.env, access.devHostname )
+    // An explicit origin governs the socket as it governs the requests.
+    this.iosHost = access.baseUrl?.replace( /\/+$/, '' )
+                    || baseURL('RTS', access.env, access.devHostname )
   }
 
   connect( clientId: string ): Promise<void> {
