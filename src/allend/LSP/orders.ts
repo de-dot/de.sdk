@@ -6,8 +6,13 @@ import type {
 	LSPOrderGetStatusValidation,
 	LSPOrderListValidation,
 	LSPOrderGetValidation,
-	LSPOrderSubscribeValidation
+	LSPOrderSubscribeValidation,
+	LSPOrderRequeueValidation
 } from '@de./types/lsp/order/management'
+import type {
+	LSPOrderIntakeCreateValidation,
+	LSPOrderIntakeApproveValidation
+} from '@de./types/lsp/order/delivery'
 import type {
 	LSPInboundOrderCreateValidation,
 	LSPInboundOrderCompleteValidation,
@@ -51,6 +56,36 @@ import { qs, type Http, type Res } from '../../utils'
 export default class LSPOrders {
 	constructor( private http: Http ){}
 
+	// ── Rally Intake ──────────────────────────────────────────────────────────
+
+	/**
+	 * Submit a delivery order for rally dispatch.
+	 *
+	 * `batchStatus` in the reply says what the engine did with it: FORMING and
+	 * DISPATCHED mean it joined a batch, DIRECT that it was sent on its own,
+	 * and the SENDER_* values that the sender's own limits stopped it. All four
+	 * are successful submissions — only an error is a failure to submit.
+	 */
+	async create( body: LSPOrderIntakeCreateValidation['body'] ): Promise<LSPOrderIntakeCreateValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPOrderIntakeCreateValidation['response']>>({
+			url: '/lsp/orders',
+			method: 'POST',
+			body
+		})
+		if( error ) throw new Error( message )
+		return data
+	}
+
+	/** Release an order the engine is holding for the sender's approval. */
+	async approve( reference: string ): Promise<LSPOrderIntakeApproveValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPOrderIntakeApproveValidation['response']>>({
+			url: `/lsp/orders/${reference}/approve`,
+			method: 'POST'
+		})
+		if( error ) throw new Error( message )
+		return data
+	}
+
 	// ── Order Management ──────────────────────────────────────────────────────
 
 	async list( querystring?: LSPOrderListValidation['querystring'] ): Promise<LSPOrderListValidation['response']> {
@@ -84,6 +119,22 @@ export default class LSPOrders {
 		const { error, message, data } = await this.http.request<Res<LSPOrderCompleteValidation['response']>>({
 			url: `/lsp/orders/${reference}/complete`,
 			method: 'PATCH',
+			body
+		})
+		if( error ) throw new Error( message )
+		return data
+	}
+
+	/**
+	 * Put a stalled order back into a zone's dispatch queue.
+	 *
+	 * The coordinator's intervention when nothing has picked the order up —
+	 * `zoneId` is where to try next, which need not be where it started.
+	 */
+	async requeue( reference: string, body: LSPOrderRequeueValidation['body'] ): Promise<LSPOrderRequeueValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPOrderRequeueValidation['response']>>({
+			url: `/lsp/orders/${reference}/requeue`,
+			method: 'POST',
 			body
 		})
 		if( error ) throw new Error( message )

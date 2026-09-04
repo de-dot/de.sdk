@@ -4,7 +4,11 @@ import type {
 	LSPReportsInventoryValidation,
 	LSPReportsOperationsValidation,
 	LSPReportsFacilityValidation,
-	LSPReportsTasksValidation
+	LSPReportsTasksValidation,
+	LSPRallyConfigRetrieveValidation,
+	LSPRallyConfigUpdateValidation,
+	LSPRallyConfigResetValidation,
+	LSPRallyConfigResetKeyValidation
 } from '@de./types/lsp/operations'
 import type {
 	LSPZoneListValidation,
@@ -29,6 +33,62 @@ export default class LSPOperations {
 
 	constructor( private http: Http ){
 		this.coverage = new LSPCoverage( this.http )
+	}
+
+	// ── Rally Config ──────────────────────────────────────────────────────────
+
+	/**
+	 * How the rally engine is tuned for this workspace.
+	 *
+	 * `config` is everything in force, platform defaults included; `overrides`
+	 * is only what this workspace has set, which is the answer to "what did we
+	 * change"; `describe` says the same thing knob by knob with the provenance
+	 * and scope of each, so a surprising value can be traced without guessing.
+	 */
+	async getRallyConfig(): Promise<LSPRallyConfigRetrieveValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPRallyConfigRetrieveValidation['response']>>({
+			url: '/lsp/rally/config',
+			method: 'GET'
+		})
+		if( error ) throw new Error( message )
+		return data
+	}
+
+	/**
+	 * Set one or more knobs for this workspace.
+	 *
+	 * A partial body — only the keys sent are touched. Keys the engine holds at
+	 * process scope are rejected rather than silently ignored, since a setting
+	 * that appears to take and does nothing is worse than a refusal.
+	 */
+	async updateRallyConfig( body: LSPRallyConfigUpdateValidation['body'] ): Promise<LSPRallyConfigUpdateValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPRallyConfigUpdateValidation['response']>>({
+			url: '/lsp/rally/config',
+			method: 'PATCH',
+			body
+		})
+		if( error ) throw new Error( message )
+		return data
+	}
+
+	/** Put one knob back to the platform default, leaving the rest tuned. */
+	async resetRallyConfigKey( key: string ): Promise<LSPRallyConfigResetKeyValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPRallyConfigResetKeyValidation['response']>>({
+			url: `/lsp/rally/config/${key}`,
+			method: 'DELETE'
+		})
+		if( error ) throw new Error( message )
+		return data
+	}
+
+	/** Drop every override this workspace holds. */
+	async resetRallyConfig(): Promise<LSPRallyConfigResetValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPRallyConfigResetValidation['response']>>({
+			url: '/lsp/rally/config',
+			method: 'DELETE'
+		})
+		if( error ) throw new Error( message )
+		return data
 	}
 
 	// ── Zones ─────────────────────────────────────────────────────────────────

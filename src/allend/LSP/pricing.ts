@@ -16,7 +16,8 @@ import type {
 	LSPPricingValidateValidation,
 	LSPPricingGetTemplatesValidation,
 	LSPPricingCreateFromTemplateValidation,
-	LSPPricingBindToValidation
+	LSPPricingBindToValidation,
+	LSPPricingAdoptValidation
 } from '@de./types/lsp/pricing'
 import { qs, type Http, type Res } from '../../utils'
 
@@ -24,6 +25,25 @@ import { qs, type Http, type Res } from '../../utils'
 
 export default class LSPPricing {
 	constructor( private http: Http ){}
+
+	/**
+	 * Take the platform's own rate card as this workspace's starting point.
+	 *
+	 * The platform rules are code, not rows, so a workspace that has never
+	 * priced anything quotes off them implicitly and cannot edit them. Adopting
+	 * writes them in as this workspace's own rules, which is what makes them
+	 * editable — and is idempotent on rule code, so a second call adopts only
+	 * what is missing and reports the rest as `skipped`.
+	 */
+	async adopt( body?: LSPPricingAdoptValidation['body'] ): Promise<LSPPricingAdoptValidation['response']> {
+		const { error, message, data } = await this.http.request<Res<LSPPricingAdoptValidation['response']>>({
+			url: '/lsp/pricing/rules/adopt',
+			method: 'POST',
+			body: body ?? {}
+		})
+		if( error ) throw new Error( message )
+		return data
+	}
 
 	async add( body: LSPPricingAddValidation['body'] ): Promise<LSPPricingAddValidation['response']> {
 		const { error, message, data } = await this.http.request<Res<LSPPricingAddValidation['response']>>({
