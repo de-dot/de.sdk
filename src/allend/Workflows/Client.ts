@@ -26,11 +26,9 @@ export default class Client extends AccessManager {
     options: HTTPRequestOptions = {
       url: `/client/${this.clientId}/orders/actives`,
       method: 'GET'
-    },
-    { error, message, data } = await this.request<OrderServiceResponse>( options )
-    if( error ) throw new Error( message )
-    
-    return data.orders
+    }
+
+    return await this.request<OrderServiceResponse>( options )
   }
 
   async fetchOrderHistory(){
@@ -41,11 +39,9 @@ export default class Client extends AccessManager {
     options: HTTPRequestOptions = {
       url: `/client/${this.clientId}/orders/history`,
       method: 'GET'
-    },
-    { error, message, data } = await this.request<OrderServiceResponse>( options )
-    if( error ) throw new Error( message )
-    
-    return data.orders
+    }
+
+    return await this.request<OrderServiceResponse>( options )
   }
 
   async nearby( location: RTLocation ){
@@ -63,10 +59,8 @@ export default class Client extends AccessManager {
       url: `/client/${this.clientId}/nearby`,
       method: 'POST',
       body: location
-    },
-    { error, message, data } = await this.request<NearbyResponse>( options )
-    if( error ) throw new Error( message )
-    
-    return data.nearby
+    }
+
+    return await this.request<NearbyResponse>( options )
   }
 }

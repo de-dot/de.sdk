@@ -10,33 +10,27 @@ import { type Http, type Res, type Data } from '../../utils'
 export class UtilitiesNearby {
 	constructor( private http: Http ){}
 
-	async search( body: UtilSearchNearbyValidation['body'] ): Promise<Data<UtilSearchNearbyValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<UtilSearchNearbyValidation['response']>>>({
+	async search( body: UtilSearchNearbyValidation['body'] ): Promise<UtilSearchNearbyValidation['response']> {
+		return await this.http.request<UtilSearchNearbyValidation['response']>({
 			url: '/utilities/nearby/search',
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async searchInBounds( body: UtilSearchInBoundsValidation['body'] ): Promise<Data<UtilSearchInBoundsValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<UtilSearchInBoundsValidation['response']>>>({
+	async searchInBounds( body: UtilSearchInBoundsValidation['body'] ): Promise<UtilSearchInBoundsValidation['response']> {
+		return await this.http.request<UtilSearchInBoundsValidation['response']>({
 			url: '/utilities/nearby/bounds',
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async findNearest( body: UtilFindNearestValidation['body'] ): Promise<Data<UtilFindNearestValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<UtilFindNearestValidation['response']>>>({
+	async findNearest( body: UtilFindNearestValidation['body'] ): Promise<UtilFindNearestValidation['response']> {
+		return await this.http.request<UtilFindNearestValidation['response']>({
 			url: '/utilities/nearby/nearest',
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 }

@@ -1,3 +1,4 @@
+import type { APIResponseBase } from '@de./types'
 import type {
 	LSPHubCreateValidation,
 	LSPHubRetrieveValidation,
@@ -44,250 +45,201 @@ export default class LSPHubs {
 		this.inventory = new LSPFacilityInventory( this.http, 'hubs' )
 	}
 
-	async create( body: LSPHubCreateValidation['body'] ): Promise<Data<LSPHubCreateValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPHubCreateValidation['response']>>>({
+	async create( body: LSPHubCreateValidation['body'] ): Promise<LSPHubCreateValidation['response']> {
+		return await this.http.request<LSPHubCreateValidation['response']>({
 			url: '/lsp/hubs/create',
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async list( querystring?: LSPHubListValidation['querystring'] ): Promise<Data<LSPHubListValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPHubListValidation['response']>>>({
+	async list( querystring?: LSPHubListValidation['querystring'] ): Promise<LSPHubListValidation['response']> {
+		return await this.http.request<LSPHubListValidation['response']>({
 			url: `/lsp/hubs${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async retrieve( id: string ): Promise<Data<LSPHubRetrieveValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPHubRetrieveValidation['response']>>>({
+	async retrieve( id: string ): Promise<LSPHubRetrieveValidation['response']> {
+		return await this.http.request<LSPHubRetrieveValidation['response']>({
 			url: `/lsp/hubs/${id}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async update( id: string, body: LSPHubUpdateValidation['body'] ): Promise<Data<LSPHubUpdateValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPHubUpdateValidation['response']>>>({
+	async update( id: string, body: LSPHubUpdateValidation['body'] ): Promise<LSPHubUpdateValidation['response']> {
+		return await this.http.request<LSPHubUpdateValidation['response']>({
 			url: `/lsp/hubs/${id}`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async updateStatus( id: string, body: LSPHubUpdateStatusValidation['body'] ): Promise<Data<LSPHubUpdateStatusValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPHubUpdateStatusValidation['response']>>>({
+	async updateStatus( id: string, body: LSPHubUpdateStatusValidation['body'] ): Promise<LSPHubUpdateStatusValidation['response']> {
+		return await this.http.request<LSPHubUpdateStatusValidation['response']>({
 			url: `/lsp/hubs/${id}/status`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async remove( id: string ): Promise<boolean> {
-		const { error, message } = await this.http.request<Res<Data<LSPHubRemoveValidation['response']>>>({
+	async remove( id: string ): Promise<LSPHubRemoveValidation['response']> {
+		return await this.http.request<LSPHubRemoveValidation['response']>({
 			url: `/lsp/hubs/${id}`,
 			method: 'DELETE'
 		})
-		if( error ) throw new Error( message )
-		return true
 	}
 
-	async bindPricing( id: string, action: LSPPricingBindToValidation['params']['action'], body: LSPPricingBindToValidation['body'] ): Promise<Data<LSPPricingBindToValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPPricingBindToValidation['response']>>>({
+	async bindPricing( id: string, action: LSPPricingBindToValidation['params']['action'], body: LSPPricingBindToValidation['body'] ): Promise<LSPPricingBindToValidation['response']> {
+		return await this.http.request<LSPPricingBindToValidation['response']>({
 			url: `/lsp/hubs/${id}/pricing/${action}`,
 			method: 'PUT',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
 	// ── Capabilities ──────────────────────────────────────────────────────────
 
-	async getCapability( id: string, type: string ): Promise<Data<LSPHubGetOperationsCapabilityValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPHubGetOperationsCapabilityValidation['response']>>>({
+	async getCapability( id: string, type: string ): Promise<LSPHubGetOperationsCapabilityValidation['response']> {
+		return await this.http.request<LSPHubGetOperationsCapabilityValidation['response']>({
 			url: `/lsp/hubs/${id}/capabilities/${type}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async setCapability( id: string, type: string, body: LSPHubSetOperationsCapabilityValidation['body'] ): Promise<Data<LSPHubSetOperationsCapabilityValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPHubSetOperationsCapabilityValidation['response']>>>({
+	async setCapability( id: string, type: string, body: LSPHubSetOperationsCapabilityValidation['body'] ): Promise<LSPHubSetOperationsCapabilityValidation['response']> {
+		return await this.http.request<LSPHubSetOperationsCapabilityValidation['response']>({
 			url: `/lsp/hubs/${id}/capabilities/${type}`,
 			method: 'PUT',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
 	// ── Capacities ────────────────────────────────────────────────────────────
 
-	async getCapacity( id: string, type: string ): Promise<Data<LSPHubGetCapacityValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPHubGetCapacityValidation['response']>>>({
+	async getCapacity( id: string, type: string ): Promise<LSPHubGetCapacityValidation['response']> {
+		return await this.http.request<LSPHubGetCapacityValidation['response']>({
 			url: `/lsp/hubs/${id}/capacities/${type}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async setCapacity( id: string, type: string, body: LSPHubSetCapacityValidation['body'] ): Promise<Data<LSPHubSetCapacityValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPHubSetCapacityValidation['response']>>>({
+	async setCapacity( id: string, type: string, body: LSPHubSetCapacityValidation['body'] ): Promise<LSPHubSetCapacityValidation['response']> {
+		return await this.http.request<LSPHubSetCapacityValidation['response']>({
 			url: `/lsp/hubs/${id}/capacities/${type}`,
 			method: 'PUT',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
 	// ── Passthrough ───────────────────────────────────────────────────────────
 
-	async createPassthrough( hubId: string, body: LSPPassthroughOrderCreateValidation['body'] ): Promise<Data<LSPPassthroughOrderCreateValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPPassthroughOrderCreateValidation['response']>>>({
+	async createPassthrough( hubId: string, body: LSPPassthroughOrderCreateValidation['body'] ): Promise<LSPPassthroughOrderCreateValidation['response']> {
+		return await this.http.request<LSPPassthroughOrderCreateValidation['response']>({
 			url: `/lsp/hubs/${hubId}/passthrough`,
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async listPassthrough( hubId: string, querystring?: LSPPassthroughOrderListValidation['querystring'] ): Promise<Data<LSPPassthroughOrderListValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPPassthroughOrderListValidation['response']>>>({
+	async listPassthrough( hubId: string, querystring?: LSPPassthroughOrderListValidation['querystring'] ): Promise<LSPPassthroughOrderListValidation['response']> {
+		return await this.http.request<LSPPassthroughOrderListValidation['response']>({
 			url: `/lsp/hubs/${hubId}/passthrough${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async retrievePassthrough( hubId: string, reference: string ): Promise<Data<LSPPassthroughOrderGetValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPPassthroughOrderGetValidation['response']>>>({
+	async retrievePassthrough( hubId: string, reference: string ): Promise<LSPPassthroughOrderGetValidation['response']> {
+		return await this.http.request<LSPPassthroughOrderGetValidation['response']>({
 			url: `/lsp/hubs/${hubId}/passthrough/${reference}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async getPassthroughLogs( hubId: string, reference: string ): Promise<Data<LSPPassthroughOrderLogsValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPPassthroughOrderLogsValidation['response']>>>({
+	async getPassthroughLogs( hubId: string, reference: string ): Promise<LSPPassthroughOrderLogsValidation['response']> {
+		return await this.http.request<LSPPassthroughOrderLogsValidation['response']>({
 			url: `/lsp/hubs/${hubId}/passthrough/${reference}/logs`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async updatePassthroughStage( hubId: string, reference: string, body: LSPPassthroughOrderUpdateStageValidation['body'] ): Promise<Data<LSPPassthroughOrderUpdateStageValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPPassthroughOrderUpdateStageValidation['response']>>>({
+	async updatePassthroughStage( hubId: string, reference: string, body: LSPPassthroughOrderUpdateStageValidation['body'] ): Promise<LSPPassthroughOrderUpdateStageValidation['response']> {
+		return await this.http.request<LSPPassthroughOrderUpdateStageValidation['response']>({
 			url: `/lsp/hubs/${hubId}/passthrough/${reference}/stage`,
 			method: 'PUT',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async updatePassthroughStatus( hubId: string, reference: string, body: LSPPassthroughOrderUpdateStatusValidation['body'] ): Promise<Data<LSPPassthroughOrderUpdateStatusValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPPassthroughOrderUpdateStatusValidation['response']>>>({
+	async updatePassthroughStatus( hubId: string, reference: string, body: LSPPassthroughOrderUpdateStatusValidation['body'] ): Promise<LSPPassthroughOrderUpdateStatusValidation['response']> {
+		return await this.http.request<LSPPassthroughOrderUpdateStatusValidation['response']>({
 			url: `/lsp/hubs/${hubId}/passthrough/${reference}/status`,
 			method: 'PUT',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async assignPassthrough( hubId: string, reference: string, body: LSPPassthroughOrderAssignValidation['body'] ): Promise<Data<LSPPassthroughOrderAssignValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPPassthroughOrderAssignValidation['response']>>>({
+	async assignPassthrough( hubId: string, reference: string, body: LSPPassthroughOrderAssignValidation['body'] ): Promise<LSPPassthroughOrderAssignValidation['response']> {
+		return await this.http.request<LSPPassthroughOrderAssignValidation['response']>({
 			url: `/lsp/hubs/${hubId}/passthrough/${reference}/assign`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async removePassthrough( hubId: string, reference: string ): Promise<void> {
-		const { error, message } = await this.http.request<Res<unknown>>({
+	async removePassthrough( hubId: string, reference: string ): Promise<APIResponseBase> {
+		return await this.http.request<APIResponseBase>({
 			url: `/lsp/hubs/${hubId}/passthrough/${reference}`,
 			method: 'DELETE'
 		})
-		if( error ) throw new Error( message )
 	}
 
 	// ── Sorting ───────────────────────────────────────────────────────────────
 
-	async createSortingJob( hubId: string, body: LSPSortValidation['body'] ): Promise<Data<LSPSortValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPSortValidation['response']>>>({
+	async createSortingJob( hubId: string, body: LSPSortValidation['body'] ): Promise<LSPSortValidation['response']> {
+		return await this.http.request<LSPSortValidation['response']>({
 			url: `/lsp/hubs/${hubId}/sorting`,
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async listSortingJobs( hubId: string, querystring?: LSPSortingListValidation['querystring'] ): Promise<Data<LSPSortingListValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPSortingListValidation['response']>>>({
+	async listSortingJobs( hubId: string, querystring?: LSPSortingListValidation['querystring'] ): Promise<LSPSortingListValidation['response']> {
+		return await this.http.request<LSPSortingListValidation['response']>({
 			url: `/lsp/hubs/${hubId}/sorting${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async getSortingStats( hubId: string, querystring?: LSPSortingStatsValidation['querystring'] ): Promise<Data<LSPSortingStatsValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPSortingStatsValidation['response']>>>({
+	async getSortingStats( hubId: string, querystring?: LSPSortingStatsValidation['querystring'] ): Promise<LSPSortingStatsValidation['response']> {
+		return await this.http.request<LSPSortingStatsValidation['response']>({
 			url: `/lsp/hubs/${hubId}/sorting/stats${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
 	// ── Cross-docking ─────────────────────────────────────────────────────────
 
-	async initiateCrossDock( hubId: string, body: LSPCrossDockInitiateValidation['body'] ): Promise<Data<LSPCrossDockInitiateValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPCrossDockInitiateValidation['response']>>>({
+	async initiateCrossDock( hubId: string, body: LSPCrossDockInitiateValidation['body'] ): Promise<LSPCrossDockInitiateValidation['response']> {
+		return await this.http.request<LSPCrossDockInitiateValidation['response']>({
 			url: `/lsp/hubs/${hubId}/crossdock/initiate`,
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async completeCrossDock( hubId: string, body: LSPCrossDockCompleteValidation['body'] ): Promise<Data<LSPCrossDockCompleteValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPCrossDockCompleteValidation['response']>>>({
+	async completeCrossDock( hubId: string, body: LSPCrossDockCompleteValidation['body'] ): Promise<LSPCrossDockCompleteValidation['response']> {
+		return await this.http.request<LSPCrossDockCompleteValidation['response']>({
 			url: `/lsp/hubs/${hubId}/crossdock/complete`,
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async getCrossDockStats( hubId: string, querystring?: LSPCrossDockStatsValidation['querystring'] ): Promise<Data<LSPCrossDockStatsValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPCrossDockStatsValidation['response']>>>({
+	async getCrossDockStats( hubId: string, querystring?: LSPCrossDockStatsValidation['querystring'] ): Promise<LSPCrossDockStatsValidation['response']> {
+		return await this.http.request<LSPCrossDockStatsValidation['response']>({
 			url: `/lsp/hubs/${hubId}/crossdock/stats${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 }

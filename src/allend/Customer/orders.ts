@@ -12,50 +12,40 @@ import { qs, type Http, type Res, type Data } from '../../utils'
 export default class CustomerOrders {
 	constructor( private http: Http ){}
 
-	async list( querystring?: CustomerOrderListValidation['querystring'] ): Promise<Data<CustomerOrderListValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<CustomerOrderListValidation['response']>>>({
+	async list( querystring?: CustomerOrderListValidation['querystring'] ): Promise<CustomerOrderListValidation['response']> {
+		return await this.http.request<CustomerOrderListValidation['response']>({
 			url: `/customer/orders${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async get( reference: string, querystring?: CustomerOrderGetValidation['querystring'] ): Promise<Data<CustomerOrderGetValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<CustomerOrderGetValidation['response']>>>({
+	async get( reference: string, querystring?: CustomerOrderGetValidation['querystring'] ): Promise<CustomerOrderGetValidation['response']> {
+		return await this.http.request<CustomerOrderGetValidation['response']>({
 			url: `/customer/orders/${reference}${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async tracking( reference: string ): Promise<Data<CustomerOrderTrackingValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<CustomerOrderTrackingValidation['response']>>>({
+	async tracking( reference: string ): Promise<CustomerOrderTrackingValidation['response']> {
+		return await this.http.request<CustomerOrderTrackingValidation['response']>({
 			url: `/customer/orders/${reference}/tracking`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async cancel( reference: string, body: CustomerOrderCancelValidation['body'] ): Promise<Data<CustomerOrderCancelValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<CustomerOrderCancelValidation['response']>>>({
+	async cancel( reference: string, body: CustomerOrderCancelValidation['body'] ): Promise<CustomerOrderCancelValidation['response']> {
+		return await this.http.request<CustomerOrderCancelValidation['response']>({
 			url: `/customer/orders/${reference}/cancel`,
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async rating( reference: string, body: CustomerOrderRatingValidation['body'] ): Promise<Data<CustomerOrderRatingValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<CustomerOrderRatingValidation['response']>>>({
+	async rating( reference: string, body: CustomerOrderRatingValidation['body'] ): Promise<CustomerOrderRatingValidation['response']> {
+		return await this.http.request<CustomerOrderRatingValidation['response']>({
 			url: `/customer/orders/${reference}/rating`,
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 }

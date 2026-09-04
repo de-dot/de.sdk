@@ -9,23 +9,19 @@ import { type Http, type Res, type Data } from '../../utils'
 export class PipelinesInterventions {
   constructor( private http: Http ){}
 
-  async stage( executionId: string, stageId: string, body?: PipelineInterventionStageValidation['body'] ): Promise<Data<PipelineInterventionStageValidation['response']>> {
-    const { error, message, data } = await this.http.request<Res<Data<PipelineInterventionStageValidation['response']>>>({
+  async stage( executionId: string, stageId: string, body?: PipelineInterventionStageValidation['body'] ): Promise<PipelineInterventionStageValidation['response']> {
+    return await this.http.request<PipelineInterventionStageValidation['response']>({
       url: `/pipelines/interventions/stage/${executionId}/${stageId}`,
       method: 'POST',
       body
     })
-    if( error ) throw new Error( message )
-    return data
   }
 
-  async execution( executionId: string, body?: PipelineInterventionExecutionValidation['body'] ): Promise<Data<PipelineInterventionExecutionValidation['response']>> {
-    const { error, message, data } = await this.http.request<Res<Data<PipelineInterventionExecutionValidation['response']>>>({
+  async execution( executionId: string, body?: PipelineInterventionExecutionValidation['body'] ): Promise<PipelineInterventionExecutionValidation['response']> {
+    return await this.http.request<PipelineInterventionExecutionValidation['response']>({
       url: `/pipelines/interventions/execution/${executionId}`,
       method: 'POST',
       body
     })
-    if( error ) throw new Error( message )
-    return data
   }
 }

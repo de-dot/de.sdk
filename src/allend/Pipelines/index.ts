@@ -79,59 +79,47 @@ export default class Pipelines extends AccessManager {
 
 	// ── Pipeline definitions ──────────────────────────────────────────────────
 
-	async list( querystring?: PipelineListValidation['querystring'] ): Promise<Data<PipelineListValidation['response']>> {
-		const { error, message, data } = await this.request<Res<Data<PipelineListValidation['response']>>>({
+	async list( querystring?: PipelineListValidation['querystring'] ): Promise<PipelineListValidation['response']> {
+		return await this.request<PipelineListValidation['response']>({
 			url: `/pipelines${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async get( id: string ): Promise<Data<PipelineRetrieveValidation['response']>> {
-		const { error, message, data } = await this.request<Res<Data<PipelineRetrieveValidation['response']>>>({
+	async get( id: string ): Promise<PipelineRetrieveValidation['response']> {
+		return await this.request<PipelineRetrieveValidation['response']>({
 			url: `/pipelines/${id}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async deploy( id: string, body?: PipelineDeployValidation['body'] ): Promise<Data<PipelineDeployValidation['response']>> {
-		const { error, message, data } = await this.request<Res<Data<PipelineDeployValidation['response']>>>({
+	async deploy( id: string, body?: PipelineDeployValidation['body'] ): Promise<PipelineDeployValidation['response']> {
+		return await this.request<PipelineDeployValidation['response']>({
 			url: `/pipelines/${id}/deploy`,
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async validate( id: string ): Promise<Data<PipelineValidateValidation['response']>> {
-		const { error, message, data } = await this.request<Res<Data<PipelineValidateValidation['response']>>>({
+	async validate( id: string ): Promise<PipelineValidateValidation['response']> {
+		return await this.request<PipelineValidateValidation['response']>({
 			url: `/pipelines/${id}/validate`,
 			method: 'POST'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async simulate( id: string, body?: PipelineSimulateValidation['body'] ): Promise<Data<PipelineSimulateValidation['response']>> {
-		const { error, message, data } = await this.request<Res<Data<PipelineSimulateValidation['response']>>>({
+	async simulate( id: string, body?: PipelineSimulateValidation['body'] ): Promise<PipelineSimulateValidation['response']> {
+		return await this.request<PipelineSimulateValidation['response']>({
 			url: `/pipelines/${id}/simulate`,
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async setStatus( id: string, status: string ): Promise<Data<PipelineSetStatusValidation['response']>> {
-		const { error, message, data } = await this.request<Res<Data<PipelineSetStatusValidation['response']>>>({
+	async setStatus( id: string, status: string ): Promise<PipelineSetStatusValidation['response']> {
+		return await this.request<PipelineSetStatusValidation['response']>({
 			url: `/pipelines/${id}/status/${status}`,
 			method: 'PATCH'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 }

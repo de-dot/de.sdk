@@ -51,33 +51,27 @@ export default class SharedInvitation<C extends UserContextType> {
 
 	private get prefix(): string { return this.ctype.toLowerCase() }
 
-	async send( as: string, body: InvitationV<C>['send']['body'] ): Promise<Data<InvitationV<C>['send']['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<InvitationV<C>['send']['response']>>>({
+	async send( as: string, body: InvitationV<C>['send']['body'] ): Promise<InvitationV<C>['send']['response']> {
+		return await this.http.request<InvitationV<C>['send']['response']>({
 			url: `/${this.prefix}/invitation/${as}`,
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async cancel( body: InvitationV<C>['cancel']['body'] ): Promise<Data<InvitationV<C>['cancel']['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<InvitationV<C>['cancel']['response']>>>({
+	async cancel( body: InvitationV<C>['cancel']['body'] ): Promise<InvitationV<C>['cancel']['response']> {
+		return await this.http.request<InvitationV<C>['cancel']['response']>({
 			url: `/${this.prefix}/invitation/cancel`,
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async accept( body: InvitationV<C>['accept']['body'] ): Promise<Data<InvitationV<C>['accept']['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<InvitationV<C>['accept']['response']>>>({
+	async accept( body: InvitationV<C>['accept']['body'] ): Promise<InvitationV<C>['accept']['response']> {
+		return await this.http.request<InvitationV<C>['accept']['response']>({
 			url: `/${this.prefix}/invitation/accept`,
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 }

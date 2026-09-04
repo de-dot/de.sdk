@@ -12,50 +12,40 @@ import { type Http, type Res, type Data } from '../../utils'
 export class QueriesPricing {
 	constructor( private http: Http ){}
 
-	async get( lsp: string, serviceId: string ): Promise<Data<QueryGetPricingValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<QueryGetPricingValidation['response']>>>({
+	async get( lsp: string, serviceId: string ): Promise<QueryGetPricingValidation['response']> {
+		return await this.http.request<QueryGetPricingValidation['response']>({
 			url: `/queries/pricing/${lsp}/${serviceId}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async estimate( body: QueryEstimateCostValidation['body'] ): Promise<Data<QueryEstimateCostValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<QueryEstimateCostValidation['response']>>>({
+	async estimate( body: QueryEstimateCostValidation['body'] ): Promise<QueryEstimateCostValidation['response']> {
+		return await this.http.request<QueryEstimateCostValidation['response']>({
 			url: '/queries/pricing/estimate',
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async compare( body: QueryComparePricingValidation['body'] ): Promise<Data<QueryComparePricingValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<QueryComparePricingValidation['response']>>>({
+	async compare( body: QueryComparePricingValidation['body'] ): Promise<QueryComparePricingValidation['response']> {
+		return await this.http.request<QueryComparePricingValidation['response']>({
 			url: '/queries/pricing/compare',
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async invalidateCache( lsp: string, serviceId: string ): Promise<Data<QueryPricingInvalidateCacheValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<QueryPricingInvalidateCacheValidation['response']>>>({
+	async invalidateCache( lsp: string, serviceId: string ): Promise<QueryPricingInvalidateCacheValidation['response']> {
+		return await this.http.request<QueryPricingInvalidateCacheValidation['response']>({
 			url: `/queries/pricing/cache/${lsp}/${serviceId}`,
 			method: 'DELETE'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async cacheStats(): Promise<Data<QueryPricingCacheStatsValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<QueryPricingCacheStatsValidation['response']>>>({
+	async cacheStats(): Promise<QueryPricingCacheStatsValidation['response']> {
+		return await this.http.request<QueryPricingCacheStatsValidation['response']>({
 			url: '/queries/pricing/cache/stats',
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 }

@@ -9,23 +9,19 @@ import { type Http, type Res, type Data } from '../../utils'
 export default class AgentDispatch {
 	constructor( private http: Http ){}
 
-	async respond( body: AgentDispatchRespondValidation['body'] ): Promise<Data<AgentDispatchRespondValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<AgentDispatchRespondValidation['response']>>>({
+	async respond( body: AgentDispatchRespondValidation['body'] ): Promise<AgentDispatchRespondValidation['response']> {
+		return await this.http.request<AgentDispatchRespondValidation['response']>({
 			url: '/agent/dispatch/respond',
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async rate( body: AgentDispatchRateValidation['body'] ): Promise<Data<AgentDispatchRateValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<AgentDispatchRateValidation['response']>>>({
+	async rate( body: AgentDispatchRateValidation['body'] ): Promise<AgentDispatchRateValidation['response']> {
+		return await this.http.request<AgentDispatchRateValidation['response']>({
 			url: '/agent/dispatch/rate',
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 }

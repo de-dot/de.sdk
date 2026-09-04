@@ -39,12 +39,10 @@ export default class Tracking extends AccessManager {
 		super( access, 'API' )
 	}
 
-	async getSession( reference: string, role: SharedTrackingSessionValidation['querystring']['role'] ): Promise<Data<SharedTrackingSessionValidation['response']>> {
-		const { error, message, data } = await this.request<Res<Data<SharedTrackingSessionValidation['response']>>>({
+	async getSession( reference: string, role: SharedTrackingSessionValidation['querystring']['role'] ): Promise<SharedTrackingSessionValidation['response']> {
+		return await this.request<SharedTrackingSessionValidation['response']>({
 			url: `/tracking/${reference}${qs({ role })}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 }

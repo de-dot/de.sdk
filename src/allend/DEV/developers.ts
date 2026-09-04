@@ -1,3 +1,4 @@
+import type { APIResponseBase } from '@de./types'
 import type {
 	DEVDeveloperRetrieveValidation,
 	DEVDeveloperFetchValidation,
@@ -10,39 +11,32 @@ import { type Http, type Res, type Data } from '../../utils'
 export default class DEVDevelopers {
 	constructor( private http: Http ){}
 
-	async list(): Promise<Data<DEVDeveloperFetchValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<DEVDeveloperFetchValidation['response']>>>({
+	async list(): Promise<DEVDeveloperFetchValidation['response']> {
+		return await this.http.request<DEVDeveloperFetchValidation['response']>({
 			url: '/dev/developers',
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async retrieve( id: string ): Promise<Data<DEVDeveloperRetrieveValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<DEVDeveloperRetrieveValidation['response']>>>({
+	async retrieve( id: string ): Promise<DEVDeveloperRetrieveValidation['response']> {
+		return await this.http.request<DEVDeveloperRetrieveValidation['response']>({
 			url: `/dev/developers/${id}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async update( id: string, body: DEVDeveloperUpdateValidation['body'] ): Promise<Data<DEVDeveloperUpdateValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<DEVDeveloperUpdateValidation['response']>>>({
+	async update( id: string, body: DEVDeveloperUpdateValidation['body'] ): Promise<DEVDeveloperUpdateValidation['response']> {
+		return await this.http.request<DEVDeveloperUpdateValidation['response']>({
 			url: `/dev/developers/${id}`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async remove( id: string ): Promise<void> {
-		const { error, message } = await this.http.request<Res<unknown>>({
+	async remove( id: string ): Promise<APIResponseBase> {
+		return await this.http.request<APIResponseBase>({
 			url: `/dev/developers/${id}`,
 			method: 'DELETE'
 		})
-		if( error ) throw new Error( message )
 	}
 }

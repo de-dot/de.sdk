@@ -66,63 +66,51 @@ export default class LSPOrders {
 	 * and the SENDER_* values that the sender's own limits stopped it. All four
 	 * are successful submissions — only an error is a failure to submit.
 	 */
-	async create( body: LSPOrderIntakeCreateValidation['body'] ): Promise<Data<LSPOrderIntakeCreateValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPOrderIntakeCreateValidation['response']>>>({
+	async create( body: LSPOrderIntakeCreateValidation['body'] ): Promise<LSPOrderIntakeCreateValidation['response']> {
+		return await this.http.request<LSPOrderIntakeCreateValidation['response']>({
 			url: '/lsp/orders',
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
 	/** Release an order the engine is holding for the sender's approval. */
-	async approve( reference: string ): Promise<Data<LSPOrderIntakeApproveValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPOrderIntakeApproveValidation['response']>>>({
+	async approve( reference: string ): Promise<LSPOrderIntakeApproveValidation['response']> {
+		return await this.http.request<LSPOrderIntakeApproveValidation['response']>({
 			url: `/lsp/orders/${reference}/approve`,
 			method: 'POST'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
 	// ── Order Management ──────────────────────────────────────────────────────
 
-	async list( querystring?: LSPOrderListValidation['querystring'] ): Promise<Data<LSPOrderListValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPOrderListValidation['response']>>>({
+	async list( querystring?: LSPOrderListValidation['querystring'] ): Promise<LSPOrderListValidation['response']> {
+		return await this.http.request<LSPOrderListValidation['response']>({
 			url: `/lsp/orders${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async get( reference: string ): Promise<Data<LSPOrderGetValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPOrderGetValidation['response']>>>({
+	async get( reference: string ): Promise<LSPOrderGetValidation['response']> {
+		return await this.http.request<LSPOrderGetValidation['response']>({
 			url: `/lsp/orders/${reference}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async getStatus( reference: string ): Promise<Data<LSPOrderGetStatusValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPOrderGetStatusValidation['response']>>>({
+	async getStatus( reference: string ): Promise<LSPOrderGetStatusValidation['response']> {
+		return await this.http.request<LSPOrderGetStatusValidation['response']>({
 			url: `/lsp/orders/${reference}/status`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async complete( reference: string, body: LSPOrderCompleteValidation['body'] ): Promise<Data<LSPOrderCompleteValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPOrderCompleteValidation['response']>>>({
+	async complete( reference: string, body: LSPOrderCompleteValidation['body'] ): Promise<LSPOrderCompleteValidation['response']> {
+		return await this.http.request<LSPOrderCompleteValidation['response']>({
 			url: `/lsp/orders/${reference}/complete`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
 	/**
@@ -131,349 +119,279 @@ export default class LSPOrders {
 	 * The coordinator's intervention when nothing has picked the order up —
 	 * `zoneId` is where to try next, which need not be where it started.
 	 */
-	async requeue( reference: string, body: LSPOrderRequeueValidation['body'] ): Promise<Data<LSPOrderRequeueValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPOrderRequeueValidation['response']>>>({
+	async requeue( reference: string, body: LSPOrderRequeueValidation['body'] ): Promise<LSPOrderRequeueValidation['response']> {
+		return await this.http.request<LSPOrderRequeueValidation['response']>({
 			url: `/lsp/orders/${reference}/requeue`,
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async cancel( reference: string, body: LSPOrderCancelValidation['body'] ): Promise<Data<LSPOrderCancelValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPOrderCancelValidation['response']>>>({
+	async cancel( reference: string, body: LSPOrderCancelValidation['body'] ): Promise<LSPOrderCancelValidation['response']> {
+		return await this.http.request<LSPOrderCancelValidation['response']>({
 			url: `/lsp/orders/${reference}/cancel`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async fail( reference: string, body: LSPOrderFailValidation['body'] ): Promise<Data<LSPOrderFailValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPOrderFailValidation['response']>>>({
+	async fail( reference: string, body: LSPOrderFailValidation['body'] ): Promise<LSPOrderFailValidation['response']> {
+		return await this.http.request<LSPOrderFailValidation['response']>({
 			url: `/lsp/orders/${reference}/fail`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async updateStage( reference: string, body: LSPOrderUpdateStageValidation['body'] ): Promise<Data<LSPOrderUpdateStageValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPOrderUpdateStageValidation['response']>>>({
+	async updateStage( reference: string, body: LSPOrderUpdateStageValidation['body'] ): Promise<LSPOrderUpdateStageValidation['response']> {
+		return await this.http.request<LSPOrderUpdateStageValidation['response']>({
 			url: `/lsp/orders/${reference}/stage`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async subscribe( id: string, reference: string ): Promise<Data<LSPOrderSubscribeValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPOrderSubscribeValidation['response']>>>({
+	async subscribe( id: string, reference: string ): Promise<LSPOrderSubscribeValidation['response']> {
+		return await this.http.request<LSPOrderSubscribeValidation['response']>({
 			url: `/lsp/orders/${reference}/track/subscribe`,
 			method: 'POST',
 			body: { id }
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
 	// ── Inbound Orders ────────────────────────────────────────────────────────
 
-	async createInbound( facilityId: string, body: LSPInboundOrderCreateValidation['body'] ): Promise<Data<LSPInboundOrderCreateValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPInboundOrderCreateValidation['response']>>>({
+	async createInbound( facilityId: string, body: LSPInboundOrderCreateValidation['body'] ): Promise<LSPInboundOrderCreateValidation['response']> {
+		return await this.http.request<LSPInboundOrderCreateValidation['response']>({
 			url: `/lsp/${facilityId}/inbound/create`,
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async completeInbound( facilityId: string, reference: string, body: LSPInboundOrderCompleteValidation['body'] ): Promise<Data<LSPInboundOrderCompleteValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPInboundOrderCompleteValidation['response']>>>({
+	async completeInbound( facilityId: string, reference: string, body: LSPInboundOrderCompleteValidation['body'] ): Promise<LSPInboundOrderCompleteValidation['response']> {
+		return await this.http.request<LSPInboundOrderCompleteValidation['response']>({
 			url: `/lsp/${facilityId}/inbound/${reference}/complete`,
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async listInbound( facilityId: string, querystring?: LSPInboundOrderListValidation['querystring'] ): Promise<Data<LSPInboundOrderListValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPInboundOrderListValidation['response']>>>({
+	async listInbound( facilityId: string, querystring?: LSPInboundOrderListValidation['querystring'] ): Promise<LSPInboundOrderListValidation['response']> {
+		return await this.http.request<LSPInboundOrderListValidation['response']>({
 			url: `/lsp/${facilityId}/inbound${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async retrieveInbound( facilityId: string, reference: string ): Promise<Data<LSPInboundOrderRetrieveValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPInboundOrderRetrieveValidation['response']>>>({
+	async retrieveInbound( facilityId: string, reference: string ): Promise<LSPInboundOrderRetrieveValidation['response']> {
+		return await this.http.request<LSPInboundOrderRetrieveValidation['response']>({
 			url: `/lsp/${facilityId}/inbound/${reference}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async updateInbound( facilityId: string, reference: string, body: LSPInboundOrderUpdateValidation['body'] ): Promise<Data<LSPInboundOrderUpdateValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPInboundOrderUpdateValidation['response']>>>({
+	async updateInbound( facilityId: string, reference: string, body: LSPInboundOrderUpdateValidation['body'] ): Promise<LSPInboundOrderUpdateValidation['response']> {
+		return await this.http.request<LSPInboundOrderUpdateValidation['response']>({
 			url: `/lsp/${facilityId}/inbound/${reference}`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async updateInboundStatus( facilityId: string, reference: string, body: LSPInboundOrderUpdateStatusValidation['body'] ): Promise<Data<LSPInboundOrderUpdateStatusValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPInboundOrderUpdateStatusValidation['response']>>>({
+	async updateInboundStatus( facilityId: string, reference: string, body: LSPInboundOrderUpdateStatusValidation['body'] ): Promise<LSPInboundOrderUpdateStatusValidation['response']> {
+		return await this.http.request<LSPInboundOrderUpdateStatusValidation['response']>({
 			url: `/lsp/${facilityId}/inbound/${reference}/status`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async assignOrUnassignInbound( facilityId: string, reference: string, action: LSPInboundOrderAssignValidation['params']['action'], to: LSPInboundOrderAssignValidation['params']['to'], body: LSPInboundOrderAssignValidation['body'] ): Promise<Data<LSPInboundOrderAssignValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPInboundOrderAssignValidation['response']>>>({
+	async assignOrUnassignInbound( facilityId: string, reference: string, action: LSPInboundOrderAssignValidation['params']['action'], to: LSPInboundOrderAssignValidation['params']['to'], body: LSPInboundOrderAssignValidation['body'] ): Promise<LSPInboundOrderAssignValidation['response']> {
+		return await this.http.request<LSPInboundOrderAssignValidation['response']>({
 			url: `/lsp/${facilityId}/inbound/${reference}/${action}/${to}`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
 	// ── Tasks ─────────────────────────────────────────────────────────────────
 
-	async createTask( facilityId: string, body: LSPTaskCreateValidation['body'] ): Promise<Data<LSPTaskCreateValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPTaskCreateValidation['response']>>>({
+	async createTask( facilityId: string, body: LSPTaskCreateValidation['body'] ): Promise<LSPTaskCreateValidation['response']> {
+		return await this.http.request<LSPTaskCreateValidation['response']>({
 			url: `/lsp/${facilityId}/tasks/create`,
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async createTaskBatch( facilityId: string, body: LSPTaskBatchCreateValidation['body'] ): Promise<Data<LSPTaskBatchCreateValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPTaskBatchCreateValidation['response']>>>({
+	async createTaskBatch( facilityId: string, body: LSPTaskBatchCreateValidation['body'] ): Promise<LSPTaskBatchCreateValidation['response']> {
+		return await this.http.request<LSPTaskBatchCreateValidation['response']>({
 			url: `/lsp/${facilityId}/tasks/batch`,
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async completeTask( facilityId: string, reference: string, body: LSPTaskCompleteValidation['body'] ): Promise<Data<LSPTaskCompleteValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPTaskCompleteValidation['response']>>>({
+	async completeTask( facilityId: string, reference: string, body: LSPTaskCompleteValidation['body'] ): Promise<LSPTaskCompleteValidation['response']> {
+		return await this.http.request<LSPTaskCompleteValidation['response']>({
 			url: `/lsp/${facilityId}/tasks/${reference}/complete`,
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async listTasks( facilityId: string, querystring?: LSPTaskListValidation['querystring'] ): Promise<Data<LSPTaskListValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPTaskListValidation['response']>>>({
+	async listTasks( facilityId: string, querystring?: LSPTaskListValidation['querystring'] ): Promise<LSPTaskListValidation['response']> {
+		return await this.http.request<LSPTaskListValidation['response']>({
 			url: `/lsp/${facilityId}/tasks${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async retrieveTask( facilityId: string, reference: string ): Promise<Data<LSPTaskRetrieveValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPTaskRetrieveValidation['response']>>>({
+	async retrieveTask( facilityId: string, reference: string ): Promise<LSPTaskRetrieveValidation['response']> {
+		return await this.http.request<LSPTaskRetrieveValidation['response']>({
 			url: `/lsp/${facilityId}/tasks/${reference}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async getTaskPerformance( facilityId: string, querystring: LSPTaskPerformanceValidation['querystring'] ): Promise<Data<LSPTaskPerformanceValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPTaskPerformanceValidation['response']>>>({
+	async getTaskPerformance( facilityId: string, querystring: LSPTaskPerformanceValidation['querystring'] ): Promise<LSPTaskPerformanceValidation['response']> {
+		return await this.http.request<LSPTaskPerformanceValidation['response']>({
 			url: `/lsp/${facilityId}/tasks/metrics/performance${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async updateTask( facilityId: string, reference: string, body: LSPTaskUpdateValidation['body'] ): Promise<Data<LSPTaskUpdateValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPTaskUpdateValidation['response']>>>({
+	async updateTask( facilityId: string, reference: string, body: LSPTaskUpdateValidation['body'] ): Promise<LSPTaskUpdateValidation['response']> {
+		return await this.http.request<LSPTaskUpdateValidation['response']>({
 			url: `/lsp/${facilityId}/tasks/${reference}`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async updateTaskStatus( facilityId: string, reference: string, body: LSPTaskUpdateStatusValidation['body'] ): Promise<Data<LSPTaskUpdateStatusValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPTaskUpdateStatusValidation['response']>>>({
+	async updateTaskStatus( facilityId: string, reference: string, body: LSPTaskUpdateStatusValidation['body'] ): Promise<LSPTaskUpdateStatusValidation['response']> {
+		return await this.http.request<LSPTaskUpdateStatusValidation['response']>({
 			url: `/lsp/${facilityId}/tasks/${reference}/status`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async assignOrUnassignTask( facilityId: string, reference: string, action: LSPTaskAssignValidation['params']['action'], to: LSPTaskAssignValidation['params']['to'], body: LSPTaskAssignValidation['body'] ): Promise<Data<LSPTaskAssignValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPTaskAssignValidation['response']>>>({
+	async assignOrUnassignTask( facilityId: string, reference: string, action: LSPTaskAssignValidation['params']['action'], to: LSPTaskAssignValidation['params']['to'], body: LSPTaskAssignValidation['body'] ): Promise<LSPTaskAssignValidation['response']> {
+		return await this.http.request<LSPTaskAssignValidation['response']>({
 			url: `/lsp/${facilityId}/tasks/${reference}/${action}/${to}`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async cancelTask( facilityId: string, reference: string, body: LSPTaskCancelValidation['body'] ): Promise<Data<LSPTaskCancelValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPTaskCancelValidation['response']>>>({
+	async cancelTask( facilityId: string, reference: string, body: LSPTaskCancelValidation['body'] ): Promise<LSPTaskCancelValidation['response']> {
+		return await this.http.request<LSPTaskCancelValidation['response']>({
 			url: `/lsp/${facilityId}/tasks/${reference}/cancel`,
 			method: 'DELETE',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
 	// ── Shipments ─────────────────────────────────────────────────────────────
 
-	async createShipment( reference: string, body: LSPShipmentCreateValidation['body'] ): Promise<Data<LSPShipmentCreateValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPShipmentCreateValidation['response']>>>({
+	async createShipment( reference: string, body: LSPShipmentCreateValidation['body'] ): Promise<LSPShipmentCreateValidation['response']> {
+		return await this.http.request<LSPShipmentCreateValidation['response']>({
 			url: `/lsp/orders/${reference}/shipments`,
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async listShipments( querystring?: LSPShipmentFetchValidation['querystring'] ): Promise<Data<LSPShipmentFetchValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPShipmentFetchValidation['response']>>>({
+	async listShipments( querystring?: LSPShipmentFetchValidation['querystring'] ): Promise<LSPShipmentFetchValidation['response']> {
+		return await this.http.request<LSPShipmentFetchValidation['response']>({
 			url: `/lsp/shipments${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async retrieveShipment( reference: string ): Promise<Data<LSPShipmentRetrieveValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPShipmentRetrieveValidation['response']>>>({
+	async retrieveShipment( reference: string ): Promise<LSPShipmentRetrieveValidation['response']> {
+		return await this.http.request<LSPShipmentRetrieveValidation['response']>({
 			url: `/lsp/shipments/${reference}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async updateShipment( reference: string, body: LSPShipmentUpdateValidation['body'] ): Promise<Data<LSPShipmentUpdateValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPShipmentUpdateValidation['response']>>>({
+	async updateShipment( reference: string, body: LSPShipmentUpdateValidation['body'] ): Promise<LSPShipmentUpdateValidation['response']> {
+		return await this.http.request<LSPShipmentUpdateValidation['response']>({
 			url: `/lsp/shipments/${reference}`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async updateShipmentStatus( reference: string, body: LSPShipmentUpdateStatusValidation['body'] ): Promise<Data<LSPShipmentUpdateStatusValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPShipmentUpdateStatusValidation['response']>>>({
+	async updateShipmentStatus( reference: string, body: LSPShipmentUpdateStatusValidation['body'] ): Promise<LSPShipmentUpdateStatusValidation['response']> {
+		return await this.http.request<LSPShipmentUpdateStatusValidation['response']>({
 			url: `/lsp/shipments/${reference}/status`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async addShipmentPackage( reference: string, body: LSPShipmentAddPackageValidation['body'] ): Promise<Data<LSPShipmentAddPackageValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPShipmentAddPackageValidation['response']>>>({
+	async addShipmentPackage( reference: string, body: LSPShipmentAddPackageValidation['body'] ): Promise<LSPShipmentAddPackageValidation['response']> {
+		return await this.http.request<LSPShipmentAddPackageValidation['response']>({
 			url: `/lsp/shipments/${reference}/packages`,
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
 	// ── Shipping Orders ───────────────────────────────────────────────────────
 
-	async listShipping( querystring?: LSPShippingOrderListValidation['querystring'] ): Promise<Data<LSPShippingOrderListValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPShippingOrderListValidation['response']>>>({
+	async listShipping( querystring?: LSPShippingOrderListValidation['querystring'] ): Promise<LSPShippingOrderListValidation['response']> {
+		return await this.http.request<LSPShippingOrderListValidation['response']>({
 			url: `/lsp/shipping${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async retrieveShipping( reference: string ): Promise<Data<LSPShippingOrderRetrieveValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPShippingOrderRetrieveValidation['response']>>>({
+	async retrieveShipping( reference: string ): Promise<LSPShippingOrderRetrieveValidation['response']> {
+		return await this.http.request<LSPShippingOrderRetrieveValidation['response']>({
 			url: `/lsp/shipping/${reference}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async completeShipping( reference: string, body: LSPShippingOrderCompleteValidation['body'] ): Promise<Data<LSPShippingOrderCompleteValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPShippingOrderCompleteValidation['response']>>>({
+	async completeShipping( reference: string, body: LSPShippingOrderCompleteValidation['body'] ): Promise<LSPShippingOrderCompleteValidation['response']> {
+		return await this.http.request<LSPShippingOrderCompleteValidation['response']>({
 			url: `/lsp/shipping/${reference}/complete`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async approveShipping( reference: string ): Promise<Data<LSPShippingOrderRefOnlyValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPShippingOrderRefOnlyValidation['response']>>>({
+	async approveShipping( reference: string ): Promise<LSPShippingOrderRefOnlyValidation['response']> {
+		return await this.http.request<LSPShippingOrderRefOnlyValidation['response']>({
 			url: `/lsp/shipping/${reference}/approve`,
 			method: 'PATCH'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async suspendShipping( reference: string ): Promise<Data<LSPShippingOrderRefOnlyValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPShippingOrderRefOnlyValidation['response']>>>({
+	async suspendShipping( reference: string ): Promise<LSPShippingOrderRefOnlyValidation['response']> {
+		return await this.http.request<LSPShippingOrderRefOnlyValidation['response']>({
 			url: `/lsp/shipping/${reference}/suspend`,
 			method: 'PATCH'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async cancelShipping( reference: string ): Promise<Data<LSPShippingOrderRefOnlyValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPShippingOrderRefOnlyValidation['response']>>>({
+	async cancelShipping( reference: string ): Promise<LSPShippingOrderRefOnlyValidation['response']> {
+		return await this.http.request<LSPShippingOrderRefOnlyValidation['response']>({
 			url: `/lsp/shipping/${reference}/cancel`,
 			method: 'PATCH'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async assignOrUnassignShipping( reference: string, action: 'assign' | 'unassign', to: 'agent' | 'operator', body: { id: string } ): Promise<Data<LSPShippingOrderAssignOrUnassignValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPShippingOrderAssignOrUnassignValidation['response']>>>({
+	async assignOrUnassignShipping( reference: string, action: 'assign' | 'unassign', to: 'agent' | 'operator', body: { id: string } ): Promise<LSPShippingOrderAssignOrUnassignValidation['response']> {
+		return await this.http.request<LSPShippingOrderAssignOrUnassignValidation['response']>({
 			url: `/lsp/shipping/${reference}/${action}/${to}`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 }

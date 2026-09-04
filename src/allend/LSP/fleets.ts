@@ -70,550 +70,436 @@ import { qs, type Http, type Res, type Data } from '../../utils'
 export default class LSPFleets {
 	constructor( private http: Http ){}
 
-	async create( body: LSPFleetCreateValidation['body'] ): Promise<Data<LSPFleetCreateValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetCreateValidation['response']>>>({
+	async create( body: LSPFleetCreateValidation['body'] ): Promise<LSPFleetCreateValidation['response']> {
+		return await this.http.request<LSPFleetCreateValidation['response']>({
 			url: '/lsp/fleets/create',
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async list( querystring?: LSPFleetListValidation['querystring'] ): Promise<Data<LSPFleetListValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetListValidation['response']>>>({
+	async list( querystring?: LSPFleetListValidation['querystring'] ): Promise<LSPFleetListValidation['response']> {
+		return await this.http.request<LSPFleetListValidation['response']>({
 			url: `/lsp/fleets${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async retrieve( id: string ): Promise<Data<LSPFleetRetrieveValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetRetrieveValidation['response']>>>({
+	async retrieve( id: string ): Promise<LSPFleetRetrieveValidation['response']> {
+		return await this.http.request<LSPFleetRetrieveValidation['response']>({
 			url: `/lsp/fleets/${id}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async update( id: string, body: LSPFleetUpdateValidation['body'] ): Promise<Data<LSPFleetUpdateValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetUpdateValidation['response']>>>({
+	async update( id: string, body: LSPFleetUpdateValidation['body'] ): Promise<LSPFleetUpdateValidation['response']> {
+		return await this.http.request<LSPFleetUpdateValidation['response']>({
 			url: `/lsp/fleets/${id}`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async updateStatus( id: string, body: LSPFleetUpdateStatusValidation['body'] ): Promise<Data<LSPFleetUpdateStatusValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetUpdateStatusValidation['response']>>>({
+	async updateStatus( id: string, body: LSPFleetUpdateStatusValidation['body'] ): Promise<LSPFleetUpdateStatusValidation['response']> {
+		return await this.http.request<LSPFleetUpdateStatusValidation['response']>({
 			url: `/lsp/fleets/${id}/status`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async remove( id: string ): Promise<boolean> {
-		const { error, message } = await this.http.request<Res<Data<LSPFleetRemoveValidation['response']>>>({
+	async remove( id: string ): Promise<LSPFleetRemoveValidation['response']> {
+		return await this.http.request<LSPFleetRemoveValidation['response']>({
 			url: `/lsp/fleets/${id}`,
 			method: 'DELETE'
 		})
-		if( error ) throw new Error( message )
-		return true
 	}
 
 	// ── Vehicles ──────────────────────────────────────────────────────────────
 
-	async addVehicle( body: LSPVehicleAddValidation['body'] ): Promise<Data<LSPVehicleAddValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPVehicleAddValidation['response']>>>({
+	async addVehicle( body: LSPVehicleAddValidation['body'] ): Promise<LSPVehicleAddValidation['response']> {
+		return await this.http.request<LSPVehicleAddValidation['response']>({
 			url: '/lsp/fleet/vehicles/add',
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async listVehicles( querystring?: LSPVehicleListValidation['querystring'] ): Promise<Data<LSPVehicleListValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPVehicleListValidation['response']>>>({
+	async listVehicles( querystring?: LSPVehicleListValidation['querystring'] ): Promise<LSPVehicleListValidation['response']> {
+		return await this.http.request<LSPVehicleListValidation['response']>({
 			url: `/lsp/fleet/vehicles${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async retrieveVehicle( id: string ): Promise<Data<LSPVehicleRetrieveValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPVehicleRetrieveValidation['response']>>>({
+	async retrieveVehicle( id: string ): Promise<LSPVehicleRetrieveValidation['response']> {
+		return await this.http.request<LSPVehicleRetrieveValidation['response']>({
 			url: `/lsp/fleet/vehicles/${id}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async updateVehicle( id: string, body: LSPVehicleUpdateValidation['body'] ): Promise<Data<LSPVehicleUpdateValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPVehicleUpdateValidation['response']>>>({
+	async updateVehicle( id: string, body: LSPVehicleUpdateValidation['body'] ): Promise<LSPVehicleUpdateValidation['response']> {
+		return await this.http.request<LSPVehicleUpdateValidation['response']>({
 			url: `/lsp/fleet/vehicles/${id}`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async updateVehicleStatus( id: string, body: LSPVehicleUpdateStatusValidation['body'] ): Promise<Data<LSPVehicleUpdateStatusValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPVehicleUpdateStatusValidation['response']>>>({
+	async updateVehicleStatus( id: string, body: LSPVehicleUpdateStatusValidation['body'] ): Promise<LSPVehicleUpdateStatusValidation['response']> {
+		return await this.http.request<LSPVehicleUpdateStatusValidation['response']>({
 			url: `/lsp/fleet/vehicles/${id}/status`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async updateVehicleSpecs( id: string, body: LSPVehicleUpdateSpecsValidation['body'] ): Promise<Data<LSPVehicleUpdateSpecsValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPVehicleUpdateSpecsValidation['response']>>>({
+	async updateVehicleSpecs( id: string, body: LSPVehicleUpdateSpecsValidation['body'] ): Promise<LSPVehicleUpdateSpecsValidation['response']> {
+		return await this.http.request<LSPVehicleUpdateSpecsValidation['response']>({
 			url: `/lsp/fleet/vehicles/${id}/specs`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async updateVehicleIoT( id: string, body: LSPVehicleUpdateIoTValidation['body'] ): Promise<Data<LSPVehicleUpdateIoTValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPVehicleUpdateIoTValidation['response']>>>({
+	async updateVehicleIoT( id: string, body: LSPVehicleUpdateIoTValidation['body'] ): Promise<LSPVehicleUpdateIoTValidation['response']> {
+		return await this.http.request<LSPVehicleUpdateIoTValidation['response']>({
 			url: `/lsp/fleet/vehicles/${id}/iot`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async allocateVehicle( id: string, body: LSPVehicleAllocateValidation['body'] ): Promise<Data<LSPVehicleAllocateValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPVehicleAllocateValidation['response']>>>({
+	async allocateVehicle( id: string, body: LSPVehicleAllocateValidation['body'] ): Promise<LSPVehicleAllocateValidation['response']> {
+		return await this.http.request<LSPVehicleAllocateValidation['response']>({
 			url: `/lsp/fleet/vehicles/${id}/allocate`,
 			method: 'PUT',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async deallocateVehicle( id: string ): Promise<Data<LSPVehicleDeallocateValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPVehicleDeallocateValidation['response']>>>({
+	async deallocateVehicle( id: string ): Promise<LSPVehicleDeallocateValidation['response']> {
+		return await this.http.request<LSPVehicleDeallocateValidation['response']>({
 			url: `/lsp/fleet/vehicles/${id}/deallocate`,
 			method: 'PATCH'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async removeVehicle( id: string ): Promise<Data<LSPVehicleRemoveValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPVehicleRemoveValidation['response']>>>({
+	async removeVehicle( id: string ): Promise<LSPVehicleRemoveValidation['response']> {
+		return await this.http.request<LSPVehicleRemoveValidation['response']>({
 			url: `/lsp/fleet/vehicles/${id}`,
 			method: 'DELETE'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
 	// ── Parking Facilities ────────────────────────────────────────────────────
 
-	async addParkingFacility( body: LSPFleetParkingAddFacilityValidation['body'] ): Promise<Data<LSPFleetParkingAddFacilityValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingAddFacilityValidation['response']>>>({
+	async addParkingFacility( body: LSPFleetParkingAddFacilityValidation['body'] ): Promise<LSPFleetParkingAddFacilityValidation['response']> {
+		return await this.http.request<LSPFleetParkingAddFacilityValidation['response']>({
 			url: '/lsp/fleet/parking/facilities',
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async listParkingFacilities( querystring?: LSPFleetParkingFetchFacilitiesValidation['querystring'] ): Promise<Data<LSPFleetParkingFetchFacilitiesValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingFetchFacilitiesValidation['response']>>>({
+	async listParkingFacilities( querystring?: LSPFleetParkingFetchFacilitiesValidation['querystring'] ): Promise<LSPFleetParkingFetchFacilitiesValidation['response']> {
+		return await this.http.request<LSPFleetParkingFetchFacilitiesValidation['response']>({
 			url: `/lsp/fleet/parking/facilities${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async retrieveParkingFacility( id: string ): Promise<Data<LSPFleetParkingRetrieveFacilityValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingRetrieveFacilityValidation['response']>>>({
+	async retrieveParkingFacility( id: string ): Promise<LSPFleetParkingRetrieveFacilityValidation['response']> {
+		return await this.http.request<LSPFleetParkingRetrieveFacilityValidation['response']>({
 			url: `/lsp/fleet/parking/facilities/${id}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async getParkingFacilityUtilization( id: string, querystring: LSPFleetParkingGetUtilizationValidation['querystring'] ): Promise<Data<LSPFleetParkingGetUtilizationValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingGetUtilizationValidation['response']>>>({
+	async getParkingFacilityUtilization( id: string, querystring: LSPFleetParkingGetUtilizationValidation['querystring'] ): Promise<LSPFleetParkingGetUtilizationValidation['response']> {
+		return await this.http.request<LSPFleetParkingGetUtilizationValidation['response']>({
 			url: `/lsp/fleet/parking/facilities/${id}/utilization${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async updateParkingFacility( id: string, body: LSPFleetParkingUpdateFacilityValidation['body'] ): Promise<Data<LSPFleetParkingUpdateFacilityValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingUpdateFacilityValidation['response']>>>({
+	async updateParkingFacility( id: string, body: LSPFleetParkingUpdateFacilityValidation['body'] ): Promise<LSPFleetParkingUpdateFacilityValidation['response']> {
+		return await this.http.request<LSPFleetParkingUpdateFacilityValidation['response']>({
 			url: `/lsp/fleet/parking/facilities/${id}`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async removeParkingFacility( id: string, body: LSPFleetParkingRemoveFacilityValidation['body'] ): Promise<Data<LSPFleetParkingRemoveFacilityValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingRemoveFacilityValidation['response']>>>({
+	async removeParkingFacility( id: string, body: LSPFleetParkingRemoveFacilityValidation['body'] ): Promise<LSPFleetParkingRemoveFacilityValidation['response']> {
+		return await this.http.request<LSPFleetParkingRemoveFacilityValidation['response']>({
 			url: `/lsp/fleet/parking/facilities/${id}`,
 			method: 'DELETE',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async addParkingSpace( id: string, body: LSPFleetParkingAddSpaceValidation['body'] ): Promise<Data<LSPFleetParkingAddSpaceValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingAddSpaceValidation['response']>>>({
+	async addParkingSpace( id: string, body: LSPFleetParkingAddSpaceValidation['body'] ): Promise<LSPFleetParkingAddSpaceValidation['response']> {
+		return await this.http.request<LSPFleetParkingAddSpaceValidation['response']>({
 			url: `/lsp/fleet/parking/facilities/${id}/spaces`,
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async updateParkingSpace( id: string, spaceId: string, body: LSPFleetParkingUpdateSpaceValidation['body'] ): Promise<Data<LSPFleetParkingUpdateSpaceValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingUpdateSpaceValidation['response']>>>({
+	async updateParkingSpace( id: string, spaceId: string, body: LSPFleetParkingUpdateSpaceValidation['body'] ): Promise<LSPFleetParkingUpdateSpaceValidation['response']> {
+		return await this.http.request<LSPFleetParkingUpdateSpaceValidation['response']>({
 			url: `/lsp/fleet/parking/facilities/${id}/spaces/${spaceId}`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async removeParkingSpace( id: string, spaceId: string ): Promise<boolean> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingRemoveSpaceValidation['response']>>>({
+	async removeParkingSpace( id: string, spaceId: string ): Promise<LSPFleetParkingRemoveSpaceValidation['response']> {
+		return await this.http.request<LSPFleetParkingRemoveSpaceValidation['response']>({
 			url: `/lsp/fleet/parking/facilities/${id}/spaces/${spaceId}`,
 			method: 'DELETE'
 		})
-		if( error ) throw new Error( message )
-		return true
 	}
 
 	// ── Parking Assignments ───────────────────────────────────────────────────
 
-	async createParkingAssignment( body: LSPFleetParkingCreateAssignmentValidation['body'] ): Promise<Data<LSPFleetParkingCreateAssignmentValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingCreateAssignmentValidation['response']>>>({
+	async createParkingAssignment( body: LSPFleetParkingCreateAssignmentValidation['body'] ): Promise<LSPFleetParkingCreateAssignmentValidation['response']> {
+		return await this.http.request<LSPFleetParkingCreateAssignmentValidation['response']>({
 			url: '/lsp/fleet/parking/assignments',
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async listParkingAssignments( querystring?: LSPFleetParkingFetchAssignmentsValidation['querystring'] ): Promise<Data<LSPFleetParkingFetchAssignmentsValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingFetchAssignmentsValidation['response']>>>({
+	async listParkingAssignments( querystring?: LSPFleetParkingFetchAssignmentsValidation['querystring'] ): Promise<LSPFleetParkingFetchAssignmentsValidation['response']> {
+		return await this.http.request<LSPFleetParkingFetchAssignmentsValidation['response']>({
 			url: `/lsp/fleet/parking/assignments${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async retrieveParkingAssignment( id: string ): Promise<Data<LSPFleetParkingRetrieveAssignmentValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingRetrieveAssignmentValidation['response']>>>({
+	async retrieveParkingAssignment( id: string ): Promise<LSPFleetParkingRetrieveAssignmentValidation['response']> {
+		return await this.http.request<LSPFleetParkingRetrieveAssignmentValidation['response']>({
 			url: `/lsp/fleet/parking/assignments/${id}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async updateParkingAssignment( id: string, body: LSPFleetParkingUpdateAssignmentValidation['body'] ): Promise<Data<LSPFleetParkingUpdateAssignmentValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingUpdateAssignmentValidation['response']>>>({
+	async updateParkingAssignment( id: string, body: LSPFleetParkingUpdateAssignmentValidation['body'] ): Promise<LSPFleetParkingUpdateAssignmentValidation['response']> {
+		return await this.http.request<LSPFleetParkingUpdateAssignmentValidation['response']>({
 			url: `/lsp/fleet/parking/assignments/${id}`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async checkInParking( id: string ): Promise<Data<LSPFleetParkingCheckInValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingCheckInValidation['response']>>>({
+	async checkInParking( id: string ): Promise<LSPFleetParkingCheckInValidation['response']> {
+		return await this.http.request<LSPFleetParkingCheckInValidation['response']>({
 			url: `/lsp/fleet/parking/assignments/${id}/check-in`,
 			method: 'PATCH'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async checkOutParking( id: string ): Promise<Data<LSPFleetParkingCheckOutValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingCheckOutValidation['response']>>>({
+	async checkOutParking( id: string ): Promise<LSPFleetParkingCheckOutValidation['response']> {
+		return await this.http.request<LSPFleetParkingCheckOutValidation['response']>({
 			url: `/lsp/fleet/parking/assignments/${id}/check-out`,
 			method: 'PATCH'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async cancelParkingAssignment( id: string ): Promise<Data<LSPFleetParkingCancelAssignmentValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingCancelAssignmentValidation['response']>>>({
+	async cancelParkingAssignment( id: string ): Promise<LSPFleetParkingCancelAssignmentValidation['response']> {
+		return await this.http.request<LSPFleetParkingCancelAssignmentValidation['response']>({
 			url: `/lsp/fleet/parking/assignments/${id}/cancel`,
 			method: 'PATCH'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
 	// ── Parking Reservations ──────────────────────────────────────────────────
 
-	async createParkingReservation( body: LSPFleetParkingCreateReservationValidation['body'] ): Promise<Data<LSPFleetParkingCreateReservationValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingCreateReservationValidation['response']>>>({
+	async createParkingReservation( body: LSPFleetParkingCreateReservationValidation['body'] ): Promise<LSPFleetParkingCreateReservationValidation['response']> {
+		return await this.http.request<LSPFleetParkingCreateReservationValidation['response']>({
 			url: '/lsp/fleet/parking/reservations',
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async listParkingReservations( querystring?: LSPFleetParkingFetchReservationsValidation['querystring'] ): Promise<Data<LSPFleetParkingFetchReservationsValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingFetchReservationsValidation['response']>>>({
+	async listParkingReservations( querystring?: LSPFleetParkingFetchReservationsValidation['querystring'] ): Promise<LSPFleetParkingFetchReservationsValidation['response']> {
+		return await this.http.request<LSPFleetParkingFetchReservationsValidation['response']>({
 			url: `/lsp/fleet/parking/reservations${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async retrieveParkingReservation( id: string ): Promise<Data<LSPFleetParkingRetrieveReservationValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingRetrieveReservationValidation['response']>>>({
+	async retrieveParkingReservation( id: string ): Promise<LSPFleetParkingRetrieveReservationValidation['response']> {
+		return await this.http.request<LSPFleetParkingRetrieveReservationValidation['response']>({
 			url: `/lsp/fleet/parking/reservations/${id}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async updateParkingReservation( id: string, body: LSPFleetParkingUpdateReservationValidation['body'] ): Promise<Data<LSPFleetParkingUpdateReservationValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingUpdateReservationValidation['response']>>>({
+	async updateParkingReservation( id: string, body: LSPFleetParkingUpdateReservationValidation['body'] ): Promise<LSPFleetParkingUpdateReservationValidation['response']> {
+		return await this.http.request<LSPFleetParkingUpdateReservationValidation['response']>({
 			url: `/lsp/fleet/parking/reservations/${id}`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async confirmParkingReservation( id: string ): Promise<Data<LSPFleetParkingConfirmReservationValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingConfirmReservationValidation['response']>>>({
+	async confirmParkingReservation( id: string ): Promise<LSPFleetParkingConfirmReservationValidation['response']> {
+		return await this.http.request<LSPFleetParkingConfirmReservationValidation['response']>({
 			url: `/lsp/fleet/parking/reservations/${id}/confirm`,
 			method: 'PATCH'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async cancelParkingReservation( id: string ): Promise<Data<LSPFleetParkingCancelReservationValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetParkingCancelReservationValidation['response']>>>({
+	async cancelParkingReservation( id: string ): Promise<LSPFleetParkingCancelReservationValidation['response']> {
+		return await this.http.request<LSPFleetParkingCancelReservationValidation['response']>({
 			url: `/lsp/fleet/parking/reservations/${id}/cancel`,
 			method: 'PATCH'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
 	// ── Maintenance Records ───────────────────────────────────────────────────
 
-	async addMaintenanceRecord( body: LSPFleetMaintenanceAddRecordValidation['body'] ): Promise<Data<LSPFleetMaintenanceAddRecordValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceAddRecordValidation['response']>>>({
+	async addMaintenanceRecord( body: LSPFleetMaintenanceAddRecordValidation['body'] ): Promise<LSPFleetMaintenanceAddRecordValidation['response']> {
+		return await this.http.request<LSPFleetMaintenanceAddRecordValidation['response']>({
 			url: '/lsp/fleet/maintenance/records',
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async listMaintenanceRecords( querystring?: LSPFleetMaintenanceFetchRecordsValidation['querystring'] ): Promise<Data<LSPFleetMaintenanceFetchRecordsValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceFetchRecordsValidation['response']>>>({
+	async listMaintenanceRecords( querystring?: LSPFleetMaintenanceFetchRecordsValidation['querystring'] ): Promise<LSPFleetMaintenanceFetchRecordsValidation['response']> {
+		return await this.http.request<LSPFleetMaintenanceFetchRecordsValidation['response']>({
 			url: `/lsp/fleet/maintenance/records${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async retrieveMaintenanceRecord( id: string ): Promise<Data<LSPFleetMaintenanceRetrieveRecordValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceRetrieveRecordValidation['response']>>>({
+	async retrieveMaintenanceRecord( id: string ): Promise<LSPFleetMaintenanceRetrieveRecordValidation['response']> {
+		return await this.http.request<LSPFleetMaintenanceRetrieveRecordValidation['response']>({
 			url: `/lsp/fleet/maintenance/records/${id}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async getVehicleMaintenanceHistory( vid: string, querystring: LSPFleetMaintenanceGetHistoryValidation['querystring'] ): Promise<Data<LSPFleetMaintenanceGetHistoryValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceGetHistoryValidation['response']>>>({
+	async getVehicleMaintenanceHistory( vid: string, querystring: LSPFleetMaintenanceGetHistoryValidation['querystring'] ): Promise<LSPFleetMaintenanceGetHistoryValidation['response']> {
+		return await this.http.request<LSPFleetMaintenanceGetHistoryValidation['response']>({
 			url: `/lsp/fleet/maintenance/vehicles/${vid}/history${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async updateMaintenanceRecord( id: string, body: LSPFleetMaintenanceUpdateRecordValidation['body'] ): Promise<Data<LSPFleetMaintenanceUpdateRecordValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceUpdateRecordValidation['response']>>>({
+	async updateMaintenanceRecord( id: string, body: LSPFleetMaintenanceUpdateRecordValidation['body'] ): Promise<LSPFleetMaintenanceUpdateRecordValidation['response']> {
+		return await this.http.request<LSPFleetMaintenanceUpdateRecordValidation['response']>({
 			url: `/lsp/fleet/maintenance/records/${id}`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async startMaintenance( id: string ): Promise<Data<LSPFleetMaintenanceStartValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceStartValidation['response']>>>({
+	async startMaintenance( id: string ): Promise<LSPFleetMaintenanceStartValidation['response']> {
+		return await this.http.request<LSPFleetMaintenanceStartValidation['response']>({
 			url: `/lsp/fleet/maintenance/records/${id}/start`,
 			method: 'PATCH'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async completeMaintenance( id: string ): Promise<Data<LSPFleetMaintenanceCompleteValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceCompleteValidation['response']>>>({
+	async completeMaintenance( id: string ): Promise<LSPFleetMaintenanceCompleteValidation['response']> {
+		return await this.http.request<LSPFleetMaintenanceCompleteValidation['response']>({
 			url: `/lsp/fleet/maintenance/records/${id}/complete`,
 			method: 'PATCH'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async cancelMaintenance( id: string ): Promise<Data<LSPFleetMaintenanceCancelValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceCancelValidation['response']>>>({
+	async cancelMaintenance( id: string ): Promise<LSPFleetMaintenanceCancelValidation['response']> {
+		return await this.http.request<LSPFleetMaintenanceCancelValidation['response']>({
 			url: `/lsp/fleet/maintenance/records/${id}/cancel`,
 			method: 'PATCH'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async approveMaintenance( id: string ): Promise<Data<LSPFleetMaintenanceApproveValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceApproveValidation['response']>>>({
+	async approveMaintenance( id: string ): Promise<LSPFleetMaintenanceApproveValidation['response']> {
+		return await this.http.request<LSPFleetMaintenanceApproveValidation['response']>({
 			url: `/lsp/fleet/maintenance/records/${id}/approve`,
 			method: 'PATCH'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async deleteMaintenanceRecord( id: string ): Promise<boolean> {
-		const { error, message } = await this.http.request<Res<Data<LSPFleetMaintenanceDeleteRecordValidation['response']>>>({
+	async deleteMaintenanceRecord( id: string ): Promise<LSPFleetMaintenanceDeleteRecordValidation['response']> {
+		return await this.http.request<LSPFleetMaintenanceDeleteRecordValidation['response']>({
 			url: `/lsp/fleet/maintenance/records/${id}`,
 			method: 'DELETE'
 		})
-		if( error ) throw new Error( message )
-		return true
 	}
 
 	// ── Maintenance Schedules ─────────────────────────────────────────────────
 
-	async addMaintenanceSchedule( body: LSPFleetMaintenanceAddScheduleValidation['body'] ): Promise<Data<LSPFleetMaintenanceAddScheduleValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceAddScheduleValidation['response']>>>({
+	async addMaintenanceSchedule( body: LSPFleetMaintenanceAddScheduleValidation['body'] ): Promise<LSPFleetMaintenanceAddScheduleValidation['response']> {
+		return await this.http.request<LSPFleetMaintenanceAddScheduleValidation['response']>({
 			url: '/lsp/fleet/maintenance/schedules',
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async listMaintenanceSchedules( querystring?: LSPFleetMaintenanceFetchSchedulesValidation['querystring'] ): Promise<Data<LSPFleetMaintenanceFetchSchedulesValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceFetchSchedulesValidation['response']>>>({
+	async listMaintenanceSchedules( querystring?: LSPFleetMaintenanceFetchSchedulesValidation['querystring'] ): Promise<LSPFleetMaintenanceFetchSchedulesValidation['response']> {
+		return await this.http.request<LSPFleetMaintenanceFetchSchedulesValidation['response']>({
 			url: `/lsp/fleet/maintenance/schedules${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async getUpcomingMaintenance( querystring?: LSPFleetMaintenanceGetUpcomingValidation['querystring'] ): Promise<Data<LSPFleetMaintenanceGetUpcomingValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceGetUpcomingValidation['response']>>>({
+	async getUpcomingMaintenance( querystring?: LSPFleetMaintenanceGetUpcomingValidation['querystring'] ): Promise<LSPFleetMaintenanceGetUpcomingValidation['response']> {
+		return await this.http.request<LSPFleetMaintenanceGetUpcomingValidation['response']>({
 			url: `/lsp/fleet/maintenance/schedules/upcoming${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async getOverdueMaintenance( querystring?: LSPFleetMaintenanceGetOverdueValidation['querystring'] ): Promise<Data<LSPFleetMaintenanceGetOverdueValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceGetOverdueValidation['response']>>>({
+	async getOverdueMaintenance( querystring?: LSPFleetMaintenanceGetOverdueValidation['querystring'] ): Promise<LSPFleetMaintenanceGetOverdueValidation['response']> {
+		return await this.http.request<LSPFleetMaintenanceGetOverdueValidation['response']>({
 			url: `/lsp/fleet/maintenance/schedules/overdue${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async retrieveMaintenanceSchedule( id: string ): Promise<Data<LSPFleetMaintenanceRetrieveScheduleValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceRetrieveScheduleValidation['response']>>>({
+	async retrieveMaintenanceSchedule( id: string ): Promise<LSPFleetMaintenanceRetrieveScheduleValidation['response']> {
+		return await this.http.request<LSPFleetMaintenanceRetrieveScheduleValidation['response']>({
 			url: `/lsp/fleet/maintenance/schedules/${id}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async updateMaintenanceSchedule( id: string, body: LSPFleetMaintenanceUpdateScheduleValidation['body'] ): Promise<Data<LSPFleetMaintenanceUpdateScheduleValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceUpdateScheduleValidation['response']>>>({
+	async updateMaintenanceSchedule( id: string, body: LSPFleetMaintenanceUpdateScheduleValidation['body'] ): Promise<LSPFleetMaintenanceUpdateScheduleValidation['response']> {
+		return await this.http.request<LSPFleetMaintenanceUpdateScheduleValidation['response']>({
 			url: `/lsp/fleet/maintenance/schedules/${id}`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async activateMaintenanceSchedule( id: string ): Promise<Data<LSPFleetMaintenanceActivateScheduleValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceActivateScheduleValidation['response']>>>({
+	async activateMaintenanceSchedule( id: string ): Promise<LSPFleetMaintenanceActivateScheduleValidation['response']> {
+		return await this.http.request<LSPFleetMaintenanceActivateScheduleValidation['response']>({
 			url: `/lsp/fleet/maintenance/schedules/${id}/activate`,
 			method: 'PATCH'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async deactivateMaintenanceSchedule( id: string ): Promise<Data<LSPFleetMaintenanceDeactivateScheduleValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<LSPFleetMaintenanceDeactivateScheduleValidation['response']>>>({
+	async deactivateMaintenanceSchedule( id: string ): Promise<LSPFleetMaintenanceDeactivateScheduleValidation['response']> {
+		return await this.http.request<LSPFleetMaintenanceDeactivateScheduleValidation['response']>({
 			url: `/lsp/fleet/maintenance/schedules/${id}/deactivate`,
 			method: 'PATCH'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async deleteMaintenanceSchedule( id: string ): Promise<boolean> {
-		const { error, message } = await this.http.request<Res<Data<LSPFleetMaintenanceDeleteScheduleValidation['response']>>>({
+	async deleteMaintenanceSchedule( id: string ): Promise<LSPFleetMaintenanceDeleteScheduleValidation['response']> {
+		return await this.http.request<LSPFleetMaintenanceDeleteScheduleValidation['response']>({
 			url: `/lsp/fleet/maintenance/schedules/${id}`,
 			method: 'DELETE'
 		})
-		if( error ) throw new Error( message )
-		return true
 	}
 }

@@ -7,18 +7,17 @@ export type Http = { request<T>( opts: HTTPRequestOptions ): Promise<T> }
 export type Res<T = any> = { error: boolean, status?: string, message?: string, data: T }
 
 /**
- * The payload inside De.'s envelope.
+ * The payload inside De.'s envelope, for a caller who wants only that.
  *
- * Every route answers `{ error, status, message, data }` and every client
- * returns the `data` — but declared the whole envelope as its return type. The
- * type therefore promised `result.data.reference` while the value was
- * `result.reference`, and a caller could not read a single field without
- * casting past its own types.
+ * Clients return the envelope — `{ error, status, message, data }` — because
+ * `status` names a refusal precisely and throwing it away leaves the caller
+ * reconstructing it from prose. This names the `data` half for the places that
+ * want to talk about the payload type on its own.
  *
- * Routes that answer with no payload resolve to `undefined`, and a payload the
- * route may omit keeps the `| undefined` its own schema gave it — which is the
- * distinction a conditional on `T extends { data: infer D }` loses, since an
- * optional property fails that test outright.
+ * A route answering with no payload resolves to `undefined`, and a payload the
+ * route may omit keeps the `| undefined` its schema gave it — the distinction
+ * a conditional on `T extends { data: infer D }` loses, since an optional
+ * property fails that test outright.
  */
 export type Data<T> = 'data' extends keyof T ? T['data'] : undefined
 

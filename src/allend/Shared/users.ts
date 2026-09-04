@@ -9,30 +9,24 @@ import { qs, type Http, type Res, type Data } from '../../utils'
 export default class SharedUsers {
 	constructor( private http: Http, private ctype: ContextType ){}
 
-	async list( querystring?: SharedUserFetchValidation['querystring'] ): Promise<Data<SharedUserFetchValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<SharedUserFetchValidation['response']>>>({
+	async list( querystring?: SharedUserFetchValidation['querystring'] ): Promise<SharedUserFetchValidation['response']> {
+		return await this.http.request<SharedUserFetchValidation['response']>({
 			url: `/${this.ctype.toLowerCase()}/users${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async retrieve( uid: string ): Promise<Data<SharedUserRetrieveValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<SharedUserRetrieveValidation['response']>>>({
+	async retrieve( uid: string ): Promise<SharedUserRetrieveValidation['response']> {
+		return await this.http.request<SharedUserRetrieveValidation['response']>({
 			url: `/${this.ctype.toLowerCase()}/users/${uid}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async remove( uid: string ): Promise<Data<SharedUserRemoveValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<SharedUserRemoveValidation['response']>>>({
+	async remove( uid: string ): Promise<SharedUserRemoveValidation['response']> {
+		return await this.http.request<SharedUserRemoveValidation['response']>({
 			url: `/${this.ctype.toLowerCase()}/users/${uid}`,
 			method: 'DELETE'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 }

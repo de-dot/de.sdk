@@ -6,13 +6,11 @@ import { type Http, type Res, type Data } from '../../utils'
 export class QueriesMatching {
 	constructor( private http: Http ){}
 
-	async match( body: QueryMatchValidation['body'] ): Promise<Data<QueryMatchValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<QueryMatchValidation['response']>>>({
+	async match( body: QueryMatchValidation['body'] ): Promise<QueryMatchValidation['response']> {
+		return await this.http.request<QueryMatchValidation['response']>({
 			url: '/queries/matching/match',
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 }

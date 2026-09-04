@@ -12,50 +12,40 @@ import { qs, type Http, type Res, type Data } from '../../utils'
 export class PipelinesExecutions {
   constructor( private http: Http ){}
 
-  async create( body: PipelineExecutionCreateValidation['body'] ): Promise<Data<PipelineExecutionCreateValidation['response']>> {
-    const { error, message, data } = await this.http.request<Res<Data<PipelineExecutionCreateValidation['response']>>>({
+  async create( body: PipelineExecutionCreateValidation['body'] ): Promise<PipelineExecutionCreateValidation['response']> {
+    return await this.http.request<PipelineExecutionCreateValidation['response']>({
       url: '/pipelines/executions',
       method: 'POST',
       body
     })
-    if( error ) throw new Error( message )
-    return data
   }
 
-  async list( querystring?: PipelineExecutionListValidation['querystring'] ): Promise<Data<PipelineExecutionListValidation['response']>> {
-    const { error, message, data } = await this.http.request<Res<Data<PipelineExecutionListValidation['response']>>>({
+  async list( querystring?: PipelineExecutionListValidation['querystring'] ): Promise<PipelineExecutionListValidation['response']> {
+    return await this.http.request<PipelineExecutionListValidation['response']>({
       url: `/pipelines/executions${qs( querystring )}`,
       method: 'GET'
     })
-    if( error ) throw new Error( message )
-    return data
   }
 
-  async get( id: string ): Promise<Data<PipelineExecutionGetValidation['response']>> {
-    const { error, message, data } = await this.http.request<Res<Data<PipelineExecutionGetValidation['response']>>>({
+  async get( id: string ): Promise<PipelineExecutionGetValidation['response']> {
+    return await this.http.request<PipelineExecutionGetValidation['response']>({
       url: `/pipelines/executions/${id}`,
       method: 'GET'
     })
-    if( error ) throw new Error( message )
-    return data
   }
 
-  async start( id: string ): Promise<Data<PipelineExecutionActionValidation['response']>> {
-    const { error, message, data } = await this.http.request<Res<Data<PipelineExecutionActionValidation['response']>>>({
+  async start( id: string ): Promise<PipelineExecutionActionValidation['response']> {
+    return await this.http.request<PipelineExecutionActionValidation['response']>({
       url: `/pipelines/executions/${id}/start`,
       method: 'POST'
     })
-    if( error ) throw new Error( message )
-    return data
   }
 
-  async cancel( id: string, body: PipelineExecutionCancelValidation['body'] ): Promise<Data<PipelineExecutionCancelValidation['response']>> {
-    const { error, message, data } = await this.http.request<Res<Data<PipelineExecutionCancelValidation['response']>>>({
+  async cancel( id: string, body: PipelineExecutionCancelValidation['body'] ): Promise<PipelineExecutionCancelValidation['response']> {
+    return await this.http.request<PipelineExecutionCancelValidation['response']>({
       url: `/pipelines/executions/${id}/cancel`,
       method: 'POST',
       body
     })
-    if( error ) throw new Error( message )
-    return data
   }
 }

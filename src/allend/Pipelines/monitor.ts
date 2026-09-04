@@ -10,30 +10,24 @@ import { qs, type Http, type Res, type Data } from '../../utils'
 export class PipelinesMonitor {
   constructor( private http: Http ){}
 
-  async list( querystring?: PipelineMonitorListValidation['querystring'] ): Promise<Data<PipelineMonitorListValidation['response']>> {
-    const { error, message, data } = await this.http.request<Res<Data<PipelineMonitorListValidation['response']>>>({
+  async list( querystring?: PipelineMonitorListValidation['querystring'] ): Promise<PipelineMonitorListValidation['response']> {
+    return await this.http.request<PipelineMonitorListValidation['response']>({
       url: `/pipelines/monitor${qs( querystring )}`,
       method: 'GET'
     })
-    if( error ) throw new Error( message )
-    return data
   }
 
-  async get( executionId: string ): Promise<Data<PipelineMonitorGetValidation['response']>> {
-    const { error, message, data } = await this.http.request<Res<Data<PipelineMonitorGetValidation['response']>>>({
+  async get( executionId: string ): Promise<PipelineMonitorGetValidation['response']> {
+    return await this.http.request<PipelineMonitorGetValidation['response']>({
       url: `/pipelines/monitor/${executionId}`,
       method: 'GET'
     })
-    if( error ) throw new Error( message )
-    return data
   }
 
-  async overview(): Promise<Data<PipelineMonitorOverviewValidation['response']>> {
-    const { error, message, data } = await this.http.request<Res<Data<PipelineMonitorOverviewValidation['response']>>>({
+  async overview(): Promise<PipelineMonitorOverviewValidation['response']> {
+    return await this.http.request<PipelineMonitorOverviewValidation['response']>({
       url: '/pipelines/monitor/overview',
       method: 'GET'
     })
-    if( error ) throw new Error( message )
-    return data
   }
 }

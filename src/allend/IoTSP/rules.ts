@@ -16,106 +16,84 @@ import { qs, type Http, type Res, type Data } from '../../utils'
 export default class IoTRules {
 	constructor( private http: Http ) {}
 
-	async add( body: IoTRuleAddValidation['body'] ): Promise<Data<IoTRuleAddValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<IoTRuleAddValidation['response']>>>({
+	async add( body: IoTRuleAddValidation['body'] ): Promise<IoTRuleAddValidation['response']> {
+		return await this.http.request<IoTRuleAddValidation['response']>({
 			url: '/iotsp/rules/add',
 			method: 'POST',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async update( reference: string, body: IoTRuleUpdateValidation['body'] ): Promise<Data<IoTRuleUpdateValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<IoTRuleUpdateValidation['response']>>>({
+	async update( reference: string, body: IoTRuleUpdateValidation['body'] ): Promise<IoTRuleUpdateValidation['response']> {
+		return await this.http.request<IoTRuleUpdateValidation['response']>({
 			url: `/iotsp/rules/${reference}`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async list( querystring?: IoTRuleListValidation['querystring'] ): Promise<Data<IoTRuleListValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<IoTRuleListValidation['response']>>>({
+	async list( querystring?: IoTRuleListValidation['querystring'] ): Promise<IoTRuleListValidation['response']> {
+		return await this.http.request<IoTRuleListValidation['response']>({
 			url: `/iotsp/rules${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async find( querystring: IoTRuleFindValidation['querystring'] ): Promise<Data<IoTRuleFindValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<IoTRuleFindValidation['response']>>>({
+	async find( querystring: IoTRuleFindValidation['querystring'] ): Promise<IoTRuleFindValidation['response']> {
+		return await this.http.request<IoTRuleFindValidation['response']>({
 			url: `/iotsp/rules/find${qs( querystring )}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async get( reference: string ): Promise<Data<IoTRuleRetrieveValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<IoTRuleRetrieveValidation['response']>>>({
+	async get( reference: string ): Promise<IoTRuleRetrieveValidation['response']> {
+		return await this.http.request<IoTRuleRetrieveValidation['response']>({
 			url: `/iotsp/rules/${reference}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async enable( reference: string ): Promise<Data<IoTRuleStatusValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<IoTRuleStatusValidation['response']>>>({
+	async enable( reference: string ): Promise<IoTRuleStatusValidation['response']> {
+		return await this.http.request<IoTRuleStatusValidation['response']>({
 			url: `/iotsp/rules/${reference}/enable`,
 			method: 'PATCH'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async disable( reference: string ): Promise<Data<IoTRuleStatusValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<IoTRuleStatusValidation['response']>>>({
+	async disable( reference: string ): Promise<IoTRuleStatusValidation['response']> {
+		return await this.http.request<IoTRuleStatusValidation['response']>({
 			url: `/iotsp/rules/${reference}/disable`,
 			method: 'PATCH'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async delete( reference: string ): Promise<Data<IoTRuleRemoveValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<IoTRuleRemoveValidation['response']>>>({
+	async delete( reference: string ): Promise<IoTRuleRemoveValidation['response']> {
+		return await this.http.request<IoTRuleRemoveValidation['response']>({
 			url: `/iotsp/rules/${reference}`,
 			method: 'DELETE'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async getConnectors( reference: string ): Promise<Data<IoTRuleConnectorsValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<IoTRuleConnectorsValidation['response']>>>({
+	async getConnectors( reference: string ): Promise<IoTRuleConnectorsValidation['response']> {
+		return await this.http.request<IoTRuleConnectorsValidation['response']>({
 			url: `/iotsp/rules/${reference}/connectors`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async assignConnector( reference: string, body: IoTRuleXssignConnectorValidation['body'] ): Promise<Data<IoTRuleXssignConnectorValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<IoTRuleXssignConnectorValidation['response']>>>({
+	async assignConnector( reference: string, body: IoTRuleXssignConnectorValidation['body'] ): Promise<IoTRuleXssignConnectorValidation['response']> {
+		return await this.http.request<IoTRuleXssignConnectorValidation['response']>({
 			url: `/iotsp/rules/${reference}/connector/assign`,
 			method: 'PUT',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async unassignConnector( reference: string, body: IoTRuleXssignConnectorValidation['body'] ): Promise<Data<IoTRuleXssignConnectorValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<IoTRuleXssignConnectorValidation['response']>>>({
+	async unassignConnector( reference: string, body: IoTRuleXssignConnectorValidation['body'] ): Promise<IoTRuleXssignConnectorValidation['response']> {
+		return await this.http.request<IoTRuleXssignConnectorValidation['response']>({
 			url: `/iotsp/rules/${reference}/connector/unassign`,
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 }

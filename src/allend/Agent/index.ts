@@ -89,31 +89,25 @@ export default class Agent extends AccessManager {
 
 	// ── Agent profile ─────────────────────────────────────────────────────────
 
-	async info(): Promise<Data<AgentInfoValidation['response']>> {
-		const { error, message, data } = await this.request<Res<Data<AgentInfoValidation['response']>>>({
+	async info(): Promise<AgentInfoValidation['response']> {
+		return await this.request<AgentInfoValidation['response']>({
 			url: '/agent',
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async update( body: AgentUpdateValidation['body'] ): Promise<Data<AgentUpdateValidation['response']>> {
-		const { error, message, data } = await this.request<Res<Data<AgentUpdateValidation['response']>>>({
+	async update( body: AgentUpdateValidation['body'] ): Promise<AgentUpdateValidation['response']> {
+		return await this.request<AgentUpdateValidation['response']>({
 			url: '/agent',
 			method: 'PATCH',
 			body
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async availability( status: AgentAvailabilityValidation['params']['availability'] ): Promise<Data<AgentAvailabilityValidation['response']>> {
-		const { error, message, data } = await this.request<Res<Data<AgentAvailabilityValidation['response']>>>({
+	async availability( status: AgentAvailabilityValidation['params']['availability'] ): Promise<AgentAvailabilityValidation['response']> {
+		return await this.request<AgentAvailabilityValidation['response']>({
 			url: `/agent/${status}`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 }

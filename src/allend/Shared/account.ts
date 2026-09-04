@@ -8,21 +8,17 @@ import type { Http, Res, Data } from '../../utils'
 export default class SharedAccount {
 	constructor( private http: Http, private ctype: UserContextType ){}
 
-	async knows(): Promise<Data<SharedAccountKnowsValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<SharedAccountKnowsValidation['response']>>>({
+	async knows(): Promise<SharedAccountKnowsValidation['response']> {
+		return await this.http.request<SharedAccountKnowsValidation['response']>({
 			url: `/${this.ctype.toLowerCase()}/account/knows`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 
-	async retrieve(): Promise<Data<SharedAccountRetrieveValidation['response']>> {
-		const { error, message, data } = await this.http.request<Res<Data<SharedAccountRetrieveValidation['response']>>>({
+	async retrieve(): Promise<SharedAccountRetrieveValidation['response']> {
+		return await this.http.request<SharedAccountRetrieveValidation['response']>({
 			url: `/${this.ctype.toLowerCase()}/account`,
 			method: 'GET'
 		})
-		if( error ) throw new Error( message )
-		return data
 	}
 }
