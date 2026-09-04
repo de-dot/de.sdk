@@ -40,7 +40,16 @@ type InvitationV<C extends UserContextType> = {
 // ─── Class ────────────────────────────────────────────────────────────────────
 
 export default class SharedInvitation<C extends UserContextType> {
-	constructor( private http: Http, private prefix: string ){}
+	/**
+	 * Lowercased, like every other shared client.
+	 *
+	 * This one took the context type as a raw `prefix` and used it verbatim, so
+	 * an LSP client addressed `/LSP/invitation/agent` — de.arch mounts `/lsp`,
+	 * and every invitation a workspace ever sent through the SDK came back 404.
+	 */
+	constructor( private http: Http, private ctype: UserContextType ){}
+
+	private get prefix(): string { return this.ctype.toLowerCase() }
 
 	async send( as: string, body: InvitationV<C>['send']['body'] ): Promise<Data<InvitationV<C>['send']['response']>> {
 		const { error, message, data } = await this.http.request<Res<Data<InvitationV<C>['send']['response']>>>({
