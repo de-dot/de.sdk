@@ -58,6 +58,8 @@ export type { WorkflowsConfig } from './allend/Workflows'
 // Utilities
 export { default as Utils } from './utils'
 
+export { default as APIError } from './error'
+
 // ── Client layer (allend) ─────────────────────────────────────────────────────
 // DClient ({ Client, Event }), the IoT socket client, and the customer/agent/
 // query surfaces.

@@ -1,6 +1,7 @@
 import type { AccessOptions, UserSession } from '../types/access'
 import type { HTTPRequestOptions } from '../types'
 import { baseURL } from '../baseUrl'
+import APIError from '../error'
 
 type AccessType = 'API' | 'ASI'
 
@@ -119,10 +120,25 @@ export default class AccessManager {
      * proxy timeout, an empty 204. Reporting that as a JSON syntax error hides
      * the only two facts worth having, which are the status and the URL.
      */
-    try { return await response.json() as Response }
+    let body: any
+    try { body = await response.json() }
     catch {
-      throw new Error(`${options.method} ${url} — ${response.status} ${response.statusText || 'no JSON body'}`)
+      throw new APIError(`${options.method} ${url} — ${response.statusText || 'no JSON body'}`, response.status )
     }
+
+    /**
+     * Failures are raised here rather than in each client.
+     *
+     * The clients all threw on `error: true` anyway; doing it once is what
+     * lets the status travel with the message, which is the part they could
+     * not have supplied — by the time a client sees the envelope, the response
+     * is gone. Their own guards stay as the fallback for a client built over
+     * some other transport.
+     */
+    if( body?.error || !response.ok )
+      throw new APIError( body?.message || `${options.method} ${url} failed`, response.status, body )
+
+    return body as Response
   }
 
   setToken( token: string ): void { this.accessToken = token }
