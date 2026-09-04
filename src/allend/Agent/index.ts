@@ -22,6 +22,10 @@ export type AgentConfig = {
 	env?: 'dev' | 'staging' | 'prod'
 	platform?: 'web' | 'mobile' | 'server' | 'proxy'
 	remoteOrigin?: string
+	/** Per-request deadline in ms. See `AccessOptions.timeout`. */
+	timeout?: number
+	/** Explicit service origin, overriding the env table. See `AccessOptions.baseUrl`. */
+	baseUrl?: string
 	/** Host to substitute for `localhost` in `dev` (Eg. a native emulator) */
 	devHostname?: string
 	/**
@@ -65,6 +69,8 @@ export default class Agent extends AccessManager {
 			env:          config.env      || 'dev',
 			platform:     config.platform || 'proxy',
 			remoteOrigin: config.remoteOrigin,
+			timeout:      config.timeout,
+			baseUrl:      config.baseUrl,
 			devHostname:  config.devHostname,
 			session:      config.session
 		}

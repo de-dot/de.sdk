@@ -33,6 +33,7 @@ export default class AccessManager {
   protected accessToken?: string
   protected remoteOrigin?: string
   protected session?: UserSession
+  private timeout?: number
 
   constructor( options: AccessOptions, atype: AccessType ){
     if( !options ) throw new Error('Undefined Access Configuration')
@@ -45,10 +46,12 @@ export default class AccessManager {
     this.accessToken = options.accessToken
     this.remoteOrigin = options.remoteOrigin
     this.session = options.session
-    this.baseURL = baseURL( this.atype === 'ASI' ? 'ASI' : 'API', options.env || 'dev', options.devHostname )
+    this.timeout = options.timeout
+    this.baseURL = options.baseUrl?.replace( /\/+$/, '' )
+                    || baseURL( this.atype === 'ASI' ? 'ASI' : 'API', options.env || 'dev', options.devHostname )
   }
 
-  async request<Response>({ url, ...options }: HTTPRequestOptions ): Promise<Response> {
+  async request<Response>({ url, timeout, ...options }: HTTPRequestOptions ): Promise<Response> {
     const rawOptions: any = {
       method: 'GET',
       headers: {
@@ -93,11 +96,33 @@ export default class AccessManager {
 
     options = { ...rawOptions, ...options }
 
+    /**
+     * Bound the request when a deadline is configured.
+     *
+     * `AbortSignal.timeout` is not in the pre-18 Node the node-fetch fallback
+     * exists for, so this is guarded rather than assumed. A missing signal
+     * leaves the previous unbounded behaviour, which is the right degradation:
+     * the request still goes out.
+     */
+    const deadline = timeout ?? this.timeout
+    if( deadline && typeof AbortSignal?.timeout === 'function' )
+      ( options as any ).signal = AbortSignal.timeout( deadline )
+
     url = `${this.baseURL}/v${this.version}/${url.replace(/^\//, '')}`
 
-    const fetch = await resolveFetch()
+    const fetch = await resolveFetch(),
+          response = await fetch( url, options as any )
 
-    return await ( await fetch( url, options as any ) ).json() as Response
+    /**
+     * Everything De. answers is the `{ error, message, data }` envelope, so a
+     * body that will not parse did not come from De. — a gateway 502 page, a
+     * proxy timeout, an empty 204. Reporting that as a JSON syntax error hides
+     * the only two facts worth having, which are the status and the URL.
+     */
+    try { return await response.json() as Response }
+    catch {
+      throw new Error(`${options.method} ${url} — ${response.status} ${response.statusText || 'no JSON body'}`)
+    }
   }
 
   setToken( token: string ): void { this.accessToken = token }

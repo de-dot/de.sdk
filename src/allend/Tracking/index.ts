@@ -9,6 +9,10 @@ export type TrackingConfig = {
 	env?: 'dev' | 'staging' | 'prod'
 	platform?: 'web' | 'mobile' | 'server' | 'proxy'
 	remoteOrigin?: string
+	/** Per-request deadline in ms. See `AccessOptions.timeout`. */
+	timeout?: number
+	/** Explicit service origin, overriding the env table. See `AccessOptions.baseUrl`. */
+	baseUrl?: string
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -28,7 +32,9 @@ export default class Tracking extends AccessManager {
 			accessToken:  config.accessToken,
 			env:          config.env      || 'dev',
 			platform:     config.platform || 'proxy',
-			remoteOrigin: config.remoteOrigin
+			remoteOrigin: config.remoteOrigin,
+			timeout:      config.timeout,
+			baseUrl:      config.baseUrl
 		}
 		super( access, 'API' )
 	}

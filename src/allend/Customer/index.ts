@@ -10,6 +10,10 @@ export type CustomerConfig = {
 	env?: 'dev' | 'staging' | 'prod'
 	platform?: 'web' | 'mobile' | 'server' | 'proxy'
 	remoteOrigin?: string
+	/** Per-request deadline in ms. See `AccessOptions.timeout`. */
+	timeout?: number
+	/** Explicit service origin, overriding the env table. See `AccessOptions.baseUrl`. */
+	baseUrl?: string
 	/**
 	 * The signed-in customer, when the client acts on their behalf rather
 	 * than as the integration itself.
@@ -39,6 +43,8 @@ export default class Customer extends AccessManager {
 			env:          config.env      || 'dev',
 			platform:     config.platform || 'proxy',
 			remoteOrigin: config.remoteOrigin,
+			timeout:      config.timeout,
+			baseUrl:      config.baseUrl,
 			session:      config.session
 		}
 		super( access, 'API' )

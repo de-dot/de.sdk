@@ -39,4 +39,27 @@ export type AccessOptions = {
 	 * identifies the integration; the two credentials travel together.
 	 */
 	session?: UserSession
+	/**
+	 * Deadline for every request this client makes, in milliseconds.
+	 *
+	 * Without one a request has no upper bound. Node closes idle keep-alive
+	 * connections after 5s while the client pool hands one out regardless, so a
+	 * request can be written into a socket the server already closed and then
+	 * wait forever — a hang in the caller, not an error it can handle.
+	 *
+	 * Omit it to keep the runtime's own default (none, in practice).
+	 */
+	timeout?: number
+	/**
+	 * Explicit service origin, overriding the environment table.
+	 *
+	 * The table maps `dev` to fixed localhost ports, which only holds when
+	 * every service runs on the port it was assigned. A self-hosted De., or a
+	 * dev machine running de.workspace on its own port, has no entry there —
+	 * and no host substitution can invent one, since `devHostname` swaps the
+	 * host and keeps the port.
+	 *
+	 * Give an origin (`http://localhost:22200`), not a path.
+	 */
+	baseUrl?: string
 }

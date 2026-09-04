@@ -149,6 +149,8 @@ export type HTTPRequestOptions = {
 	method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE'
 	headers?: { [index: string]: string }
 	body?: any
+	/** Per-call deadline in ms, overriding the client's own. */
+	timeout?: number
 }
 export type HTTPResponse<T = Record<string, never>> = {
 	error: boolean

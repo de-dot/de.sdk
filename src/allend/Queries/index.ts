@@ -15,6 +15,10 @@ export type QueriesConfig = {
 	env?: Env
 	platform?: Platform
 	remoteOrigin?: string
+	/** Per-request deadline in ms. See `AccessOptions.timeout`. */
+	timeout?: number
+	/** Explicit service origin, overriding the env table. See `AccessOptions.baseUrl`. */
+	baseUrl?: string
 	version?: number
 }
 
@@ -38,6 +42,8 @@ export default class Queries extends AccessManager {
 			env:          config.env      || 'dev',
 			platform:     config.platform || 'proxy',
 			remoteOrigin: config.remoteOrigin,
+			timeout:      config.timeout,
+			baseUrl:      config.baseUrl,
 			version:      config.version
 		}
 
