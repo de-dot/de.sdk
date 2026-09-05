@@ -2,6 +2,7 @@ import type { AccessOptions, UserSession } from '../types/access'
 import type { HTTPRequestOptions } from '../types'
 import { baseURL } from '../baseUrl'
 import APIError from '../error'
+import { rememberStatus } from '../response'
 
 /**
  * Which service the client addresses.
@@ -168,6 +169,8 @@ export default class AccessManager {
      * look like a workspace being told no, which is precisely the bug that
      * hid `/LSP/invitation/agent` behind a plausible-looking failure.
      */
+    rememberStatus( body, response.status )
+
     if( typeof body?.error !== 'boolean' )
       throw new APIError(
         body?.message || `${options.method} ${url} — ${response.status} ${response.statusText || 'not a De. response'}`,
