@@ -41,11 +41,9 @@ export const API_SERVER_BASEURL = {
  * It is not reachable through the API host: de.arch serves no `/workspace`
  * routes, so a client pointed there gets 404 for the whole surface.
  *
- * The staging and production hosts follow the naming of the other services
- * (auth.dedot.io, iot.dedot.io). Confirm them against the deployment before
- * relying on them, and pass `baseUrl` to address a host that differs — which
- * is also what a self-hosted De. needs, and what a dev machine running
- * de.workspace on a port other than 22200 needs.
+ * Pass `baseUrl` to address a host that differs — what a self-hosted De.
+ * needs, and what a dev machine running de.workspace on a port other than
+ * 22200 needs.
  */
 export const WSP_SERVER_BASEURL = {
 	dev:     `http://localhost:${DEV_PORTS.WSP}`,
