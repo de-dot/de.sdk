@@ -218,6 +218,26 @@ export default class MSI extends EventEmitter {
   isReady(){ return this.chn && this.isConnected }
 
   /**
+   * Tear the gateway down.
+   *
+   * Every `load()` adds a `message` listener to the window and an iframe to
+   * the page, and neither went away: a single-page host that mounts a map on
+   * a route accumulated one of each per visit, all of them still parsing
+   * traffic from the gateway. The React Native entry already unwinds this on
+   * unmount; the web entry had no way to.
+   */
+  destroy(){
+    this.chn?.disconnect()
+    this.chn = undefined
+    this.isConnected = false
+
+    const container = document.getElementById( this.element )
+    if( container ) container.innerHTML = ''
+
+    this.removeAllListeners()
+  }
+
+  /**
    * Extend the kit's functionalities
    * 
    * @param name - Name of the plugin that will be later used to access the plugin object interface

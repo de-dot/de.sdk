@@ -8,6 +8,7 @@ import Handles from './Handles'
 import Controls from './Controls'
 import Plugins, { type Plugin } from './Plugins'
 import resolveAccessToken from './token'
+import belongsToGateway from './origin'
 
 export interface MSIInterface {
   controls: Controls
@@ -115,6 +116,18 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
   apiRef = useRef<MSIInterface | null>( null ),
   isInitializedRef = useRef( false ),
 
+  /**
+   * The bridge is built once, so its handlers close over the props of the
+   * render that built it. `bind` resolves the access token at connect time
+   * precisely so a reconnect picks up a rotated one -- but reading it from a
+   * captured `props` gave back whatever `getAccessToken` closed over at mount,
+   * which for the usual `() => token` is the token the host held then. Every
+   * reconnect after a rotation would have re-bound with a dead token. Same for
+   * the callbacks: a host passing inline handlers had the mount-time ones
+   * called forever.
+   */
+  propsRef = useRef( props ),
+
   [ isConnected, setIsConnected ] = useState( false ),
   [ isReady, setIsReady ] = useState( false ),
 
@@ -128,13 +141,18 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
           ? error
           : new Error( typeof error === 'string' ? error : error?.error || 'Unknown MSI error')
 
-    props.onError?.( normalized )
-  }, [ props.onError ] ),
+    propsRef.current.onError?.( normalized )
+  }, [] ),
 
   initializeConnection = useCallback( () => {
     if( !wioRef.current || !webViewRef.current ) return
     wioRef.current.initiate( webViewRef, baseURL )
   }, [ baseURL ] ),
+
+  /**
+   * Refuse to navigate anywhere but the gateway -- see `belongsToGateway`.
+   */
+  isGatewayURL = useCallback( ( url: string ) => belongsToGateway( baseURL, url ), [ baseURL ] ),
 
   /**
    * One options object for both ends of the bridge.
@@ -162,6 +180,8 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
   // Rebuilt only when those options change, rather than on every render.
   injectedBridge = useMemo( () => new WIO( wioOptions ).getInjectedJavaScript(), [ wioOptions ] )
 
+  useEffect( () => { propsRef.current = props } )
+
   // Expose the control surface to the host
   useImperativeHandle( ref, () => ({
     get controls(){ return apiRef.current?.controls },
@@ -184,11 +204,11 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
          * Resolve the token here rather than at mount, so a reconnect after a
          * backgrounded app or a dropped bridge binds with a current token.
          */
-        const { getAccessToken, onReady, onError, onLoaded, style, ...config } = props
+        const { getAccessToken, onReady, onError, onLoaded, style, ...config } = propsRef.current
 
         await wio.emitAsync('bind', {
           ...config,
-          accessToken: resolveAccessToken( props ),
+          accessToken: resolveAccessToken( propsRef.current ),
           origin: 'react-native'
         }, BIND_TIMEOUT )
 
@@ -198,7 +218,7 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
     })
     .on('ready', () => {
       setIsReady( true )
-      props.onReady?.()
+      propsRef.current.onReady?.()
     })
     .on('disconnect', () => {
       setIsConnected( false )
@@ -217,19 +237,21 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
     })
 
     /**
-     * Pause gateway work while backgrounded, and re-establish the bridge on
-     * resume -- iOS in particular tears down the WebView's socket.
+     * Re-establish the bridge on resume -- iOS in particular tears down the
+     * WebView's socket while the app is backgrounded.
+     *
+     * This used to also emit `app:background` / `app:foreground`, which read
+     * like the gateway paused its work. It never did: the gateway has no
+     * handler for either, and its own allowlist dropped them before they got
+     * that far. Nor should there be a blanket one -- a rider streaming their
+     * position must keep streaming with the phone in their pocket, so whether
+     * backgrounding stops anything is the host's call, made through
+     * `controls.untrackLiveLocation()` and its counterpart.
      */
     const subscription = AppState.addEventListener('change', ( state: AppStateStatus ) => {
-      if( state === 'background' ){
-        wio.emit('app:background')
-        return
-      }
-
-      if( state === 'active' ){
-        wio.emit('app:foreground')
-        !wio.isConnected() && initializeConnection()
-      }
+      state === 'active'
+      && !wio.isConnected()
+      && initializeConnection()
     })
 
     return () => {
@@ -247,16 +269,16 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
 
     const
     chn = wioRef.current,
-    controls = new Controls( chn, props ),
-    handles = new Handles( chn, controls, props ),
-    plugins = new Plugins( chn, handles, controls, props )
+    controls = new Controls( chn, propsRef.current ),
+    handles = new Handles( chn, controls, propsRef.current ),
+    plugins = new Plugins( chn, handles, controls, propsRef.current )
 
     plugins.mount( REGISTERED_PLUGINS )
 
     apiRef.current = { controls, handles, plugins }
     isInitializedRef.current = true
 
-    props.onLoaded?.( apiRef.current )
+    propsRef.current.onLoaded?.( apiRef.current )
   }, [ isConnected, isReady ] )
 
   const onMessage = ( event: any ) => {
@@ -303,6 +325,7 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
         bounces={false}
         scrollEnabled={false}
         originWhitelist={[ baseURL ]}
+        onShouldStartLoadWithRequest={( { url }: any ) => isGatewayURL( url )}
         onMessage={onMessage}
         onLoadEnd={initializeConnection}
         onError={( { nativeEvent }: any ) => reportError( new Error( nativeEvent?.description || 'WebView error') )}
