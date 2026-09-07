@@ -149,3 +149,41 @@ describe('context', () => {
     expect( c.scope ).toBeUndefined()
   })
 })
+
+describe('OTPAuth is constructible for the flow it exists to serve', () => {
+  const { OTPAuth } = require('../dist')
+
+  test('needs neither a workspace context nor a bearer token', () => {
+    // Sign-in is what PRODUCES a session: at POST /auth/otp/send there is no
+    // workspace to name and no token to bear. AccessManager demanded both of
+    // every access type, so this client threw in its own constructor and could
+    // never be used — which is why de.simulation's bootstrap and Hot's getUser
+    // both talk to de.auth over raw fetch, and why nothing caught that it once
+    // addressed /v1/auth/otp, a route de.auth has never served.
+    expect( () => new OTPAuth({ baseUrl: 'http://localhost:44000', remoteOrigin: 'http://api.dedot.com:24800' }) )
+      .not.toThrow()
+  })
+
+  test('an API client still requires both', () => {
+    expect( () => new LSP({ baseUrl: 'http://localhost:24800' }) ).toThrow(/[Uu]ndefined context/)
+  })
+
+  test('signs in as De.service, the only agent de.auth admits without a bearer', async () => {
+    // de.auth refuses any `de-user-agent` outside De.service* that carries no
+    // Authorization header — 412, before any handler. The SDK's default
+    // platform is `proxy`, so every sign-in through it was refused.
+    const calls = stubFetch( () => ({ body: { error: false, status: 'AUTH::UPN_SIGNIN', data: { next: 'verify' } } }) )
+
+    const client = new OTPAuth({ baseUrl: 'http://localhost:44000', remoteOrigin: 'http://api.dedot.com:24800' })
+    await client.signin({ phone: '+233555000000', device: '{}' })
+
+    expect( calls[0].options.headers['de-user-agent'] ).toBe('De.service/1.0')
+    expect( calls[0].options.headers['de-auth-service'] ).toBeTruthy()
+    expect( calls[0].options.headers.origin ).toBe('http://api.dedot.com:24800')
+  })
+
+  test('a caller that knows better can still override the platform', () => {
+    const client = new OTPAuth({ baseUrl: 'http://localhost:44000', platform: 'proxy' })
+    expect( client.platform ).toBe('proxy')
+  })
+})

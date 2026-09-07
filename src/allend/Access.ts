@@ -56,10 +56,26 @@ export default class AccessManager {
 
   constructor( options: AccessOptions, atype: AccessType ){
     if( !options ) throw new Error('Undefined Access Configuration')
-    if( !options.context ) throw new Error('Undefined Context Reference. Check https://doc.dedot.io/sdk/auth')
-    if( !options.accessToken ) throw new Error('Undefined Access Token. Check https://doc.dedot.io/sdk/auth')
-    
-    this.context = options.context
+
+    /**
+     * A workspace context and a bearer token identify a CALLER to de.arch, and
+     * every API client needs both. de.auth answers a different question — who
+     * the PERSON is — and the sign-in flow is what produces a session in the
+     * first place: at `POST /auth/otp/send` there is no workspace to name and
+     * no token to bear.
+     *
+     * Requiring them of every access type meant `OTPAuth` threw in its own
+     * constructor and could never be used for the one thing it exists to do.
+     * That is why de.simulation's bootstrap and Hot's `getUser` both talk to
+     * de.auth over raw fetch, and why nothing ever caught that this client
+     * addressed `/v1/auth/otp` — a route de.auth has never served.
+     */
+    if( atype !== 'ASI' ){
+      if( !options.context ) throw new Error('Undefined Context Reference. Check https://doc.dedot.io/sdk/auth')
+      if( !options.accessToken ) throw new Error('Undefined Access Token. Check https://doc.dedot.io/sdk/auth')
+    }
+
+    this.context = options.context || ''
     this.atype = atype
     this.version = options.version || 1
     this.platform = options.platform || 'proxy'

@@ -1,3 +1,4 @@
+import type { SigninBody, CreateAccountBody, VerificationBody } from '@de./types'
 import type { AccessOptions, UserSession } from '../../types/access'
 import AccessManager from '../Access'
 import { qs, type Res } from '../../utils'
@@ -23,13 +24,16 @@ import { qs, type Res } from '../../utils'
 //
 // ─────────────────────────────────────────────────────────────────────────────
 
-export type SigninBody = {
-	phone: string
-	/** Device fingerprint — an object or its JSON string. */
-	device: string | Record<string, any>
-	/** ISO 3166-1 alpha-2. */
-	country?: string
-}
+/**
+ * Request bodies come from `@de./types`, which is what de.auth validates
+ * against — these were hand-declared here, and said `country?: string` where
+ * de.auth wants the Country OBJECT. Its schema is additionalProperties:false,
+ * so a caller trusting the SDK's type was answered `body/country must be
+ * object`. Nothing caught it because this client could not be constructed at
+ * all: AccessManager demanded a workspace context and a bearer token, which
+ * sign-in is what produces.
+ */
+export type { SigninBody, CreateAccountBody, VerificationBody, Country } from '@de./types'
 
 export type SigninResult = {
 	/** What the caller must do next — verification, or account creation first. */
@@ -43,17 +47,6 @@ export type SigninResult = {
 	testVCode?: number
 }
 
-export type CreateAccountBody = {
-	phone: string
-	agreeTerms: boolean | string
-	firstName?: string
-	lastName?: string
-	photo?: string
-	type?: string
-	country?: string
-	newsletters?: boolean | string
-}
-
 export type VerifyResult = {
 	ctoken?: string
 	deviceId?: string
@@ -62,7 +55,17 @@ export type VerifyResult = {
 
 export default class OTPAuth extends AccessManager {
 	constructor( access: AccessOptions ){
-		super( access, 'ASI' )
+		/**
+		 * de.auth admits an agent that does not start with `De.service` only if
+		 * the request carries an Authorization header — and the whole point of
+		 * this client is the flow that has no token yet. The SDK's default
+		 * platform is `proxy`, so every sign-in through it was answered 412
+		 * before reaching a handler.
+		 *
+		 * `service` is the platform this client is for; a caller that knows
+		 * better can still say so.
+		 */
+		super({ ...access, platform: access.platform || 'service' }, 'ASI' )
 	}
 
 	// ── Sign-in ───────────────────────────────────────────────────────────────
