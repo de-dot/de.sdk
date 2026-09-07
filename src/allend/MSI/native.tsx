@@ -1,6 +1,6 @@
 import type { MapOptions } from '../../types'
 
-import React, { useRef, useEffect, useState, useCallback, forwardRef, useImperativeHandle } from 'react'
+import React, { useRef, useEffect, useState, useCallback, useMemo, forwardRef, useImperativeHandle } from 'react'
 import { View, StyleSheet, AppState, type AppStateStatus, Platform } from 'react-native'
 import { WebView } from 'react-native-webview'
 import WIO from 'webview.io'
@@ -134,7 +134,33 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
   initializeConnection = useCallback( () => {
     if( !wioRef.current || !webViewRef.current ) return
     wioRef.current.initiate( webViewRef, baseURL )
-  }, [ baseURL ] )
+  }, [ baseURL ] ),
+
+  /**
+   * One options object for both ends of the bridge.
+   *
+   * `getInjectedJavaScript()` bakes the transport's own configuration into the
+   * script the WebView runs — the auth secret, the skew tolerance, the replay
+   * window. It used to be called on a throwaway `new WIO({ type: 'WEBVIEW' })`
+   * constructed inline in the JSX, which shares nothing with the instance that
+   * actually holds the connection: the embedded side would have been handed a
+   * null secret and default tolerances no matter what the host was configured
+   * with. Nothing configures cryptoAuth today, so it never showed.
+   */
+  wioOptions = useMemo( () => ({
+    type: 'WEBVIEW' as const,
+    debug: props.env === 'dev',
+    allowedIncomingEvents: ALLOWED_INCOMING_EVENTS,
+    maxMessagesPerSecond: 100,
+    connectionTimeout: 15000,
+    connectionPingInterval: 2000,
+    maxConnectionAttempts: 5,
+    autoReconnect: true,
+    heartbeatInterval: 30000
+  }), [ props.env ] ),
+
+  // Rebuilt only when those options change, rather than on every render.
+  injectedBridge = useMemo( () => new WIO( wioOptions ).getInjectedJavaScript(), [ wioOptions ] )
 
   // Expose the control surface to the host
   useImperativeHandle( ref, () => ({
@@ -149,17 +175,7 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
   }), [ isConnected, isReady, initializeConnection ] )
 
   useEffect( () => {
-    const wio = wioRef.current = new WIO({
-      type: 'WEBVIEW',
-      debug: props.env === 'dev',
-      allowedIncomingEvents: ALLOWED_INCOMING_EVENTS,
-      maxMessagesPerSecond: 100,
-      connectionTimeout: 15000,
-      connectionPingInterval: 2000,
-      maxConnectionAttempts: 5,
-      autoReconnect: true,
-      heartbeatInterval: 30000
-    })
+    const wio = wioRef.current = new WIO( wioOptions )
 
     wio
     .on('connect', async () => {
@@ -274,7 +290,7 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
         style={styles.webview}
         injectedJavaScript={`
           ${props.env === 'dev' ? injectedConsole() : ''}
-          ${new WIO({ type: 'WEBVIEW' }).getInjectedJavaScript()}
+          ${injectedBridge}
         `}
         javaScriptEnabled
         domStorageEnabled
