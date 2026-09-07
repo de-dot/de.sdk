@@ -16,6 +16,11 @@ import { qs, type Res } from '../../utils'
 // single method it had could never succeed. Route shapes are taken from
 // de.auth/src/routes/{auth,user}/index.ts.
 //
+// The paths now say what they do — `/auth/otp/send` rather than `/signin`,
+// which sent a code and signed nobody in. The method names here are kept as
+// they were: `signin` is what a caller is doing, even when what it costs is
+// one SMS.
+//
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type SigninBody = {
@@ -66,26 +71,26 @@ export default class OTPAuth extends AccessManager {
 	async signin( body: SigninBody ): Promise<Res<SigninResult>> {
 		if( !body.phone ) throw new Error('<phone> argument required')
 
-		return this.request<Res<SigninResult>>({ url: '/signin', method: 'POST', body })
+		return this.request<Res<SigninResult>>({ url: '/auth/otp/send', method: 'POST', body })
 	}
 
 	/** Step 2 — exchanges the code for a session. */
 	async verify( body: { phone: string, pvc: number, new_phone?: string }): Promise<Res<VerifyResult>> {
-		return this.request<Res<VerifyResult>>({ url: '/verification', method: 'POST', body })
+		return this.request<Res<VerifyResult>>({ url: '/auth/otp/verify', method: 'POST', body })
 	}
 
 	/** Step 1a — for a phone de.auth has never seen. */
 	async setAccount( body: CreateAccountBody ): Promise<Res<{ next: string }>> {
-		return this.request<Res<{ next: string }>>({ url: '/set-account', method: 'POST', body })
+		return this.request<Res<{ next: string }>>({ url: '/auth/account/create', method: 'POST', body })
 	}
 
 	async resendSms( body: { phone: string }): Promise<Res<void>> {
-		return this.request<Res<void>>({ url: '/resend/sms', method: 'POST', body })
+		return this.request<Res<void>>({ url: '/auth/otp/resend', method: 'POST', body })
 	}
 
-	/** GET, with the scope in the querystring — not a POST. */
+	/** A state change, so a POST — it was a GET, which is cacheable. */
 	async signout( querystring?: { allDevices?: boolean | string }): Promise<Res<void>> {
-		return this.request<Res<void>>({ url: `/signout${qs( querystring )}`, method: 'GET' })
+		return this.request<Res<void>>({ url: `/auth/session/revoke${qs( querystring )}`, method: 'POST' })
 	}
 
 	// ── The signed-in person ──────────────────────────────────────────────────
