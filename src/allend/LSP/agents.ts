@@ -5,7 +5,10 @@ import type {
 	LSPAgentUpdateValidation,
 	LSPAgentAssignVehicleValidation,
 	LSPAgentUnassignVehicleValidation,
-	LSPAgentRemoveValidation
+	LSPAgentRemoveValidation,
+	LSPAgentEnrolValidation,
+	LSPAgentEnrolmentRetrieveValidation,
+	LSPAgentEnrolmentUpdateValidation
 } from '@de./types/aux/agents'
 import type {
 	LSPConsolidationScheduleValidation,
@@ -21,6 +24,48 @@ import { qs, type Http, type Res, type Data } from '../../utils'
 
 export default class LSPAgents {
 	constructor( private http: Http ){}
+
+	// ── Self-enrolment ──────────────────────────────────────────────────────
+	//
+	// The invitation flow needs an operator to name each agent, which is right
+	// when a provider picks riders one at a time and wrong for a platform that
+	// already runs its own verification. Enrolment keeps what invitation was
+	// buying — the agent lands in this provider's context, and the provider
+	// agreed to take them — but takes the agreement from a standing policy
+	// instead of a per-person act.
+
+	/** The provider's standing enrolment policy. Operator-scoped. */
+	async enrolmentPolicy(): Promise<LSPAgentEnrolmentRetrieveValidation['response']> {
+		return await this.http.request<LSPAgentEnrolmentRetrieveValidation['response']>({
+			url: '/lsp/agents/enrolment',
+			method: 'GET'
+		})
+	}
+
+	/** Set it. Off unless `enabled` says otherwise. Operator-scoped. */
+	async setEnrolmentPolicy( body: LSPAgentEnrolmentUpdateValidation['body'] ): Promise<LSPAgentEnrolmentUpdateValidation['response']> {
+		return await this.http.request<LSPAgentEnrolmentUpdateValidation['response']>({
+			url: '/lsp/agents/enrolment',
+			method: 'PUT',
+			body
+		})
+	}
+
+	/**
+	 * Join this provider as an agent.
+	 *
+	 * Authorized as the person joining — the uid on the token — so a platform
+	 * enrols on someone's behalf by minting for them, exactly as it would to
+	 * redeem an invitation. `status`, `grade` and the zone come from the
+	 * provider's policy, not from the body.
+	 */
+	async enrol( body: LSPAgentEnrolValidation['body'] ): Promise<LSPAgentEnrolValidation['response']> {
+		return await this.http.request<LSPAgentEnrolValidation['response']>({
+			url: '/lsp/agents/enrolment',
+			method: 'POST',
+			body
+		})
+	}
 
 	async list( querystring?: LSPAgentListValidation['querystring'] ): Promise<LSPAgentListValidation['response']> {
 		return await this.http.request<LSPAgentListValidation['response']>({
