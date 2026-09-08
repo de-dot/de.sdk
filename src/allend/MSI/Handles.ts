@@ -46,13 +46,21 @@ export default class Handles extends EventEmitter {
   /**
    * Create new stream through which user's current location
    * details will be pushed to the API level.
-   * 
-   * @param usertype - (Default: `client`) Type of user at the current location
+   *
+   * This took a `usertype` of `client | agent` and sent it as the payload of
+   * `pin:current:location`. The gateway's handler takes an acknowledgement in
+   * that position and its `geolocator.pin()` takes no arguments at all, so the
+   * value was bound to `callback`, failed the `typeof … == 'function'` test and
+   * was discarded — `myLocation('agent')` and `myLocation('client')` did the
+   * same thing. `Controls.pinCurrentLocation()` emits the same event correctly,
+   * with only the ack. Removed rather than kept as decoration; distinguishing
+   * the marker by user type is a gateway feature that does not exist yet.
+   *
    * @return - Readable stream
    */
-  myLocation( usertype?: 'client' | 'agent' ){
+  myLocation(){
     if( !this.chn ) return
-    this.chn?.emit('pin:current:location', usertype || 'client' )
+    this.chn?.emit('pin:current:location')
 
     const stream = new Stream()
 
