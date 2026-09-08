@@ -21,16 +21,35 @@ export type Res<T = any> = { error: boolean, status?: string, message?: string, 
  */
 export type Data<T> = 'data' extends keyof T ? T['data'] : undefined
 
+/**
+ * Serialize a querystring for a De. route.
+ *
+ * Array values are appended as repeated keys — `state=A&state=B` — which is
+ * what Fastify's query parser turns back into an array. `String( value )` on
+ * an array produces `A,B`, a single comma-joined string, and the route answers
+ * `querystring/state must be array`: the schema is right, the request never
+ * matched it. Every array parameter the SDK sent was malformed this way, the
+ * same shape of fault as the coordinates object that once serialized to
+ * `[object Object]`.
+ *
+ * @param params - Query parameters; null and undefined values are dropped
+ * @return - `?a=1&b=2`, or an empty string when there is nothing to send
+ */
 export const qs = ( params?: Record<string, any> ): string => {
   if( !params ) return ''
-  const q = new URLSearchParams(
-    Object.fromEntries(
-      Object.entries( params )
-            .filter( ( [, v] ) => v != null )
-            .map( ( [k, v] ) => [k, String( v )] )
-    )
-  ).toString()
-  return q ? `?${q}` : ''
+
+  const q = new URLSearchParams()
+
+  for( const [ key, value ] of Object.entries( params ) ){
+    if( value === null || value === undefined ) continue
+
+    Array.isArray( value )
+      ? value.forEach( each => each !== null && each !== undefined && q.append( key, String( each ) ) )
+      : q.append( key, String( value ) )
+  }
+
+  const query = q.toString()
+  return query ? `?${query}` : ''
 }
 
 export default { Stream }
