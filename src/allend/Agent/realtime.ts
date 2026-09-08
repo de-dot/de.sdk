@@ -1,11 +1,7 @@
 import type { OrderTrackingEvent } from '@de./types'
 import type { RTLocation, Message, Peer } from '../../types'
-import type { SocketAuthCredentials } from '../../types/auth'
-import type { AccessOptions } from '../../types/access'
 
-import io, { Socket } from 'socket.io-client'
-import AccessManager from '../Access'
-import { baseURL } from '../../baseUrl'
+import RealtimeSocket, { type RealtimeConnectOptions } from '../realtime-socket'
 
 // ─── Agent Realtime ───────────────────────────────────────────────────────────
 //
@@ -32,53 +28,20 @@ export type AgentRealtimeContext = {
   xcode: string
 }
 
-export default class AgentRealtime extends AccessManager {
-  private nsp?: Socket
-  private iosHost: string
+export default class AgentRealtime extends RealtimeSocket {
   private agentId?: string
 
-  constructor( access: AccessOptions ){
-    super( access, 'API' )
-
-    // Socket.io is served by the same de.arch API server, so an explicit
-    // origin governs the socket exactly as it governs the requests — without
-    // this, a client pointed at a self-hosted De. still opened its socket
-    // against the environment table's host.
-    this.iosHost = access.baseUrl?.replace( /\/+$/, '' )
-                    || baseURL('API', access.env || 'dev', access.devHostname )
-  }
-
-  connect( agentId: string ): Promise<void> {
-    return new Promise( ( resolve, reject ) => {
-      const auth: SocketAuthCredentials = {
-        utype: 'agent',
-        id: agentId,
-        remoteOrigin: this.remoteOrigin as string,
-        accessToken: this.accessToken as string
-      }
-
-      this.agentId = agentId
-      this.nsp = io( this.iosHost, { auth } )
-      this.nsp.on('connect', resolve )
-      this.nsp.on('connect_error', reject )
-    } )
-  }
-
-  disconnect(){
-    this.nsp?.disconnect()
-    return true
-  }
+  protected get utype(): string { return 'agent' }
 
   /**
-   * Join an order tracking room with a Join Room Token issued by
-   * GET /v1/tracking/:reference (role must match this socket's utype)
+   * @param options  `getToken` supplies a fresh access token per attempt. A
+   *                 rider's phone reconnects constantly and De.'s tokens are
+   *                 short-lived, so without it the socket comes back refused —
+   *                 or, worse, comes back connected and in none of its rooms.
    */
-  join( jrtoken: string ): Promise<boolean> {
-    return new Promise( ( resolve, reject ) => {
-      this.nsp?.emit('JOIN', jrtoken, ( errmess?: string ) => {
-        errmess ? reject( new Error( errmess ) ) : resolve( true )
-      } )
-    } )
+  connect( agentId: string, options?: RealtimeConnectOptions ): Promise<void> {
+    this.agentId = agentId
+    return this.open( agentId, options )
   }
 
   // ── Order room streams (after join) ─────────────────────────────────────

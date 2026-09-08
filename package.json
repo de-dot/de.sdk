@@ -1,6 +1,6 @@
 {
   "name": "@de./sdk",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Complete SDK pack for MSI (Map Service Interface), IoTClient and DClient services — web, server and React Native",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -41,7 +41,7 @@
     "test:event": "npm run build:tsc && jest test/event.test.js"
   },
   "dependencies": {
-    "@de./types": "^2.1.0",
+    "@de./types": "^2.2.0",
     "events": "^3.3.0",
     "iframe.io": "^1.3.0",
     "node-fetch": "2.6.1",

@@ -22,6 +22,10 @@
 export { default as Auth } from './backend/Auth'
 export type { AuthConfig } from './backend/Auth'
 
+// Order-room sockets — shared connect/rejoin behaviour
+export type { RealtimeConnectOptions } from './allend/realtime-socket'
+export type { RealtimeUserType } from './allend/Realtime'
+
 // Client-side OTP auth (de.auth service)
 export { default as OTPAuth } from './allend/OTPAuth'
 

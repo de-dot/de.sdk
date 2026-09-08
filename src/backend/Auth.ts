@@ -1,7 +1,18 @@
 import { baseURL } from '../baseUrl'
 import type { AuthRequestOptions } from '../types/auth'
 
-const ACCESS_TOKEN_EXPIRY = 3.75 // in 3 minutes 45 seconds
+/**
+ * When to rotate, in minutes.
+ *
+ * De.'s own default token life is four minutes, so this beats it by fifteen
+ * seconds. It is a default and not a constant because the server's life is
+ * configurable — `API_ACCESS_TOKEN_EXPIRY` — and these two numbers are
+ * otherwise free to drift apart in the direction that breaks: a deployment
+ * that shortens the token to two minutes leaves every client rotating a
+ * credential that expired ninety seconds ago, and every call in between is
+ * answered 401 with nothing to say why.
+ */
+const ACCESS_TOKEN_EXPIRY = 3.75
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 //
@@ -27,7 +38,20 @@ export type AuthConfig = {
 	 * credentials are. Omit it for pure machine-to-machine access.
 	 */
 	uid?: string
+	/**
+	 * Rotate the token ahead of expiry.
+	 *
+	 * Off by default, which is the trap: a long-lived process that forgets it
+	 * works perfectly until the first expiry and then fails every call until
+	 * it is restarted. Anything holding a token for longer than one request
+	 * wants this on.
+	 */
 	autorefresh?: boolean
+	/**
+	 * Minutes between rotations. Defaults to 3.75 — set it below the De.
+	 * deployment's `API_ACCESS_TOKEN_EXPIRY` when that is not the default 4.
+	 */
+	rotateAfterMins?: number
 	onNewToken?: ( token: string ) => void
 	/** Host to substitute for `localhost` in `dev` (Eg. a native emulator) */
 	devHostname?: string
@@ -51,6 +75,7 @@ export default class Auth {
   private remoteOrigin?: string
   private refreshTimer?: NodeJS.Timeout
   private autorefresh?: boolean
+  private rotateAfterMins: number
   private onNewToken?: (token: string) => void
   private baseURL: string
   private isRotating: boolean = false
@@ -71,6 +96,9 @@ export default class Auth {
     this.version      = config.version || 1
     this.baseURL      = baseURL('API', this.env, config.devHostname )
     this.autorefresh  = config.autorefresh || false
+    this.rotateAfterMins = config.rotateAfterMins && config.rotateAfterMins > 0
+                              ? config.rotateAfterMins
+                              : ACCESS_TOKEN_EXPIRY
     this.onNewToken   = config.onNewToken
   }
 
@@ -114,7 +142,7 @@ export default class Auth {
     if( !this.autorefresh ) return
 
     this.clearRotation()
-    this.refreshTimer = setTimeout( () => this.rotateToken(), ACCESS_TOKEN_EXPIRY * 60 * 1000 )
+    this.refreshTimer = setTimeout( () => this.rotateToken(), this.rotateAfterMins * 60 * 1000 )
   }
 
   /**
