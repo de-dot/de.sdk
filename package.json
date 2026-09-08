@@ -1,6 +1,6 @@
 {
   "name": "@de./sdk",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Complete SDK pack for MSI (Map Service Interface), IoTClient and DClient services — web, server and React Native",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -54,9 +54,15 @@
     "react-native-webview": ">=11.0.0"
   },
   "peerDependenciesMeta": {
-    "react": { "optional": true },
-    "react-native": { "optional": true },
-    "react-native-webview": { "optional": true }
+    "react": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    },
+    "react-native-webview": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
