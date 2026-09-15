@@ -4300,20 +4300,35 @@ interface Peer {
 
 ### Authentication Types
 
-```typescript
-interface AuthOptions {
-  env?: 'dev' | 'prod';
-  version?: number;
-  autorefresh?: boolean;
-  onNewToken?: (token: string) => void;
-}
+A connector answers to two credentials. The **secret** (`de_sk_…`) stays on
+your server. The **publishable key** (`de_pk_…`) is made to ship inside an app:
+its token acts for nobody and reaches only what a map needs. `Auth` refuses a
+secret when it finds itself running in a browser or React Native.
 
-interface AuthCredentials {
-  workspace: string;
-  remoteOrigin: string;
-  cid: string;
-  secret: string;
-}
+Both are shown once — in the reply that created or rotated them — because
+De. keeps only their hashes.
+
+```typescript
+type AuthConfig = {
+  context: string;
+  env?: 'dev' | 'staging' | 'prod';
+  version?: number;
+  autorefresh?: boolean;         // renew ahead of expiry
+  rotateAfterMins?: number;
+  onNewToken?: (token: string) => void;
+} & (
+  | { cid: string; secret: string; uid?: string }   // server
+  | { publicKey: string }                          // app
+);
+
+// Server
+const auth = new Auth({ context, cid, secret: process.env.DE_SECRET });
+
+// App — MSI connectors only
+const auth = new Auth({ context, publicKey: 'de_pk_…', autorefresh: true });
+```
+
+```typescript
 
 interface SocketAuthCredentials {
   utype: string;

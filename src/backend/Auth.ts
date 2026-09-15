@@ -16,28 +16,25 @@ const ACCESS_TOKEN_EXPIRY = 3.75
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 //
-// Server-side Auth — connector credentials (cid + secret) → access token.
-// Use on the backend; never expose cid/secret to the client.
+// Connector credentials → access token, with one of two credentials:
 //
-//   const auth = new Auth({ context, cid, secret, env })
+//   Server — the secret (`de_sk_…`). Never let it leave the server.
+//     const auth = new Auth({ context, cid, secret, env })
+//
+//   App — the publishable key (`de_pk_…`), made to ship inside a bundle. Its
+//   token acts for nobody and reaches only what a map needs.
+//     const auth = new Auth({ context, publicKey, env, autorefresh: true })
+//
 //   const token = await auth.getToken()
+//
+// Anything an app needs beyond that goes through its own server, which holds
+// the secret and hands the app a short-lived token it minted.
 
-export type AuthConfig = {
+type AuthCommonConfig = {
 	context: string
-	cid: string
-	secret: string
 	remoteOrigin?: string
 	env?: 'dev' | 'staging' | 'prod'
 	version?: number
-	/**
-	 * Operator uid to embed in the minted token's scope.
-	 *
-	 * Routes behind `isAllowed` look the caller up in the `operators`
-	 * collection by uid, so a token minted without one is rejected with
-	 * "Require <uid> generated accessToken" no matter how valid the connector
-	 * credentials are. Omit it for pure machine-to-machine access.
-	 */
-	uid?: string
 	/**
 	 * Rotate the token ahead of expiry.
 	 *
@@ -57,6 +54,42 @@ export type AuthConfig = {
 	devHostname?: string
 }
 
+export type SecretAuthConfig = AuthCommonConfig & {
+	cid: string
+	/** `de_sk_…` — or `vs_…`, issued before the prefixes, which still works */
+	secret: string
+	/**
+	 * Operator uid to embed in the minted token's scope.
+	 *
+	 * Routes behind `isAllowed` look the caller up in the `operators`
+	 * collection by uid, so a token minted without one is rejected with
+	 * "Require <uid> generated accessToken" no matter how valid the connector
+	 * credentials are. Omit it for pure machine-to-machine access.
+	 */
+	uid?: string
+	publicKey?: never
+}
+
+export type PublicAuthConfig = AuthCommonConfig & {
+	/** `de_pk_…` — names its own connector, so there is no `cid` to send */
+	publicKey: string
+	cid?: never
+	secret?: never
+	uid?: never
+}
+
+export type AuthConfig = SecretAuthConfig | PublicAuthConfig
+
+/**
+ * Whether this code is running inside an app rather than on a server.
+ *
+ * A browser has a `document`; React Native says so on `navigator.product`.
+ * Node, Bun, Deno and edge runtimes have neither.
+ */
+const inAppBundle = (): boolean =>
+  typeof ( globalThis as any ).document !== 'undefined'
+  || ( globalThis as any ).navigator?.product === 'ReactNative'
+
 type AuthResponse = {
   error: boolean
   message: string
@@ -68,8 +101,9 @@ type AuthResponse = {
 export default class Auth {
   private version: number
   private env: AuthConfig['env']
-  private cid: string
-  private secret: string
+  private cid?: string
+  private secret?: string
+  private publicKey?: string
   private context: string
   private uid?: string
   private remoteOrigin?: string
@@ -84,13 +118,29 @@ export default class Auth {
   constructor( config: AuthConfig ){
     if( !config )         throw new Error('Undefined config. Check https://doc.dedot.io/sdk/auth')
     if( !config.context ) throw new Error('Undefined context. Check https://doc.dedot.io/sdk/auth')
-    if( !config.cid )     throw new Error('Undefined cid. Check https://doc.dedot.io/sdk/auth')
-    if( !config.secret )  throw new Error('Undefined secret. Check https://doc.dedot.io/sdk/auth')
+
+    if( config.publicKey ){
+      if( config.cid || config.secret )
+        throw new Error('Pass either <publicKey>, or <cid> and <secret> — not both. Check https://doc.dedot.io/sdk/auth')
+    }
+    else {
+      if( !config.cid )     throw new Error('Undefined cid. Check https://doc.dedot.io/sdk/auth')
+      if( !config.secret )  throw new Error('Undefined secret. Check https://doc.dedot.io/sdk/auth')
+
+      /**
+       * A secret inside an app is a secret everyone who downloads the app
+       * has. Refused here rather than documented, because the app that does
+       * it works perfectly — nothing would ever say so.
+       */
+      if( inAppBundle() )
+        throw new Error('A connector secret cannot be used inside an app. Use a publishable key (`publicKey`), or have your server mint the token. Check https://doc.dedot.io/sdk/auth')
+    }
 
     this.context      = config.context
     this.uid          = config.uid
     this.cid          = config.cid
     this.secret       = config.secret
+    this.publicKey    = config.publicKey
     this.remoteOrigin = config.remoteOrigin
     this.env          = config.env || 'dev'
     this.version      = config.version || 1
@@ -122,7 +172,12 @@ export default class Auth {
 
     options = { ...rawOptions, ...options }
 
-    this.debug('Auth request', `${this.baseURL}/v${this.version}/${url.replace(/^\//, '')}`, options )
+    /**
+     * Method and URL only. This logged the whole request, and the body of
+     * every one of these is a credential — the secret, or a bearer token —
+     * printed into whatever collects a dev server's output.
+     */
+    this.debug('Auth request', options.method, `${this.baseURL}/v${this.version}/${url.replace(/^\//, '')}`)
     const response = await fetch(`${this.baseURL}/v${this.version}/${url.replace(/^\//, '')}`, options )
     
     return await response.json() as T
@@ -160,7 +215,9 @@ export default class Auth {
     options: AuthRequestOptions = {
       url: '/access/token',
       method: 'POST',
-      body: { context: this.context, cid: this.cid, secret: this.secret, remoteOrigin: this.remoteOrigin, ...( this.uid ? { uid: this.uid } : {} ) }
+      body: this.publicKey
+              ? { context: this.context, publicKey: this.publicKey }
+              : { context: this.context, cid: this.cid, secret: this.secret, remoteOrigin: this.remoteOrigin, ...( this.uid ? { uid: this.uid } : {} ) }
     },
     { error, message, data } = await this.request<AuthResponse>( options )
     if( error ) throw new Error( message )
@@ -180,6 +237,20 @@ export default class Auth {
 
     if( !this.accessToken )
       throw new Error('No access token found')
+
+    /**
+     * Rotation proves possession of the secret, which an app does not have.
+     * A publishable key renews by minting afresh — same result, one call.
+     */
+    if( this.publicKey ){
+      const token = await this.getToken()
+
+      if( typeof this.onNewToken === 'function' )
+        try { this.onNewToken( token ) }
+        catch( callbackError ){ this.error('[Auth] Error in onNewToken callback:', callbackError) }
+
+      return token
+    }
 
     this.isRotating = true
 

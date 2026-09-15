@@ -141,13 +141,14 @@ export default class Workspace extends AccessManager {
 	// ── Connectors ────────────────────────────────────────────────────────────
 
 	/**
-	 * Created disabled, and the reply carries only the id — the secret has to
-	 * be read back with `getConnector`.
+	 * Created disabled. The reply carries the secret, and it is the only one
+	 * that ever will: the connector stores its hash, so `getConnector` has
+	 * nothing to show. Keep it, or rotate.
 	 */
 	async createConnector(
 		wid: string, ctype: ContextType, xcode: string,
 		body: { name: string, type: ConnectorType, description?: string, config?: Record<string, any> }
-	): Promise<Res<{ connectorId: string }>> {
+	): Promise<Res<{ connectorId: string, secret: string }>> {
 		return this.call('POST', `/${wid}/${ctype}/${xcode}/connectors`, body )
 	}
 
@@ -191,8 +192,25 @@ export default class Workspace extends AccessManager {
 		return this.call('PATCH', `/${wid}/${ctype}/${xcode}/connectors/${id}/access`, body )
 	}
 
-	async rotateConnectorSecret( wid: string, ctype: ContextType, xcode: string, id: string ): Promise<Res<{ secret: string }>> {
+	/** The new secret is in this reply and nowhere else, ever. The old one stops at once. */
+	async rotateConnectorSecret( wid: string, ctype: ContextType, xcode: string, id: string ): Promise<Res<{ secret: string, connector: Connector }>> {
 		return this.call('PATCH', `/${wid}/${ctype}/${xcode}/connectors/${id}/secret/rotate`)
+	}
+
+	/**
+	 * Issue — or replace — the publishable key an app ships with instead of
+	 * the secret. MSI connectors only. Like the secret, it is shown once.
+	 *
+	 * Replacing retires the old key immediately, so every released app build
+	 * carrying it stops working: do it when a key is being abused.
+	 */
+	async rotateConnectorPublicKey( wid: string, ctype: ContextType, xcode: string, id: string ): Promise<Res<{ publicKey: string, connector: Connector }>> {
+		return this.call('PATCH', `/${wid}/${ctype}/${xcode}/connectors/${id}/publickey/rotate`)
+	}
+
+	/** Withdraw the publishable key; the connector answers to its secret only. */
+	async revokeConnectorPublicKey( wid: string, ctype: ContextType, xcode: string, id: string ): Promise<Res<{ connector: Connector }>> {
+		return this.call('DELETE', `/${wid}/${ctype}/${xcode}/connectors/${id}/publickey`)
 	}
 
 	async requestConnectorDeletion( wid: string, ctype: ContextType, xcode: string, id: string ): Promise<Res<{ intent: string }>> {
