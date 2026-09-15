@@ -18,9 +18,9 @@
 
 // ── Named exports (preferred — tree-shakeable) ────────────────────────────────
 
-// Server-side auth: connector credentials → access token
+// Connector credentials → access token: the secret on a server, the publishable key in an app
 export { default as Auth } from './backend/Auth'
-export type { AuthConfig } from './backend/Auth'
+export type { AuthConfig, SecretAuthConfig, PublicAuthConfig } from './backend/Auth'
 
 // Order-room sockets — shared connect/rejoin behaviour
 export type { RealtimeConnectOptions } from './allend/realtime-socket'

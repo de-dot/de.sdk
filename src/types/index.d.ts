@@ -175,16 +175,18 @@ export type CoreConfig = {
 	version?: number
 }
 
+/** Mirrors `AuthConfig` in backend/Auth: the secret on a server, or the publishable key in an app */
 export type AuthConfig = {
 	context: string
-	cid: string
-	secret: string
 	remoteOrigin?: string
 	env?: Env
 	version?: number
 	autorefresh?: boolean
 	onNewToken?: ( token: string ) => void
-}
+} & (
+	{ cid: string, secret: string, uid?: string, publicKey?: never }
+	| { publicKey: string, cid?: never, secret?: never, uid?: never }
+)
 
 export type OTPAuthConfig = {
 	context: string
