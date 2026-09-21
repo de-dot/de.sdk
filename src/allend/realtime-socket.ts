@@ -75,10 +75,30 @@ export default abstract class RealtimeSocket extends AccessManager {
     this.id = id
 
     return new Promise( ( resolve, reject ) => {
+      /**
+       * The document's own origin where there is one, and the configured
+       * origin everywhere else.
+       *
+       * This tested `globalThis.window` and then took `globalThis.origin` on
+       * the strength of it. React Native defines `window` and no `origin`, so
+       * every native app sent `remoteOrigin: undefined` and de.arch refused
+       * the handshake — "Undefined Request Origin". This client could not open
+       * a user socket from a native app at all, which is the same shape of
+       * mistake `Access` made testing `window && fetch`, with the same result.
+       *
+       * Reading `origin` is what the value actually is, so nothing has to be
+       * assumed about the runtime. `"null"` is what a sandboxed or `file://`
+       * document reports for it, and is no more usable to de.arch than
+       * nothing — so that falls back too.
+       */
+      const documentOrigin = typeof globalThis.origin == 'string' && globalThis.origin !== 'null'
+                              ? globalThis.origin
+                              : undefined
+
       const credentials = async (): Promise<SocketAuthCredentials> => ({
         utype:        this.utype,
         id,
-        remoteOrigin: globalThis?.window ? globalThis.origin : this.remoteOrigin as string,
+        remoteOrigin: documentOrigin || this.remoteOrigin as string,
         accessToken:  options.getToken ? await options.getToken() : this.accessToken as string
       })
 
