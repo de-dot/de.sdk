@@ -318,6 +318,10 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
         domStorageEnabled
         geolocationEnabled
         allowsInlineMediaPlayback
+        // The host app owns the status bar. Left on, the WebView restores the
+        // style it saw at creation whenever any window shows or hides — the
+        // keyboard included — overriding whatever screen is now on top.
+        autoManageStatusBarEnabled={false}
         cacheEnabled={props.env !== 'dev'}
         incognito={props.env === 'dev'}
         androidLayerType="hardware"
