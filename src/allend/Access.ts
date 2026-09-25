@@ -66,7 +66,7 @@ export default class AccessManager {
      *
      * Requiring them of every access type meant `OTPAuth` threw in its own
      * constructor and could never be used for the one thing it exists to do.
-     * That is why de.simulation's bootstrap and Hot's `getUser` both talk to
+     * That is why de.simulation's bootstrap and Buffé's `getUser` both talk to
      * de.auth over raw fetch, and why nothing ever caught that this client
      * addressed `/v1/auth/otp` — a route de.auth has never served.
      */

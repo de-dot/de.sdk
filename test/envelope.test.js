@@ -157,7 +157,7 @@ describe('OTPAuth is constructible for the flow it exists to serve', () => {
     // Sign-in is what PRODUCES a session: at POST /auth/otp/send there is no
     // workspace to name and no token to bear. AccessManager demanded both of
     // every access type, so this client threw in its own constructor and could
-    // never be used — which is why de.simulation's bootstrap and Hot's getUser
+    // never be used — which is why de.simulation's bootstrap and Buffé's getUser
     // both talk to de.auth over raw fetch, and why nothing caught that it once
     // addressed /v1/auth/otp, a route de.auth has never served.
     expect( () => new OTPAuth({ baseUrl: 'http://localhost:44000', remoteOrigin: 'http://api.dedot.com:24800' }) )
