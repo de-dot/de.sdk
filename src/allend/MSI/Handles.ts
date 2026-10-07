@@ -374,7 +374,7 @@ export default class Handles extends EventEmitter {
    */
   navigation( journey: Journey ): Promise<Stream> {
     return new Promise( ( resolve, reject ) => {
-      if( !this.chn ) return
+      if( !this.chn ) return reject('Map is not connected')
 
       const initialize = () => {
         const stream = new Stream
@@ -414,7 +414,7 @@ export default class Handles extends EventEmitter {
           this.controls?.unmountNavigation()
         })
 
-        resolve( stream )
+        return stream
       }
       
       // Set route
@@ -427,13 +427,25 @@ export default class Handles extends EventEmitter {
                       const position = journey.origin?.coords || await this.controls?.getCurrentLocation()
                       if( !position ) return reject('Unable to get current location')
 
-                      initialize()
+                      // Listening before the navigator starts, so its STARTED is heard
+                      const stream = initialize()
 
-                      await this.controls?.mountNavigation( journey.routeId )
-                      // The navigator takes its direction from the mounted route
-                      // in load(); without it every position it is given fails
-                      await this.controls?.loadNavigation()
-                      await this.controls?.setInitialNavigationPosition( position as RTLocation )
+                      try {
+                        await this.controls?.mountNavigation( journey.routeId )
+                        // The navigator takes its direction from the mounted route
+                        // in load(); without it every position it is given fails
+                        await this.controls?.loadNavigation()
+                        await this.controls?.setInitialNavigationPosition( position as RTLocation )
+                      }
+                      catch( error ){
+                        stream.close()
+                        throw error
+                      }
+
+                      // Handed over once the navigator is live: a position synced the
+                      // moment this resolves used to reach a navigator not yet started,
+                      // and was dropped — as was any failure above, after the resolve
+                      resolve( stream )
                     } )
                     .catch( reject )
     } )
