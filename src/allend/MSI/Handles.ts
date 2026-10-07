@@ -420,8 +420,11 @@ export default class Handles extends EventEmitter {
       // Set route
       this.controls?.setRoute( journey )
                     .then( async () => {
-                      // Initialize navigation point to current location
-                      const position = journey.origin || await this.controls?.getCurrentLocation()
+                      // Initialize navigation point to current location.
+                      // The origin is a waypoint — `{ coords, caption }` — and the
+                      // navigator places its marker at a bare `{ lat, lng }`: handing
+                      // it the waypoint itself put the rider nowhere
+                      const position = journey.origin?.coords || await this.controls?.getCurrentLocation()
                       if( !position ) return reject('Unable to get current location')
 
                       initialize()
