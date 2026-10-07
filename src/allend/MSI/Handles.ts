@@ -430,6 +430,9 @@ export default class Handles extends EventEmitter {
                       initialize()
 
                       await this.controls?.mountNavigation( journey.routeId )
+                      // The navigator takes its direction from the mounted route
+                      // in load(); without it every position it is given fails
+                      await this.controls?.loadNavigation()
                       await this.controls?.setInitialNavigationPosition( position as RTLocation )
                     } )
                     .catch( reject )
