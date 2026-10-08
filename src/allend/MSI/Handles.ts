@@ -6,6 +6,7 @@ import type {
   MapOptions,
   Caption,
   Journey,
+  NavigationProgress,
   PickedLocation,
   RouteOptions,
   ControlEntity,
@@ -382,8 +383,11 @@ export default class Handles extends EventEmitter {
         const stream = new Stream
 
         // Sync with navigation route update
-        this.chn?.on('navigation:direction', ({ status, direction, position }) => {
-          stream.sync({ status, direction, position })
+        this.chn?.on('navigation:direction', ({ status, direction, position, instruction, remaining }) => {
+          stream.sync({ status, direction, position, instruction, remaining })
+
+          // The next maneuver and what is left, on every fix: what a rider reads
+          ;( instruction || remaining ) && this.emit('pe:progress', { status, instruction, remaining } as NavigationProgress & { status: string })
 
           switch( status ){
             case 'STALE':
