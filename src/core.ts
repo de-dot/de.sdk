@@ -54,6 +54,8 @@ export type { WorkspaceConfig } from './allend/Workspace'
 
 // Realtime socket client (de.arch / Socket)
 export { default as Realtime } from './allend/Realtime'
+// A platform server's own connection: Rally events and every order update
+export { default as ServiceRealtime } from './allend/Realtime/service'
 
 // Layer 2 — Workflows
 export { default as Workflows } from './allend/Workflows'
@@ -106,6 +108,7 @@ import Auth      from './backend/Auth'
 import OTPAuth   from './allend/OTPAuth'
 import Pipelines from './allend/Pipelines'
 import Realtime  from './allend/Realtime'
+import ServiceRealtime from './allend/Realtime/service'
 import IoT       from './allend/IoTSP/backend'
 import LSP       from './allend/LSP'
 import CSP       from './allend/CSP'
@@ -132,6 +135,7 @@ export const core = {
 	OTPAuth,
 	Pipelines,
 	Realtime,
+	ServiceRealtime,
 	IoT,
 	LSP,
 	CSP,

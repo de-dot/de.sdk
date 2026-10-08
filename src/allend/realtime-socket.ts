@@ -41,6 +41,12 @@ export type RealtimeConnectOptions = {
    * correct only for a process that rotates it in place.
    */
   getToken?: () => string | Promise<string>
+  /**
+   * Handshake headers. Honoured by server-side runtimes only: a browser cannot
+   * set headers on a WebSocket upgrade. A service connection names itself
+   * with `de-api-service` this way.
+   */
+  headers?: Record<string, string>
 }
 
 export default abstract class RealtimeSocket extends AccessManager {
@@ -70,6 +76,9 @@ export default abstract class RealtimeSocket extends AccessManager {
 
   /** The `utype` this client connects as. Must match the JRT's `role`. */
   protected abstract get utype(): string
+
+  /** Transport settings a kind of connection needs; none by default. */
+  protected socketOptions(): Record<string, unknown> { return {} }
 
   protected open( id: string, options: RealtimeConnectOptions = {} ): Promise<void> {
     this.id = id
@@ -111,7 +120,9 @@ export default abstract class RealtimeSocket extends AccessManager {
             // A token the app could not fetch is still an attempt: let De.
             // refuse it and surface a connect_error, rather than hanging.
             .catch( () => cb({ utype: this.utype, id }) )
-        }
+        },
+        ...( options.headers ? { extraHeaders: options.headers } : {} ),
+        ...this.socketOptions()
       })
 
       this.nsp.on('connect', () => {
