@@ -114,7 +114,8 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
   webViewRef = useRef<WebView>( null ),
   wioRef = useRef<WIO | null>( null ),
   apiRef = useRef<MSIInterface | null>( null ),
-  isInitializedRef = useRef( false ),
+  /** The page load the control surface was built for; 0 before the first */
+  builtForRef = useRef( 0 ),
 
   /**
    * The bridge is built once, so its handlers close over the props of the
@@ -130,6 +131,8 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
 
   [ isConnected, setIsConnected ] = useState( false ),
   [ isReady, setIsReady ] = useState( false ),
+  /** Pages loaded: every load is a new page, with nothing the last one drew */
+  [ loads, setLoads ] = useState( 0 ),
 
   baseURL = gatewayURL( props ),
 
@@ -189,7 +192,7 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
     get plugins(){ return apiRef.current?.plugins },
     isReady: () => isConnected && isReady,
     retry: () => {
-      isInitializedRef.current = false
+      builtForRef.current = 0
       initializeConnection()
     }
   }), [ isConnected, isReady, initializeConnection ] )
@@ -259,13 +262,13 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
       wio.disconnect()
 
       apiRef.current = null
-      isInitializedRef.current = false
+      builtForRef.current = 0
     }
   }, [] )
 
   // Build the control surface once the bridge is both connected and ready
   useEffect( () => {
-    if( isInitializedRef.current || !wioRef.current || !isConnected || !isReady ) return
+    if( builtForRef.current === loads || !wioRef.current || !isConnected || !isReady ) return
 
     const
     chn = wioRef.current,
@@ -276,10 +279,26 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
     plugins.mount( REGISTERED_PLUGINS )
 
     apiRef.current = { controls, handles, plugins }
-    isInitializedRef.current = true
+    builtForRef.current = loads
 
+    /**
+     * On every page, not once. A reloaded page has no map state, and the
+     * host's routes, markers and navigation went with the old one; built once,
+     * the host never heard, kept the dead surface and drew into nothing.
+     */
     propsRef.current.onLoaded?.( apiRef.current )
-  }, [ isConnected, isReady ] )
+  }, [ isConnected, isReady, loads ] )
+
+  /**
+   * A page finished loading: the first, or a reload. The bridge belongs to
+   * the page, so it is not ready until the new page says so.
+   */
+  const onLoadEnd = () => {
+    setIsConnected( false )
+    setIsReady( false )
+    setLoads( n => n + 1 )
+    initializeConnection()
+  }
 
   const onMessage = ( event: any ) => {
     // Console forwarding rides the same bridge; peel it off before WIO sees it
@@ -331,7 +350,10 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
         originWhitelist={[ baseURL ]}
         onShouldStartLoadWithRequest={( { url }: any ) => isGatewayURL( url )}
         onMessage={onMessage}
-        onLoadEnd={initializeConnection}
+        onLoadEnd={onLoadEnd}
+        // iOS kills a WebView's content process under memory pressure and
+        // leaves the view blank: load the page again rather than show nothing
+        onContentProcessDidTerminate={() => webViewRef.current?.reload()}
         onError={( { nativeEvent }: any ) => reportError( new Error( nativeEvent?.description || 'WebView error') )}
       />
     </View>

@@ -264,6 +264,26 @@ export type MapWaypoint = {
 	coords: Coordinates
 	caption?: Caption
 }
+/**
+ * What a navigation reports on every fix, as `pe:progress`: the next
+ * maneuver and how far off it is, and what is left of the trip.
+ */
+export type NavigationProgress = {
+	instruction?: {
+		/** Routes API maneuver (TURN_LEFT, ROUNDABOUT_RIGHT…), or ARRIVE */
+		maneuver: string
+		/** "Turn right onto Mission St" */
+		text: string
+		/** Metres to the maneuver */
+		distance: number
+	}
+	remaining?: {
+		/** Metres to the destination, along the route */
+		distance: number
+		/** Seconds to the destination */
+		duration: number
+	}
+}
 export type Journey = {
 	routeId: string | number
 	origin?: MapWaypoint
