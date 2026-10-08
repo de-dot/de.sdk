@@ -1,5 +1,5 @@
 import type { OrderTrackingEvent } from '@de./types'
-import type { RTLocation, Message, Peer } from '../../types'
+import type { RTLocation, RTRoute, Message, Peer } from '../../types'
 
 import RealtimeSocket, { type RealtimeConnectOptions } from '../realtime-socket'
 
@@ -68,7 +68,13 @@ export default class Realtime extends RealtimeSocket {
     return this
   }
 
-  onRoute( fn: ( route: any ) => void ){
+  /**
+   * The rider's route to this order's stop, as its navigator worked it out:
+   * the road ahead (`polyline`, encoded at precision 5) and what is left of it.
+   * Comes with the rider's position reports while it navigates; a pickup
+   * route leads to the merchant, a dropoff route to this order's door.
+   */
+  onRoute( fn: ( route: RTRoute ) => void ){
     this.nsp?.on('ROUTE-CHANGE', fn )
     return this
   }

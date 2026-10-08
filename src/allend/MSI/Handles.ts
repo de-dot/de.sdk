@@ -344,7 +344,7 @@ export default class Handles extends EventEmitter {
       if( !direction || !position )
         return stream.error( new Error('Invalid Data') )
         
-      this.controls?.casting('peer-direction', direction, position, options )
+      this.controls?.casting('peer-direction', direction, position, options ).catch( () => {} )
 
       switch( status ){
         case 'STALE':
@@ -412,7 +412,9 @@ export default class Handles extends EventEmitter {
           if( !position )
             return stream.error( new Error('Invalid Data') )
           
-          this.controls?.navigate( position )
+          // A fix the map could not take — its page reloading — is replaced by
+          // the next; left uncaught, every one surfaced as an app error
+          this.controls?.navigate( position ).catch( () => {} )
         })
         .onerror( error => console.error('[Stream Error] ', error ) )
         .onclose( () => {
