@@ -38,6 +38,7 @@ export type CustomPointOptions = Record<string, unknown>
 import type {
 	// ── geo ───────────────────────────────────────────────────────────────────
 	RTLocation,
+	RTRoute,
 	Address,
 	Contacts,
 	BoundingBox,
@@ -93,6 +94,7 @@ import type {
 
 export type {
 	RTLocation,
+	RTRoute,
 	Address,
 	Contacts,
 	BoundingBox,

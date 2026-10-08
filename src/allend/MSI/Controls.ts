@@ -612,6 +612,26 @@ export default class Controls {
     } )
   }
   /**
+   * Clear a route's line behind a subject moving along it — a rider on the
+   * road drawn for them — so the line starts where they are.
+   *
+   * @param routeId - Route identifier
+   * @param position - Where the subject is now
+   */
+  trimRoute( routeId: string, position: Coordinates ): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      // Set timeout
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+
+      this.chn.emit('trim:route', { routeId, position }, ( error: string | boolean ) => {
+        clearTimeout( timeout )
+
+        if( error ) return reject( error )
+        resolve()
+      } )
+    } )
+  }
+  /**
    * Fit all/many routes bounds
    * 
    * @param options - Routes fit bounds options
