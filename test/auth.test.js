@@ -69,6 +69,37 @@ describe('with a secret', () => {
 
     expect( calls[0].body ).not.toHaveProperty('expire')
   })
+
+  it('keeps rotating after a rotation that failed both ways', async () => {
+    jest.useFakeTimers()
+    jest.spyOn( console, 'error' ).mockImplementation( () => {} )
+
+    const calls = stubFetch()
+    const working = globalThis.fetch
+    const auth = new Auth({ context: CONTEXT, cid: 'c1', secret: 'de_sk_x', autorefresh: true })
+
+    await auth.getToken()
+
+    // de.arch restarting: the rotate and the fresh mint behind it both fail
+    globalThis.fetch = async ( url, options ) => {
+      calls.push({ url, method: options.method })
+      return { status: 500, json: async () => ({ error: true, status: 'ERROR::500', message: 'Internal Server Error' }) }
+    }
+    await jest.advanceTimersByTimeAsync( 3.75 * 60_000 )
+    expect( calls.slice( 1 ).map( call => call.method ) ).toEqual([ 'PATCH', 'POST' ])
+
+    // Back up: the retry rotates, and rotation carries on by itself
+    globalThis.fetch = working
+    await jest.advanceTimersByTimeAsync( 15_000 )
+    expect( auth.accessToken ).toBe('token-2')
+
+    await jest.advanceTimersByTimeAsync( 3.75 * 60_000 )
+    expect( auth.accessToken ).toBe('token-3')
+
+    auth.stopAutoRefresh()
+    jest.useRealTimers()
+    console.error.mockRestore()
+  })
 })
 
 describe('with a publishable key', () => {

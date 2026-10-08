@@ -14,6 +14,17 @@ import type { AuthRequestOptions } from '../types/auth'
  */
 const ACCESS_TOKEN_EXPIRY = 3.75
 
+/**
+ * How soon to try again after a rotation that failed outright.
+ *
+ * A rotation that fails both ways — de.arch restarting, the network down for
+ * a moment — used to end rotation for good: the timer's promise was dropped,
+ * nothing rescheduled, and the token lapsed four minutes later with every call
+ * after it answered 401 "Token Expired" until the process restarted. The
+ * retry mints afresh, which is all an expired token needs.
+ */
+const ROTATION_RETRY_MS = 15_000
+
 // ─── Config ───────────────────────────────────────────────────────────────────
 //
 // Connector credentials → access token, with one of two credentials:
@@ -193,11 +204,13 @@ export default class Auth {
   /**
    * Schedule next token rotation
    */
-  private scheduleRotation(){
+  private scheduleRotation( afterMs = this.rotateAfterMins * 60 * 1000 ){
     if( !this.autorefresh ) return
 
     this.clearRotation()
-    this.refreshTimer = setTimeout( () => this.rotateToken(), this.rotateAfterMins * 60 * 1000 )
+    this.refreshTimer = setTimeout( () => {
+      this.rotateToken().catch( () => this.scheduleRotation( ROTATION_RETRY_MS ) )
+    }, afterMs )
   }
 
   /**
