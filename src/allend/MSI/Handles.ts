@@ -23,6 +23,8 @@ export default class Handles extends EventEmitter {
   private chn: Channel
   private controls: Controls
   private options: MapOptions
+  /** The last navigation's teardown — the map has one navigator, and the next waits for it */
+  private navigated: Promise<unknown> = Promise.resolve()
 
   constructor( chn: Channel, controls: Controls, options: MapOptions ){
     super()
@@ -411,14 +413,22 @@ export default class Handles extends EventEmitter {
         .onerror( error => console.error('[Stream Error] ', error ) )
         .onclose( () => {
           this.chn?.off('navigation:direction')
-          this.controls?.unmountNavigation()
+          this.navigated = this.controls?.unmountNavigation()
+            // The route was made for this navigation (setRoute below), so it
+            // goes with it. Left behind, the finished trip stayed drawn on the
+            // map until the next one replaced it.
+            .then( () => this.controls?.removeRoute( String( journey.routeId ) ) )
+            .catch( () => {} ) ?? Promise.resolve()
         })
 
         return stream
       }
       
-      // Set route
-      this.controls?.setRoute( journey )
+      // Set route, once the last navigation is gone. Its teardown is async,
+      // and a stop that follows another (kitchen, then door) used to start
+      // first: the old unmount and route removal then landed on the new one,
+      // and the rider rode on with no route and no marker
+      this.navigated.then( () => this.controls?.setRoute( journey ) )
                     .then( async () => {
                       // Initialize navigation point to current location.
                       // The origin is a waypoint — `{ coords, caption }` — and the
