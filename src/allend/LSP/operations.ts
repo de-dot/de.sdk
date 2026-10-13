@@ -1,6 +1,7 @@
 import type { APIResponseBase } from '@de./types'
 import type {
 	LSPScoreOriginValidation,
+	LSPScoreSenderValidation,
 	LSPScoreAgentValidation,
 	LSPReportsInventoryValidation,
 	LSPReportsOperationsValidation,
@@ -159,6 +160,18 @@ export default class LSPOperations {
 	async getOriginScore( senderId: string ): Promise<LSPScoreOriginValidation['response']> {
 		return await this.http.request<LSPScoreOriginValidation['response']>({
 			url: `/lsp/score/origin/${senderId}`,
+			method: 'GET'
+		})
+	}
+
+	/**
+	 * The score of the place that sends orders, whichever way De. scores it:
+	 * `tracked` (origin-tracked, a stall) with its batch tier, or as a sender
+	 * (a restaurant) with `batchTier: null`
+	 */
+	async getSenderScore( senderId: string ): Promise<LSPScoreSenderValidation['response']> {
+		return await this.http.request<LSPScoreSenderValidation['response']>({
+			url: `/lsp/score/sender/${senderId}`,
 			method: 'GET'
 		})
 	}
