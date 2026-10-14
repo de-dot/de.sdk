@@ -76,6 +76,81 @@ function injectedConsole(): string {
 }
 
 /**
+ * Answer the page's `navigator.geolocation` from the host app.
+ *
+ * iOS treats the gateway page as a website: asked for the position there, it
+ * prompts again in the page's name (the gateway's host) on every launch, though
+ * the app holds location already, and the app has no public way to answer it.
+ * With this in place before the page loads, the page asks the app instead and
+ * WebKit never prompts. Replies come back through `window.__deGeo`.
+ */
+function injectedGeolocation(): string {
+  return `
+    (function(){
+      var seq = 0, calls = {}
+      var ask = function( kind, id ){
+        window.ReactNativeWebView.postMessage( JSON.stringify({ type: '__geo', kind: kind, id: id }) )
+      }
+
+      window.__deGeo = function( reply ){
+        var call = calls[ reply.id ]
+        if( !call ) return
+        if( !call.watch ) delete calls[ reply.id ]
+
+        reply.error
+          ? call.fail && call.fail({ code: 2, message: reply.error, PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3 })
+          : call.ok( reply.position )
+      }
+
+      Object.defineProperty( navigator, 'geolocation', {
+        configurable: true,
+        value: {
+          getCurrentPosition: function( ok, fail ){
+            var id = ++seq
+            calls[ id ] = { ok: ok, fail: fail }
+            ask('get', id )
+          },
+          watchPosition: function( ok, fail ){
+            var id = ++seq
+            calls[ id ] = { ok: ok, fail: fail, watch: true }
+            ask('watch', id )
+            return id
+          },
+          clearWatch: function( id ){
+            if( !calls[ id ] ) return
+            delete calls[ id ]
+            ask('clear', id )
+          }
+        }
+      })
+    })();
+  `
+}
+
+/**
+ * A position as the browser's Geolocation API reports it, which is also what
+ * expo-location's `getCurrentPositionAsync` and `watchPositionAsync` give.
+ */
+export type HostPosition = {
+  coords: {
+    latitude: number
+    longitude: number
+    accuracy?: number | null
+    altitude?: number | null
+    altitudeAccuracy?: number | null
+    heading?: number | null
+    speed?: number | null
+  }
+  timestamp: number
+}
+
+export interface HostGeolocation {
+  getCurrentPosition: () => Promise<HostPosition>
+  /** Calls back on every fix; returns what stops it */
+  watchPosition: ( onPosition: ( position: HostPosition ) => void ) => () => void
+}
+
+/**
  * Resolve the gateway host for the running platform.
  *
  * A native app cannot reach the developer's machine on `localhost`: the Android
@@ -95,6 +170,11 @@ export interface MSIProps extends MapOptions {
   onReady?: () => void
   onError?: ( error: Error ) => void
   onLoaded?: ( msi: MSIInterface ) => void
+  /**
+   * The app's own location, for the map to use instead of asking the WebView.
+   * Leave it out and iOS prompts in the gateway's name on every launch.
+   */
+  geolocation?: HostGeolocation
   style?: any
 }
 
@@ -128,6 +208,8 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
    * called forever.
    */
   propsRef = useRef( props ),
+  /** The page's position watches, by the id the page gave them */
+  watchesRef = useRef( new Map<number, () => void>() ),
 
   [ isConnected, setIsConnected ] = useState( false ),
   [ isReady, setIsReady ] = useState( false ),
@@ -207,7 +289,7 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
          * Resolve the token here rather than at mount, so a reconnect after a
          * backgrounded app or a dropped bridge binds with a current token.
          */
-        const { getAccessToken, onReady, onError, onLoaded, style, ...config } = propsRef.current
+        const { getAccessToken, onReady, onError, onLoaded, geolocation, style, ...config } = propsRef.current
 
         await wio.emitAsync('bind', {
           ...config,
@@ -260,6 +342,7 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
     return () => {
       subscription.remove()
       wio.disconnect()
+      stopWatches()
 
       apiRef.current = null
       builtForRef.current = 0
@@ -300,10 +383,45 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
     initializeConnection()
   }
 
+  /**
+   * Answer the page's position requests from the host -- see
+   * `injectedGeolocation`.
+   */
+  const answer = ( reply: object ) => {
+    webViewRef.current?.injectJavaScript(`window.__deGeo && window.__deGeo(${JSON.stringify( reply )}); true;`)
+  }
+
+  const locate = ( kind: string, id: number ) => {
+    const { geolocation } = propsRef.current
+    if( !geolocation ) return
+
+    switch( kind ){
+      case 'get': geolocation.getCurrentPosition()
+                             .then( position => answer({ id, position }) )
+                             .catch( ( error: any ) => answer({ id, error: String( error?.message || error ) }) ); break
+
+      case 'watch': watchesRef.current.set( id, geolocation.watchPosition( position => answer({ id, position }) ) ); break
+
+      case 'clear': watchesRef.current.get( id )?.()
+                    watchesRef.current.delete( id ); break
+    }
+  }
+
+  // A new page starts with no watches of its own; the last page's are dead
+  function stopWatches(){
+    watchesRef.current.forEach( stop => stop() )
+    watchesRef.current.clear()
+  }
+
   const onMessage = ( event: any ) => {
     // Console forwarding rides the same bridge; peel it off before WIO sees it
     try {
       const data = JSON.parse( event.nativeEvent.data )
+      if( data?.type === '__geo' ){
+        locate( data.kind, data.id )
+        return
+      }
+
       if( data?.type === '__console' ){
         const message = `[MSI gateway] ${data.message}`
 
@@ -329,6 +447,7 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
         ref={webViewRef}
         source={{ uri: baseURL }}
         style={styles.webview}
+        injectedJavaScriptBeforeContentLoaded={props.geolocation ? injectedGeolocation() : undefined}
         injectedJavaScript={`
           ${props.env === 'dev' ? injectedConsole() : ''}
           ${injectedBridge}
@@ -350,6 +469,7 @@ export default forwardRef<MSIRef, MSIProps>( ( props, ref ) => {
         originWhitelist={[ baseURL ]}
         onShouldStartLoadWithRequest={( { url }: any ) => isGatewayURL( url )}
         onMessage={onMessage}
+        onLoadStart={stopWatches}
         onLoadEnd={onLoadEnd}
         // iOS kills a WebView's content process under memory pressure and
         // leaves the view blank: load the page again rather than show nothing

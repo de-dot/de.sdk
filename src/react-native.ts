@@ -29,7 +29,9 @@ export {
 	plugin,
 	type MSIInterface,
 	type MSIProps,
-	type MSIRef
+	type MSIRef,
+	type HostGeolocation,
+	type HostPosition
 } from './allend/MSI/native'
 
 import MSI from './allend/MSI/native'
