@@ -14,6 +14,7 @@ import type {
   Journey,
   RouteOptions,
   RoutesFitBoundsOptions,
+  MapPadding,
   LngLat
 } from '../../types'
 import type {
@@ -642,6 +643,27 @@ export default class Controls {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
       
       this.chn.emit('fit:routes:bounds', options, ( error: string | boolean ) => {
+        clearTimeout( timeout )
+
+        if( error ) return reject( error )
+        resolve()
+      } )
+    } )
+  }
+
+  /**
+   * What the host's panels cover (a sheet over the map's bottom, in points):
+   * the camera centres, follows the navigation and fits routes within what is
+   * left visible, while the map still draws under the panels. Send it again
+   * whenever a panel changes size.
+   *
+   * @param padding - Pixels covered on each side; sides left out keep theirs
+   */
+  setPadding( padding: Partial<MapPadding> ): Promise<void> {
+    return new Promise( ( resolve, reject ) => {
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+
+      this.chn.emit('set:padding', padding, ( error: string | boolean ) => {
         clearTimeout( timeout )
 
         if( error ) return reject( error )

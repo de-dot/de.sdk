@@ -302,6 +302,8 @@ export type ActiveDirection<RouteSpec> = {
 	route: RouteSpec | null
 }
 export type RouteID = string | number
+/** Pixels of the map the host's panels cover, on each side */
+export type MapPadding = { top: number; right: number; bottom: number; left: number }
 export type RoutesFitBoundsOptions = {
 	includes?: RouteID[]
 	margin?: number
