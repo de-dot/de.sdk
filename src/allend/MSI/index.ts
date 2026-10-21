@@ -29,7 +29,9 @@ ALLOWED_INCOMING_EVENTS = [
   'live:location:update',
   'live:location:end',
   'route',
-  'navigation:direction'
+  'navigation:direction',
+  'zone:click',
+  'zone:change'
 ]
 
 export interface MSIInterface {

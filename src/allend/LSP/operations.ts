@@ -17,6 +17,7 @@ import type {
 	LSPZoneDensityValidation,
 	LSPZoneCreateValidation,
 	LSPZoneUpdateStatusValidation,
+	LSPZoneUpdateValidation,
 	LSPZoneRemoveValidation
 } from '@de./types/lsp/zones'
 import type {
@@ -106,6 +107,19 @@ export default class LSPOperations {
 		return await this.http.request<LSPZoneDensityValidation['response']>({
 			url: `/lsp/zones/${id}/density`,
 			method: 'GET'
+		})
+	}
+
+	/**
+	 * Rename a zone, redraw its boundary or set its neighbours. Neighbours are
+	 * kept two-way, and a redrawn boundary is no longer reshaped by De.'s
+	 * zoning sweep (`metadata.drawnAt: null` hands it back).
+	 */
+	async updateZone( id: string, body: LSPZoneUpdateValidation['body'] ): Promise<LSPZoneUpdateValidation['response']> {
+		return await this.http.request<LSPZoneUpdateValidation['response']>({
+			url: `/lsp/zones/${id}`,
+			method: 'PATCH',
+			body
 		})
 	}
 
