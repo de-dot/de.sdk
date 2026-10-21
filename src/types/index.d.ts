@@ -304,6 +304,31 @@ export type ActiveDirection<RouteSpec> = {
 export type RouteID = string | number
 /** Pixels of the map the host's panels cover, on each side */
 export type MapPadding = { top: number; right: number; bottom: number; left: number }
+
+/**
+ * Zones on the map. `boundary` is De.'s own (a zone as `lsp.zones` lists it);
+ * `CUSTOM` boundaries name areas rather than draw them, so they are skipped.
+ */
+export type MapZoneBoundary =
+	| { type: 'POLYGON'; geofence?: boolean; coordinates: Coordinates[][] }
+	| { type: 'CIRCLE'; geofence?: boolean; center: Coordinates; radius: { value: number; unit: 'm' | 'km' | 'mi' } }
+export type MapZone = {
+	id: string
+	boundary: MapZoneBoundary
+	/** Shown at the zone's centre */
+	label?: string
+	status?: 'ACTIVE' | 'DORMANT' | 'SUSPENDED'
+	/** Fills the zone: busy warm, quiet cool. `color` overrides it */
+	density?: 'HIGH' | 'NORMAL' | 'LOW' | 'UNKNOWN'
+	/** Stroke and fill, in place of status and density's */
+	color?: string
+	/** Drawn heavier, over the others */
+	selected?: boolean
+}
+/** `zone:change`: a boundary as it is edited (`id`) or drawn (no `id`) */
+export type MapZoneChange = { id?: string; boundary: MapZoneBoundary }
+/** `zone:click` */
+export type MapZoneClick = { id: string; coordinates: Coordinates }
 export type RoutesFitBoundsOptions = {
 	includes?: RouteID[]
 	margin?: number

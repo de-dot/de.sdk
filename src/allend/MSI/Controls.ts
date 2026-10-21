@@ -15,7 +15,10 @@ import type {
   RouteOptions,
   RoutesFitBoundsOptions,
   MapPadding,
-  LngLat
+  LngLat,
+  MapZone,
+  MapZoneBoundary,
+  MapZoneChange
 } from '../../types'
 import type {
   RTLocation
@@ -659,6 +662,82 @@ export default class Controls {
    *
    * @param padding - Pixels covered on each side; sides left out keep theirs
    */
+  /**
+   * One request to the map, answered by its callback: what it hands back, or
+   * its error. Times out like every other control.
+   */
+  private call<T = void>( event: string, ...args: any[] ): Promise<T> {
+    return new Promise( ( resolve, reject ) => {
+      const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
+
+      this.chn.emit( event, ...args, ( error: string | boolean, data?: T ) => {
+        clearTimeout( timeout )
+
+        if( error ) return reject( error )
+        resolve( data as T )
+      } )
+    } )
+  }
+
+  /**
+   * Draw zones, in place of those shown. Listen to `zone:click` for taps
+   * (`MapZoneClick`). Googlemap only: Mapbox answers with an error.
+   *
+   * @param list - Zones, coloured by status and density unless given a colour
+   */
+  showZones( list: MapZone[] ): Promise<void> {
+    return this.call('show:zones', list )
+  }
+  /**
+   * Take zones off the map
+   *
+   * @param ids - (Optional) The zones to remove. All of them by default
+   */
+  removeZones( ids?: string[] ): Promise<void> {
+    return this.call('remove:zones', ids || null )
+  }
+  /**
+   * Fit zones in what is visible
+   *
+   * @param ids - (Optional) The zones to fit. All shown by default
+   * @param margin - (Optional) Space around them, in pixels
+   */
+  focusZones( ids?: string[], margin?: number ): Promise<void> {
+    return this.call('focus:zones', { ids, margin })
+  }
+  /**
+   * Make a shown zone's boundary editable: corners drag, and a circle's centre
+   * and radius. Each change comes as `zone:change` (`MapZoneChange`).
+   *
+   * @param id - A zone shown with `showZones`
+   */
+  editZone( id: string ): Promise<void> {
+    return this.call('edit:zone', id )
+  }
+  /**
+   * Stop editing
+   *
+   * @return - The edited zone's boundary as it now is, or null when none was
+   */
+  endZoneEdit(): Promise<MapZoneChange | null> {
+    return this.call('end:zone:edit')
+  }
+  /**
+   * Draw a new zone: each tap on the map adds a corner, and corners drag.
+   * Each change comes as `zone:change` with no id.
+   */
+  drawZone(): Promise<void> {
+    return this.call('draw:zone')
+  }
+  /**
+   * Stop drawing
+   *
+   * @return - The polygon drawn, or null under three corners
+   */
+  endZoneDraw(): Promise<MapZoneBoundary | null> {
+    return this.call('end:zone:draw')
+  }
+
   setPadding( padding: Partial<MapPadding> ): Promise<void> {
     return new Promise( ( resolve, reject ) => {
       const timeout = setTimeout( () => reject( FUNCTION_EVENT_TIMEOUT_MESSAGE ), FUNCTION_EVENT_TIMEOUT )
