@@ -117,7 +117,11 @@ export default class MSI extends EventEmitter {
         this.isConnected = true
       })
     })
-    .on('error', ( error: Error | string ) => this.emit('error', typeof error == 'object' ? error : new Error( error ) ) )
+    /**
+     * Only to someone listening: an EventEmitter throws an `error` nobody
+     * handles, and the transport would hand that throw back as another error
+     */
+    .on('error', ( error: Error | string ) => this.listenerCount('error') && this.emit('error', typeof error == 'object' ? error : new Error( error ) ) )
     .on('ready', () => {
       this.emit('ready')
       this.emit('loaded', this.chn )
@@ -229,6 +233,8 @@ export default class MSI extends EventEmitter {
    * unmount; the web entry had no way to.
    */
   destroy(){
+    // Nothing the gateway says after this reaches the host
+    this.chn?.removeListeners()
     this.chn?.disconnect()
     this.chn = undefined
     this.isConnected = false
