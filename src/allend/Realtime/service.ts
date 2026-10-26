@@ -44,10 +44,43 @@ export default class ServiceRealtime extends RealtimeSocket {
    *                   after an expiry is refused without a fresh one.
    */
   connect( serviceId: string, options: RealtimeConnectOptions = {} ): Promise<void> {
-    return this.open( serviceId, {
+    this.closed = false
+    const opened = this.open( serviceId, {
       ...options,
       headers: { ...options.headers, 'de-api-service': serviceId }
     })
+
+    this.retryRefusals()
+    return opened
+  }
+
+  private closed = false
+
+  /**
+   * A handshake De. refused is one socket.io never tries again: it reconnects
+   * after a dropped transport, and gives up on a refusal. The refusal a server
+   * meets is an expired token, after its host slept through the rotation: the
+   * reconnect sent the stale one, De. said "Token Expired", and Buffé heard no
+   * Rally event for two days, every offer to a rider lost, while its HTTP calls
+   * (which mint a token each) went on working. Each attempt reads the token
+   * afresh, so a refusal is retried with the same backoff as a drop.
+   */
+  private retryRefusals(){
+    let wait = 1_000
+
+    this.nsp?.on('connect', () => { wait = 1_000 })
+    this.nsp?.on('connect_error', () => {
+      // Still active: socket.io is reconnecting on its own
+      if( this.nsp?.active ) return
+
+      setTimeout( () => { !this.closed && !this.nsp?.connected && this.nsp?.connect() }, wait )
+      wait = Math.min( wait * 2, 60_000 )
+    })
+  }
+
+  disconnect(){
+    this.closed = true
+    return super.disconnect()
   }
 
   /** Rally: offers, assignments, expiries, releases, relays, zone changes. */
@@ -75,7 +108,7 @@ export default class ServiceRealtime extends RealtimeSocket {
     return this
   }
 
-  /** A refused or failed attempt. Reconnection carries on regardless. */
+  /** A refused or failed attempt. Reconnection carries on regardless, a refusal included. */
   onConnectError( fn: ( error: Error ) => void ){
     this.nsp?.on('connect_error', fn )
     return this
